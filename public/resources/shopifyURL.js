@@ -1,0 +1,1 @@
+module.exports = "https://21dbd73540e6a727cfec5b701650e283:8e7ec897dbbf3f113968cad76e6e6f8d@apphappens.myshopify.com/admin"

@@ -1,8 +1,6 @@
 var request = require('request');
 var Parse = require('parse/node');
-var initializeParse = require("./initializeParse.js");
-
-console.log(getMostRecentlySavedOrder());
+var initializeParse = require("../../resources/initializeParse.js");
 
 function getMostRecentlySavedOrder() {
         var LastRetrievedOrder = Parse.Object.extend("LastRetrievedOrder");
@@ -20,7 +18,8 @@ function getMostRecentlySavedOrder() {
 }
 
 function getAllOrders(lastRetrievedShopifyID) {
-    var shopifyURL = 'https://21dbd73540e6a727cfec5b701650e283:8e7ec897dbbf3f113968cad76e6e6f8d@apphappens.myshopify.com/admin/orders.json';
+    let baseURL = require("../../resources/shopifyURL.js");
+    var shopifyURL = baseURL + '/orders.json';
     var parameters = {limit : 250, since_id : lastRetrievedShopifyID};
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -59,7 +58,7 @@ function saveCustomers(orders) {
     //Creating order dictionary, so when we get the customers back after saving, then we can easily see which order the customer corresponds to when saving orders.
     var orderDictionary = {};
 
-    for (i = 0; i < orders.length; i++) {
+    for (var i = 0; i < orders.length; i++) {
         let Customer = require('../../models/customer.js');
         let customer = new Customer();
         let order = orders[i];
@@ -87,7 +86,7 @@ function saveCustomers(orders) {
 function saveOrders(ordersJSON, dictionary) {
     var orderArray = [];
 
-    for (i = 0; i < ordersJSON.length; i++) {
+    for (var i = 0; i < ordersJSON.length; i++) {
         let orderJSON = ordersJSON[i];
         let customer = dictionary[orderJSON.id];
         
@@ -113,7 +112,7 @@ function saveOrders(ordersJSON, dictionary) {
 function saveLineItems(ordersJSON, orders) {
     var lineItems = [];
 
-    for (i = 0; i < ordersJSON.length; i++) {
+    for (var i = 0; i < ordersJSON.length; i++) {
         let orderJSON = ordersJSON[i];
         let order = order[i];
 
