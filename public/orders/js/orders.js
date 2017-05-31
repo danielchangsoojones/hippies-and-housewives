@@ -2,13 +2,14 @@ var request = require('request');
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
-console.log(saveAllOrders(1));
+// console.log(saveAllOrders(1));
+console.log(getPracticeOrder());
 
 //TODO: I can delete this once I know it works
 function getPracticeOrder() {
     let baseURL = require("../../resources/shopifyURL.js");
     var shopifyURL = baseURL + '/orders.json';
-    var parameters = {ids : 4852107785, status : "any"};
+    var parameters = {ids : 4913188233, status : "any"};
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
@@ -103,7 +104,7 @@ function getShipmentStatus(orderJSON) {
     //statuses: open, label printed, in-transit, delivered or failure. See Shopify Fulfillment Event documentation for better understanding
     var shipmentStatus;
 
-    if (fulfillments.length == 0) {
+    if (fulfillments.length == 0 || fulfillments[0].shipment_status == null) {
         //the order has no shipment status yet because the shipping label has not been printed yet
         shipmentStatus = "open";
     } else if (fulfillments[0].shipment_status == "confirmed") {
