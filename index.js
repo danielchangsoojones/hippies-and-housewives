@@ -40,7 +40,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/test', function(req, res) {
-  console.log(req);
+  console.log(req.params);
 });
 
 // There will be a test page available on the /test path of your server url
