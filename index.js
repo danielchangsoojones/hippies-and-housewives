@@ -41,10 +41,17 @@ app.get('/', function(req, res) {
 
 app.post('/newOrder', function(req, res) {
   console.log("different parameter tries");
-  console.log(req.param);
+  console.log(req.param('id'));
+  console.log(req.param('order'));
+  console.log(req.param('event'));
+  console.log(req.param('events'));
+  console.log(req.param('newOrder'));
+  console.log(req.param('body'));
+
   console.log(req.params);
   console.log(req.body);
   console.log(req);
+  res.status(200).send('successfully recieved the new order');
 });
 
 // There will be a test page available on the /test path of your server url
