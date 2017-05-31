@@ -4,6 +4,7 @@ var initializeParse = require("../../resources/initializeParse.js");
 
 console.log(getAllProducts(1));
 
+
 function getAllProducts(page) {
     let baseURL = require("../../resources/shopifyURL.js");
     var shopifyURL = baseURL + '/products.json';

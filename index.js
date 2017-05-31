@@ -43,14 +43,10 @@ app.get('/', function(req, res) {
 });
 
 app.post('/newOrder', function(req, res) {
-  console.log("different parameter tries");
+  let newOrder = req.body;
+  var orderJS = require("./public/orders/js/orders.js");
+  console.log(orderJS.saveOrder(newOrder));
 
-  console.log("using body stuff");
-  console.log(req.body);
-  console.log(req.body.order);
-  
-  console.log(req);
-  console.log("right above the data");
   res.status(200).send('successfully recieved the new order');
 });
 

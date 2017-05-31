@@ -109,6 +109,27 @@ function saveOrders(ordersJSON, dictionary) {
     });
 }
 
+exports.saveOrder = function saveOrder(orderJSON) {
+    console.log("saving the order");
+    let Order = require('../../models/order.js');
+    let order = new Order();
+    order.set("shopifyID", orderJSON.id);
+    let address = orderJSON.address1 + " " + orderJSON.city + " " + orderJSON.province_code + " " + orderJSON.zip + " " + orderJSON.country;
+    order.set("shippingAddress", address);
+    order.set("customer", customer);
+
+    order.save(null, {
+        success: function(order) {
+            console.log("saved new order");
+        },
+        error: function(product, error) {
+            console.log('Failed to create new object, with error code: ' + error.message);
+        }
+    });
+    
+    return order
+}
+
 function saveLineItems(ordersJSON, orders) {
     var lineItems = [];
 
