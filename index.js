@@ -40,7 +40,11 @@ app.get('/', function(req, res) {
 });
 
 app.post('/newOrder', function(req, res) {
+  console.log("different parameter tries");
+  console.log(req.param);
+  console.log(req.params);
   console.log(req.body);
+  console.log(req);
 });
 
 // There will be a test page available on the /test path of your server url
