@@ -1,5 +1,8 @@
 var request = require('request');
 var Parse = require('parse/node');
+var initializeParse = require("../../resources/initializeParse.js");
+
+var allProducts = [];
 
 console.log(getAllProducts());
 
@@ -10,41 +13,87 @@ function getAllProducts(lastShopifyProductID) {
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             let products = JSON.parse(body).products;
-            // console.log(products.length);
             if (products.length != 0) {
-                //we have not hit the most recent order because more exist beyond it
+                //we have not hit the most recent product because more exist beyond it
+                allProducts.push(products);
                 let lastShopifyProductID = products[products.length - 1].id;
                 getAllProducts(lastShopifyProductID);
             }
 
-            saveProducts(products);
+            saveFabric(products);
         } else {
             console.log(error);
         }
     });
 }
 
-function saveProducts(products) {
+function saveFabric(productsJSON) {
+    for(var i = 0; i < productsJSON.length; i++) {
+        let productJSON = productsJSON[i];
+        var Fabric = Parse.Object.extend("Fabric");
+        var query = new Parse.Query(Fabric);
+
+        query.equalTo("color", getColor(productJSON));
+
+        query.first({
+            success: function(fabric) {
+                if (fabric == undefined) {
+                    //fabric color does not exist yet, so save it
+                    saveNewFabric(productJSON);
+                } else {
+                    //fabric already exists
+                    
+                }
+            },
+            error: function(error) {
+                console.log("Error: " + error.code + " " + error.message);
+            }
+        });
+    }
+}
+
+//TODO: it's possible that it could be querying at the same time as another color is saving, so we should really make sure to not save any duplicate fabrics. But,this is about 90% working
+function saveNewFabric(productJSON) {
+    let Fabric = require('../../models/fabric.js');
+    let fabric = new Fabric();
+    fabric.set("color", getColor(productJSON));
+    fabric.save(null, {
+        success: function(fabric) {
+            console.log('New object created with objectId: ' + fabric.id);
+        },
+        error: function(fabric, error) {
+            console.log('Failed to create new object, with error code: ' + error.message);
+        }
+    });
+} 
+
+function saveProducts(productsJSON) {
     var productsArray = [];
-    for (var i = 0; i < products.length; i++) {
+    var productDictionary = {};
+
+    for (var i = 0; i < productsJSON.length; i++) {
         let Product = require('../../models/product.js');
         let product = new Product();
-        var productJSON = products[i];
+
+        var productJSON = productsJSON[i];
 
         product.set("shopifyID", productJSON.id);
         product.set("color", getColor(productJSON));
-
+        product.set("title", productJSON.title);
+        product.set("vendor", productJSON.vendor.toLowerCase());
+        
         productsArray.push(product);
+        productDictionary[productJSON.id] = product;
     }
 
-    // Parse.Object.saveAll(customers, {
-    //     success: function (customers) {
-    //         saveOrders(orders, orderDictionary);                               
-    //     },
-    //     error: function (error) {                                     
-    //         console.log(error);
-    //     },
-    // });
+   Parse.Object.saveAll(productsArray, {
+        success: function (products) {
+            saveVariants(productsJSON, productDictionary);                         
+        },
+        error: function (error) {                                
+            console.log(error);
+        },
+    });
 }
 
 function getColor(product) {
@@ -59,6 +108,50 @@ function getColor(product) {
         color = "COLOR ERROR";
     }
 
-    console.log(color);
-    return color;
+    return color.toLowerCase();
 }
+
+function saveVariants(productsJSON, productsDictionary) {
+    var variantsArray = [];
+
+    for (var i = 0; i < productsJSON.length; i++) {
+        let productJSON = productsJSON[i];
+        let product = productsDictionary[productJSON.id];
+
+        let variantsJSON = productJSON.variants;
+
+        for (var v = 0; v < variantsJSON.length; v++) {
+            let variantJSON = variantsJSON[v];
+
+            let ProductVariant = require('../../models/productVariant.js');
+            let variant = new ProductVariant();
+        
+            variant.set("shopifyVariantID", variantJSON.id);
+            variant.set("size", getSize(productJSON, variantJSON));
+            variant.set("product", product);
+            variantsArray.push(variant);
+        }
+    }
+
+    Parse.Object.saveAll(variantsArray, {
+        success: function (variants) {
+            console.log("successfully saved variants");                     
+        },
+        error: function (error) {                                
+            console.log(error);
+        },
+    });
+}
+
+function getSize(productJSON, variantJSON) {
+    //an option is customizable data that you can place on variants, so on shopify most variants have size and color, but the problem is that not all have these options, so the order is messed up sometimes.
+    let options = productJSON.options;
+    let size = "size"
+    if (options[0].name.toLowerCase() == size) {
+        //size is the first option, sometimes size is the first option, other times it is the second option because someone did bad shopify data.
+        return variantJSON.option1;
+    } else if (options[1].name.toLowerCase() == size) {
+        return variantJSON.option2;
+    }
+}
+
