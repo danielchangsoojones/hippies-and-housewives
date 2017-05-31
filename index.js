@@ -4,6 +4,7 @@
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 var path = require('path');
+var bodyParser = require("body-parser");
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
@@ -26,6 +27,8 @@ var api = new ParseServer({
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 var app = express();
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
@@ -41,19 +44,13 @@ app.get('/', function(req, res) {
 
 app.post('/newOrder', function(req, res) {
   console.log("different parameter tries");
-  console.log(req.param('id'));
-  console.log(req.param('order'));
-  console.log(req.param('event'));
-  console.log(req.param('events'));
-  console.log(req.param('newOrder'));
-  console.log(req.param('body'));
 
-  console.log(req.params);
+  console.log("using body stuff");
   console.log(req.body);
+  console.log(req.body.order);
+  
   console.log(req);
   console.log("right above the data");
-  var theData = req.body;
-  console.log(theData);
   res.status(200).send('successfully recieved the new order');
 });
 
