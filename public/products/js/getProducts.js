@@ -42,7 +42,7 @@ function saveFabric(productsJSON) {
                     saveNewFabric(productJSON);
                 } else {
                     //fabric already exists
-                    
+                    saveProduct(productJSON, fabric);
                 }
             },
             error: function(error) {
@@ -52,14 +52,14 @@ function saveFabric(productsJSON) {
     }
 }
 
-//TODO: it's possible that it could be querying at the same time as another color is saving, so we should really make sure to not save any duplicate fabrics. But,this is about 90% working
+//TODO: it's possible that it could be querying at the same time as another color is saving, so we should really make sure to not save any duplicate fabrics. So, this still creates duplicates when we run mass queries, but I am just manually inputting the colors for now.
 function saveNewFabric(productJSON) {
     let Fabric = require('../../models/fabric.js');
     let fabric = new Fabric();
     fabric.set("color", getColor(productJSON));
     fabric.save(null, {
         success: function(fabric) {
-            console.log('New object created with objectId: ' + fabric.id);
+            saveProduct(productJSON, fabric);
         },
         error: function(fabric, error) {
             console.log('Failed to create new object, with error code: ' + error.message);
@@ -67,32 +67,23 @@ function saveNewFabric(productJSON) {
     });
 } 
 
-function saveProducts(productsJSON) {
-    var productsArray = [];
-    var productDictionary = {};
+function saveProduct(productJSON, fabric) {
+    let Product = require('../../models/product.js');
+    let product = new Product();
 
-    for (var i = 0; i < productsJSON.length; i++) {
-        let Product = require('../../models/product.js');
-        let product = new Product();
+    product.set("shopifyID", productJSON.id);
+    product.set("color", getColor(productJSON));
+    product.set("title", productJSON.title);
+    product.set("vendor", productJSON.vendor.toLowerCase());
+    product.set("fabric", fabric);
 
-        var productJSON = productsJSON[i];
-
-        product.set("shopifyID", productJSON.id);
-        product.set("color", getColor(productJSON));
-        product.set("title", productJSON.title);
-        product.set("vendor", productJSON.vendor.toLowerCase());
-        
-        productsArray.push(product);
-        productDictionary[productJSON.id] = product;
-    }
-
-   Parse.Object.saveAll(productsArray, {
-        success: function (products) {
-            saveVariants(productsJSON, productDictionary);                         
+    product.save(null, {
+        success: function(product) {
+            saveVariants(productJSON, product);
         },
-        error: function (error) {                                
-            console.log(error);
-        },
+        error: function(product, error) {
+            console.log('Failed to create new object, with error code: ' + error.message);
+        }
     });
 }
 
@@ -111,26 +102,20 @@ function getColor(product) {
     return color.toLowerCase();
 }
 
-function saveVariants(productsJSON, productsDictionary) {
+function saveVariants(productJSON, product) {
     var variantsArray = [];
+    let variantsJSON = productJSON.variants;
 
-    for (var i = 0; i < productsJSON.length; i++) {
-        let productJSON = productsJSON[i];
-        let product = productsDictionary[productJSON.id];
+    for (var v = 0; v < variantsJSON.length; v++) {
+        let variantJSON = variantsJSON[v];
 
-        let variantsJSON = productJSON.variants;
-
-        for (var v = 0; v < variantsJSON.length; v++) {
-            let variantJSON = variantsJSON[v];
-
-            let ProductVariant = require('../../models/productVariant.js');
-            let variant = new ProductVariant();
+        let ProductVariant = require('../../models/productVariant.js');
+        let variant = new ProductVariant();
         
-            variant.set("shopifyVariantID", variantJSON.id);
-            variant.set("size", getSize(productJSON, variantJSON));
-            variant.set("product", product);
-            variantsArray.push(variant);
-        }
+        variant.set("shopifyVariantID", variantJSON.id);
+        variant.set("size", getSize(productJSON, variantJSON));
+        variant.set("product", product);
+        variantsArray.push(variant);
     }
 
     Parse.Object.saveAll(variantsArray, {
