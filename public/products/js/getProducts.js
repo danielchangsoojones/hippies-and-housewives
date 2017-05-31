@@ -137,6 +137,8 @@ function getSize(productJSON, variantJSON) {
         return variantJSON.option1;
     } else if (options[1].name.toLowerCase() == size) {
         return variantJSON.option2;
+    } else {
+        return "Size Error"
     }
 }
 
