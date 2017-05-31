@@ -4,6 +4,66 @@ var initializeParse = require("../../resources/initializeParse.js");
 
 console.log(getAllProducts(1));
 
+//MARK: checking for a product
+exports.findProduct = findProduct(shopifyProductID) {
+    var promise = new Parse.Promise();
+
+    var ProductType = Parse.Object.extend("ProductType");
+    var query = new Parse.Query(ProductType);
+    query.equalTo("shopifyID", shopifyProductID);
+
+    query.first({
+        success: function(product) {
+            if (product == undefined) {
+                //product does not exist yet, so save it
+                //DO NOT CHANGE REJECT MESSAGE, we use this message to decide whether to search for a new product.
+                promise.reject({message : "no product in our database yet", shopifyProductID : shopifyProductID});
+            } else {
+                //product already exists
+                promise.resolve(product);
+            }
+        },
+        error: function(error) {
+            promise.reject(error);
+        }
+    });
+
+    return promise;
+}
+
+function findNewProduct(shopifyProductID) {
+    let baseURL = require("../../resources/shopifyURL.js");
+    //searching for individual shopifyProductID
+    var shopifyURL = baseURL + '/products/' + shopifyProductID + ".json";
+    var parameters = {fields : ""};
+    request({url: shopifyURL, qs: parameters}, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
+            let orders = JSON.parse(body).orders;
+            if (orders.length == 0) {
+                //we have hit the most recent order because no more exist beyond it
+                saveLastShopifyID(lastRetrievedShopifyID);
+            } else {
+                //still more orders to go
+                let lastShopifyID = orders[orders.length - 1].id
+                getAllOrders(lastShopifyID);
+            }
+
+            saveCustomers(orders);
+        } else {
+            console.log(error);
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
 
 function getAllProducts(page) {
     let baseURL = require("../../resources/shopifyURL.js");
@@ -124,7 +184,6 @@ function getColor(product) {
 function checkVariant(productJSON, product) {
     let variantsJSON = productJSON.variants;
     
-
     for (var v = 0; v < variantsJSON.length; v++) {
         let variantJSON = variantsJSON[v];
     
@@ -161,6 +220,17 @@ function saveVariant(productJSON, product, variantJSON) {
             console.log('Failed to create new object, with error code: ' + error.message);
         }
     });
+}
+
+function createVariant(shopifyVariantID) {
+    let ProductVariant = require('../../models/productVariant.js');
+    let variant = new ProductVariant();
+        
+    variant.set("shopifyVariantID", variantJSON.id);
+    variant.set("size", getSize(productJSON, variantJSON));
+    variant.set("product", product);
+
+
 }
 
 function getSize(productJSON, variantJSON) {
