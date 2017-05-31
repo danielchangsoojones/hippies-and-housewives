@@ -51,6 +51,9 @@ app.post('/newOrder', function(req, res) {
   console.log(req.params);
   console.log(req.body);
   console.log(req);
+  console.log("right above the data");
+  var theData = req.body;
+  console.log(theData);
   res.status(200).send('successfully recieved the new order');
 });
 
