@@ -2,22 +2,18 @@ var request = require('request');
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
-var allProducts = [];
+console.log(getAllProducts(1));
 
-console.log(getAllProducts());
-
-function getAllProducts(lastShopifyProductID) {
+function getAllProducts(page) {
     let baseURL = require("../../resources/shopifyURL.js");
     var shopifyURL = baseURL + '/products.json';
-    var parameters = {limit : 250, fields : "id,variants,title,vendor,options", since_id : lastShopifyProductID};
+    var parameters = {limit : 250, fields : "id,variants,title,vendor,options", page : page};
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             let products = JSON.parse(body).products;
             if (products.length != 0) {
                 //we have not hit the most recent product because more exist beyond it
-                allProducts.push(products);
-                let lastShopifyProductID = products[products.length - 1].id;
-                getAllProducts(lastShopifyProductID);
+                getAllProducts(page + 1);
             }
 
             saveFabric(products);
@@ -30,6 +26,7 @@ function getAllProducts(lastShopifyProductID) {
 function saveFabric(productsJSON) {
     for(var i = 0; i < productsJSON.length; i++) {
         let productJSON = productsJSON[i];
+
         var Fabric = Parse.Object.extend("Fabric");
         var query = new Parse.Query(Fabric);
 
@@ -42,7 +39,7 @@ function saveFabric(productsJSON) {
                     saveNewFabric(productJSON);
                 } else {
                     //fabric already exists
-                    saveProduct(productJSON, fabric);
+                    checkProduct(productJSON, fabric);
                 }
             },
             error: function(error) {
@@ -59,17 +56,38 @@ function saveNewFabric(productJSON) {
     fabric.set("color", getColor(productJSON));
     fabric.save(null, {
         success: function(fabric) {
-            saveProduct(productJSON, fabric);
+            checkProduct(productJSON, fabric);
         },
         error: function(fabric, error) {
             console.log('Failed to create new object, with error code: ' + error.message);
         }
     });
-} 
+}
+
+function checkProduct(productJSON, fabric) {
+    var ProductType = Parse.Object.extend("ProductType");
+    var query = new Parse.Query(ProductType);
+    query.equalTo("shopifyID", productJSON.id);
+
+    query.first({
+        success: function(product) {
+            if (product == undefined) {
+                //product does not exist yet, so save it
+                saveProduct(productJSON, fabric);
+            } else {
+                //product already exists
+                checkVariant(productJSON, product);
+            }
+        },
+        error: function(error) {
+            console.log("Error: " + error.code + " " + error.message);
+        }
+    });
+}
 
 function saveProduct(productJSON, fabric) {
-    let Product = require('../../models/product.js');
-    let product = new Product();
+    let ProductType = require('../../models/productType.js');
+    let product = new ProductType();
 
     product.set("shopifyID", productJSON.id);
     product.set("color", getColor(productJSON));
@@ -79,7 +97,7 @@ function saveProduct(productJSON, fabric) {
 
     product.save(null, {
         success: function(product) {
-            saveVariants(productJSON, product);
+            checkVariant(productJSON, product);
         },
         error: function(product, error) {
             console.log('Failed to create new object, with error code: ' + error.message);
@@ -102,29 +120,45 @@ function getColor(product) {
     return color.toLowerCase();
 }
 
-function saveVariants(productJSON, product) {
-    var variantsArray = [];
+function checkVariant(productJSON, product) {
     let variantsJSON = productJSON.variants;
+    
 
     for (var v = 0; v < variantsJSON.length; v++) {
         let variantJSON = variantsJSON[v];
-
-        let ProductVariant = require('../../models/productVariant.js');
-        let variant = new ProductVariant();
-        
-        variant.set("shopifyVariantID", variantJSON.id);
-        variant.set("size", getSize(productJSON, variantJSON));
-        variant.set("product", product);
-        variantsArray.push(variant);
+    
+        var ProductVariant = Parse.Object.extend("ProductVariant");
+        var query = new Parse.Query(ProductVariant);
+        query.equalTo("shopifyVariantID", variantJSON.id);
+        query.first({
+            success: function(variant) {
+                if (variant == undefined) {
+                    //variant does not exist yet, so save it
+                    saveVariant(productJSON, product, variantJSON);
+                }
+            },
+            error: function(error) {
+                console.log("Error: " + error.code + " " + error.message);
+            }
+        });
     }
+}
 
-    Parse.Object.saveAll(variantsArray, {
-        success: function (variants) {
-            console.log("successfully saved variants");                     
+function saveVariant(productJSON, product, variantJSON) {
+    let ProductVariant = require('../../models/productVariant.js');
+    let variant = new ProductVariant();
+        
+    variant.set("shopifyVariantID", variantJSON.id);
+    variant.set("size", getSize(productJSON, variantJSON));
+    variant.set("product", product);
+
+    variant.save(null, {
+        success: function(variant) {
+            console.log("successfully saved a variant");
         },
-        error: function (error) {                                
-            console.log(error);
-        },
+        error: function(variant, error) {
+            console.log('Failed to create new object, with error code: ' + error.message);
+        }
     });
 }
 
