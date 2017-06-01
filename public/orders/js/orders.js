@@ -50,6 +50,7 @@ function createLineItems(orderJSON, order, customer) {
         getVariant.findProductVariant(lineItemJSON.variant_id, lineItemJSON.variant_title, lineItemJSON.title).then(function(variant) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
+            
             saveAllComponents([order, customer, lineItem])
         }, function(error) {
             console.log("couldn't find the variant");
@@ -65,7 +66,7 @@ function createLineItem(lineItemJSON, order, orderJSON) {
     lineItem.set("title", lineItemJSON.title);
     lineItem.set("variant_title", lineItemJSON.variant_title);
     lineItem.set("order", order);
-    lineItem.set("state", exports.getLineItemState(orderJSON));
+    lineItem.set("state", exports.getLineItemState(orderJSON, lineItemJSON.id));
     return lineItem
 }
 
@@ -118,18 +119,20 @@ exports.getLineItemState = function getLineItemState(orderJSON, shopifyLineItemI
 function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     let refunds = orderJSON.refunds;
     let refundedLineItems = refunds.refund_line_items;
-    for (var i = 0; i < refundedLineItems.length; i++) {
-        let refundLineItem = refundedLineItems[i];
-        if (refundLineItem.line_item_id == shopifyLineItemID) {
-            //this particular line item has been refunded
-            return true;
+    if (refundedLineItems != undefined) {
+        for (var i = 0; i < refundedLineItems.length; i++) {
+        
+            let refundLineItem = refundedLineItems[i];
+        
+            if (refundLineItem.line_item_id == shopifyLineItemID) {
+                //this particular line item has been refunded
+                return true;
+            }
         }
     }
-
+    
     return false;
 }
-
-console.log(saveAllOrders(1));
 
 //MARK: mass saving orders
 //start off at page 1 to get the entire orders database
@@ -150,6 +153,24 @@ function saveAllOrders(page) {
             for (var i = 0; i < orders.length; i++) {
                 exports.uploadNewOrder(orders[i]);
             }
+
+        } else {
+            console.log(error);
+        }
+    });
+}
+
+console.log(getPracticeOrder());
+
+function getPracticeOrder() {
+    let baseURL = require("../../resources/shopifyURL.js");
+    var shopifyURL = baseURL + '/orders/4918518729.json';
+    var parameters = {};
+    request({url: shopifyURL, qs: parameters}, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
+            let order = JSON.parse(body).order;
+            exports.uploadNewOrder(order);
 
         } else {
             console.log(error);
