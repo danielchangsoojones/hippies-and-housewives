@@ -4,20 +4,14 @@ var initializeParse = require("../../resources/initializeParse.js");
 
 exports.findProductVariant = function findProductVariant(shopifyVariantID, variantTitle, productTitle) {
     var promise = new Parse.Promise();
-
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var query = new Parse.Query(ProductVariant);
-    query.equalTo("shopifyVariantID", shopifyVariantID);
-
-    var titleMatchQuery = new Parse.Query(ProductVariant);
+    let query = createQuery(shopifyVariantID, variantTitle, productTitle);
     
-
     query.first({
         success: function(variant) {
             if (variant == undefined) {
                 //no variant exists yet
                 //TODO: we actually want to use the code below to get a new product from Shopify if the variant doesn't exist yet, but for now, I am just having it return undefined
-                promise.resolve(variant);
+                promise.resolve(undefined);
             } else {
                 //variant exists
                 promise.resolve(variant);
@@ -32,7 +26,31 @@ exports.findProductVariant = function findProductVariant(shopifyVariantID, varia
     return promise;
 }
 
-console.log(systemizeVariantTitle("Black / 16 inches"));
+function createQuery(shopifyVariantID, variantTitle, productTitle) {
+    var ProductVariant = Parse.Object.extend("ProductVariant");
+    var idQuery = new Parse.Query(ProductVariant);
+    idQuery.equalTo("shopifyVariantID", shopifyVariantID);
+
+    var addTitleMatchQuery = false;
+    var titleMatchQuery = new Parse.Query(ProductVariant);
+    if (variantTitle != undefined && productTitle != undefined) {
+       console.log(systemizeVariantTitle(variantTitle));
+        titleMatchQuery.equalTo("size", systemizeVariantTitle(variantTitle));
+        
+        var ProductType = Parse.Object.extend("ProductType");
+        let innerQuery = new Parse.Query(ProductType);
+        innerQuery.equalTo("title", productTitle);
+        titleMatchQuery.matchesQuery("product", innerQuery);
+
+        addTitleMatchQuery = true;
+    }
+
+    if (addTitleMatchQuery) {
+        return Parse.Query.or(idQuery, titleMatchQuery);
+    } else {
+        return idQuery;
+    }
+}
 
 function systemizeVariantTitle(variantTitle) {
     var sizes = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL", "One Size"];

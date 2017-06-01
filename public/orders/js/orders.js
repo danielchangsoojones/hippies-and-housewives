@@ -9,12 +9,11 @@ console.log(getPracticeOrder());
 function getPracticeOrder() {
     let baseURL = require("../../resources/shopifyURL.js");
     var shopifyURL = baseURL + '/orders.json';
-    var parameters = {ids : 4574130633, status : "any"};
+    var parameters = {ids : 4884229641, status : "any"};
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
             let orders = JSON.parse(body).orders;
-            console.log("successfully got order from shopify");
             uploadNewOrder(orders[0]);
         } else {
             console.log(error);
@@ -67,7 +66,7 @@ function createLineItems(orderJSON, order, customer) {
         let lineItemJSON = lineItemsJSON[i];
         
         let getVariant = require("../../products/variant/getVariant.js");
-        getVariant.findProductVariant(lineItemJSON.variant_id).then(function(variant) {
+        getVariant.findProductVariant(lineItemJSON.variant_id, lineItemJSON.variant_title, lineItemJSON.title).then(function(variant) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
             console.log(variant);
