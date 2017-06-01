@@ -117,13 +117,18 @@ exports.getLineItemState = function getLineItemState(orderJSON, shopifyLineItemI
 
 function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     let refunds = orderJSON.refunds;
-    let refundedLineItems = refunds.refund_line_items;
-    if (refundedLineItems != undefined) {
-    for (var i = 0; i < refundedLineItems.length; i++) {      
-        let refundLineItem = refundedLineItems[i];
-        if (refundLineItem.line_item_id == shopifyLineItemID) {
-            //this particular line item has been refunded
-            return true;
+
+    for (var j = 0; j < refunds.length; j++) {
+        let refund = refunds[j];
+        let refundedLineItems = refund.refund_line_items;
+
+        if (refundedLineItems != undefined) {
+            for (var i = 0; i < refundedLineItems.length; i++) {      
+                let refundLineItem = refundedLineItems[i];
+                if (refundLineItem.line_item_id == shopifyLineItemID) {
+                    //this particular line item has been refunded
+                    return true;
+                }
             }
         }
     }
@@ -159,7 +164,7 @@ function saveAllOrders(page) {
 
 function getPracticeOrder() {
     let baseURL = require("../../resources/shopifyURL.js");
-    var shopifyURL = baseURL + '/orders/4918518729.json';
+    var shopifyURL = baseURL + '/orders/4918627593.json';
     var parameters = {};
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
