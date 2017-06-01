@@ -74,7 +74,6 @@ function getAllProducts(page) {
                 getAllProducts(page + 1);
             }
 
-            console.log(products.length);
             for (var i = 0; i < products.length; i++) {
                 let productJSON = products[i];
                 exports.uploadNewProduct(productJSON);

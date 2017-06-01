@@ -34,7 +34,6 @@ function createQuery(shopifyVariantID, variantTitle, productTitle) {
     var addTitleMatchQuery = false;
     var titleMatchQuery = new Parse.Query(ProductVariant);
     if (variantTitle != undefined && productTitle != undefined) {
-       console.log(systemizeVariantTitle(variantTitle));
         titleMatchQuery.equalTo("size", systemizeVariantTitle(variantTitle));
         
         var ProductType = Parse.Object.extend("ProductType");

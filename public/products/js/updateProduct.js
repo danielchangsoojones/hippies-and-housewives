@@ -49,7 +49,7 @@ function translateUpdatedProduct(product, productJSON) {
 
     product.get("fabric").set("color", newColor);
     product.set("title", newTitle);
-    product.set("vendor", newVendor);
+    product.set("vendor", newVendor.toLowerCase());
 
     product.save(null, {
         success: function(product) {},
