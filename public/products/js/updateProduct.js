@@ -86,8 +86,6 @@ function compareVariants(variants, productJSON, product) {
     for (var i = 0; i < variantsJSON.length; i++) {
         let variantJSON = variantsJSON[i];
 
-        console.log("the variant json id:");
-        console.log(variantJSON.id);
         let matchingIndex = currentVariantIDs.indexOf(variantJSON.id);
         if (matchingIndex == -1) {
             //variant id does not exist yet because this particular variant just got created.
@@ -100,7 +98,6 @@ function compareVariants(variants, productJSON, product) {
 }
 
 function updateVariant(variantJSON, variant, productJSON) {
-    console.log("in the update variant function");
     variant.set("size", getProducts.getSize(productJSON, variantJSON));
     
     variant.save(null, {
@@ -118,14 +115,11 @@ function getCurrentVariantIDs(variants) {
         let variant = variants[i];
         variantIDs.push(variant.get("shopifyVariantID"));
     }
-    
-    console.log("our current variant ids in the getCurrentVariantIDs function:");
-    console.log(variantIDs);
+
     return variantIDs;
 }
 
 function createNewVariant(variantJSON, productJSON, product) {
-    console.log("in the createNewVariant function");
     let variant = getProducts.createVariant(variantJSON, productJSON, product);
     variant.save(null, {
         success: function(variant) {},
