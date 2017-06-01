@@ -85,6 +85,9 @@ function compareVariants(variants, productJSON, product) {
 
     for (var i = 0; i < variantsJSON.length; i++) {
         let variantJSON = variantsJSON[i];
+
+        console.log("the variant json id:");
+        console.log(variantJSON.id);
         let matchingIndex = currentVariantIDs.indexOf(variantJSON.id);
         if (matchingIndex == -1) {
             //variant id does not exist yet because this particular variant just got created.
