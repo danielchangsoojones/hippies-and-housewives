@@ -106,7 +106,7 @@ exports.getLineItemState = function getLineItemState(orderJSON, shopifyLineItemI
         state = "archived";
     } else if (orderJSON.cancelled_at != null) {
         state = "cancelled";
-    } else if (orderJSON.financial_status == "refunded" || isLineItemRefunded(orderJSON, shopifyLineItemID)) {
+    } else if (isLineItemRefunded(orderJSON, shopifyLineItemID)) {
         state = "refunded";
     } else {
         state = "open";
@@ -121,15 +121,12 @@ function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     for (var j = 0; j < refunds.length; j++) {
         let refund = refunds[j];
         let refundedLineItems = refund.refund_line_items;
+        let RefundHelper = require("../../refunds/recieveRefund.js");
+        let refundLineItemIDs = RefundHelper.getLineItemIDsFromRefund(refund);
 
-        if (refundedLineItems != undefined) {
-            for (var i = 0; i < refundedLineItems.length; i++) {      
-                let refundLineItem = refundedLineItems[i];
-                if (refundLineItem.line_item_id == shopifyLineItemID) {
-                    //this particular line item has been refunded
-                    return true;
-                }
-            }
+        if (refundLineItemIDs.indexOf(shopifyLineItemID) != -1) {
+            //this particular line item exists in the refund line items array, therefore, it was refunded
+            return true;
         }
     }
 

@@ -79,6 +79,15 @@ app.post('/updateProduct', function(req, res) {
   res.status(200).send('successfully recieved the updated product');
 });
 
+//refund paths
+app.post('/newRefund', function(req, res) {
+  let refund = req.body;
+  console.log("recieved new refund created from webhook for refund id:" + refund.id);
+  var RefundHelper = require("./public/refunds/recieveRefund.js");
+  RefundHelper.recieveNewRefund(refund);
+
+  res.status(200).send('successfully recieved the created refund');
+});
 
 
 // There will be a test page available on the /test path of your server url
