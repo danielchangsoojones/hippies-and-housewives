@@ -77,7 +77,6 @@ function getAllProducts(page) {
                 getAllProducts(page + 1);
             }
 
-            checkProduct(products);
             // saveFabric(products);
         } else {
             console.log(error);
@@ -130,8 +129,6 @@ function checkProduct(productJSON, fabric) {
     var ProductType = Parse.Object.extend("ProductType");
     var query = new Parse.Query(ProductType);
     query.equalTo("shopifyID", productJSON.id);
-
-    console.log(productJSON.length);
 
     // query.first({
     //     success: function(product) {

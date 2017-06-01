@@ -2,13 +2,16 @@ var request = require('request');
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
-exports.findProductVariant = function findProductVariant(shopifyVariantID) {
+exports.findProductVariant = function findProductVariant(shopifyVariantID, variantTitle, productTitle) {
     var promise = new Parse.Promise();
-    console.log(shopifyVariantID);
 
     var ProductVariant = Parse.Object.extend("ProductVariant");
     var query = new Parse.Query(ProductVariant);
     query.equalTo("shopifyVariantID", shopifyVariantID);
+
+    var titleMatchQuery = new Parse.Query(ProductVariant);
+    
+
     query.first({
         success: function(variant) {
             if (variant == undefined) {
@@ -27,6 +30,20 @@ exports.findProductVariant = function findProductVariant(shopifyVariantID) {
     });
 
     return promise;
+}
+
+console.log(systemizeVariantTitle("Black / 16 inches"));
+
+function systemizeVariantTitle(variantTitle) {
+    var sizes = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL", "One Size"];
+
+    if (sizes.indexOf(variantTitle) == -1) {
+        //the size is not a normal size string (i.e. Chaco / S, etc.)
+        let sizeSuffix = variantTitle.substring(variantTitle.indexOf("/")+2)
+        return sizeSuffix
+    }
+
+    return variantTitle
 }
 
 
