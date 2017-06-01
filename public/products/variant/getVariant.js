@@ -4,6 +4,7 @@ var initializeParse = require("../../resources/initializeParse.js");
 
 exports.findProductVariant = function findProductVariant(shopifyVariantID) {
     var promise = new Parse.Promise();
+    console.log(shopifyVariantID);
 
     var ProductVariant = Parse.Object.extend("ProductVariant");
     var query = new Parse.Query(ProductVariant);
@@ -20,6 +21,7 @@ exports.findProductVariant = function findProductVariant(shopifyVariantID) {
             }
         },
         error: function(error) {
+            promise.reject(error);
             console.log("Error: " + error.code + " " + error.message);
         }
     });

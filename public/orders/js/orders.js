@@ -9,7 +9,7 @@ console.log(getPracticeOrder());
 function getPracticeOrder() {
     let baseURL = require("../../resources/shopifyURL.js");
     var shopifyURL = baseURL + '/orders.json';
-    var parameters = {ids : 4913188233, status : "any"};
+    var parameters = {ids : 4574130633, status : "any"};
     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
@@ -70,6 +70,7 @@ function createLineItems(orderJSON, order, customer) {
         getVariant.findProductVariant(lineItemJSON.variant_id).then(function(variant) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
+            console.log(variant);
             saveAllComponents([order, customer, lineItem])
         }, function(error) {
             console.log("couldn't find the variant");
@@ -105,7 +106,7 @@ function getShipmentStatus(orderJSON) {
     var shipmentStatus;
 
     if (fulfillments.length == 0 || fulfillments[0].shipment_status == null) {
-        //the order has no shipment status yet because the shipping label has not been printed yet
+        //the order has no shipment status yet because the shipping label has not been printed yet. Open means that the order is still in Hippies and Housewives possession.
         shipmentStatus = "open";
     } else if (fulfillments[0].shipment_status == "confirmed") {
         //shipping label has been printed but that doesn't mean it's actually left the house. It gets confirmed right when you print the label

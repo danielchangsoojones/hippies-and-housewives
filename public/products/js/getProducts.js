@@ -5,31 +5,31 @@ var initializeParse = require("../../resources/initializeParse.js");
 console.log(getAllProducts(1));
 
 //MARK: checking for a product
-exports.findProduct = findProduct(shopifyProductID) {
-    var promise = new Parse.Promise();
+// exports.findProduct = findProduct(shopifyProductID) {
+//     var promise = new Parse.Promise();
 
-    var ProductType = Parse.Object.extend("ProductType");
-    var query = new Parse.Query(ProductType);
-    query.equalTo("shopifyID", shopifyProductID);
+//     var ProductType = Parse.Object.extend("ProductType");
+//     var query = new Parse.Query(ProductType);
+//     query.equalTo("shopifyID", shopifyProductID);
 
-    query.first({
-        success: function(product) {
-            if (product == undefined) {
-                //product does not exist yet, so save it
-                //DO NOT CHANGE REJECT MESSAGE, we use this message to decide whether to search for a new product.
-                promise.reject({message : "no product in our database yet", shopifyProductID : shopifyProductID});
-            } else {
-                //product already exists
-                promise.resolve(product);
-            }
-        },
-        error: function(error) {
-            promise.reject(error);
-        }
-    });
+//     query.first({
+//         success: function(product) {
+//             if (product == undefined) {
+//                 //product does not exist yet, so save it
+//                 //DO NOT CHANGE REJECT MESSAGE, we use this message to decide whether to search for a new product.
+//                 promise.reject({message : "no product in our database yet", shopifyProductID : shopifyProductID});
+//             } else {
+//                 //product already exists
+//                 promise.resolve(product);
+//             }
+//         },
+//         error: function(error) {
+//             promise.reject(error);
+//         }
+//     });
 
-    return promise;
-}
+//     return promise;
+// }
 
 function findNewProduct(shopifyProductID) {
     let baseURL = require("../../resources/shopifyURL.js");
@@ -77,7 +77,8 @@ function getAllProducts(page) {
                 getAllProducts(page + 1);
             }
 
-            saveFabric(products);
+            checkProduct(products);
+            // saveFabric(products);
         } else {
             console.log(error);
         }
@@ -130,20 +131,22 @@ function checkProduct(productJSON, fabric) {
     var query = new Parse.Query(ProductType);
     query.equalTo("shopifyID", productJSON.id);
 
-    query.first({
-        success: function(product) {
-            if (product == undefined) {
-                //product does not exist yet, so save it
-                saveProduct(productJSON, fabric);
-            } else {
-                //product already exists
-                checkVariant(productJSON, product);
-            }
-        },
-        error: function(error) {
-            console.log("Error: " + error.code + " " + error.message);
-        }
-    });
+    console.log(productJSON.length);
+
+    // query.first({
+    //     success: function(product) {
+    //         if (product == undefined) {
+    //             //product does not exist yet, so save it
+    //             saveProduct(productJSON, fabric);
+    //         } else {
+    //             //product already exists
+    //             checkVariant(productJSON, product);
+    //         }
+    //     },
+    //     error: function(error) {
+    //         console.log("Error: " + error.code + " " + error.message);
+    //     }
+    // });
 }
 
 function saveProduct(productJSON, fabric) {
