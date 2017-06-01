@@ -6,7 +6,7 @@ let Fabric = require("../fabric/getFabric.js");
 console.log(getAllProducts(1));
 
 //MARK: upload new product
-function uploadNewProduct(productJSON) {
+exports.uploadNewProduct = function uploadNewProduct(productJSON) {
     Fabric.getFabric(productJSON).then(function(fabric) {
         let product = createProduct(productJSON, fabric);
         let variants = getVariants(productJSON, product);
@@ -79,7 +79,7 @@ function getAllProducts(page) {
             console.log(products.length);
             for (var i = 0; i < products.length; i++) {
                 let productJSON = products[i];
-                uploadNewProduct(productJSON);
+                exports.uploadNewProduct(productJSON);
             }
         } else {
             console.log(error);

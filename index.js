@@ -50,6 +50,15 @@ app.post('/newOrder', function(req, res) {
   res.status(200).send('successfully recieved the new order');
 });
 
+//MARK: product paths
+var productJS = require("./public/products/js/getProducts.js");
+app.post('/newProduct', function(req, res) {
+  let newProduct = req.body;
+  console.log(productJS.uploadNewProduct(newProduct));
+
+  res.status(200).send('successfully recieved the new product');
+});
+
 // There will be a test page available on the /test path of your server url
 // Remove this before launching your app
 app.get('/test', function(req, res) {
