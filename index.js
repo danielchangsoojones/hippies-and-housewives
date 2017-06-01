@@ -42,11 +42,13 @@ app.get('/', function(req, res) {
   res.status(200).send('I dream of being a website.  Please star the parse-server repo on GitHub!');
 });
 
+//MARK: Order paths
+var orderJS = require("./public/orders/js/orders.js");
+
 app.post('/newOrder', function(req, res) {
   let newOrder = req.body;
-  var orderJS = require("./public/orders/js/orders.js");
-  console.log(orderJS.saveOrder(newOrder));
-
+  console.log("recieved new webhook order creation for:" + newOrder.id);
+  orderJS.uploadNewOrder(newOrder);
   res.status(200).send('successfully recieved the new order');
 });
 
@@ -54,10 +56,13 @@ app.post('/newOrder', function(req, res) {
 var productJS = require("./public/products/js/getProducts.js");
 app.post('/newProduct', function(req, res) {
   let newProduct = req.body;
-  console.log(productJS.uploadNewProduct(newProduct));
+  console.log("recieved new product creation from webhook for:" + newProduct.id);
+  productJS.uploadNewProduct(newProduct)
 
   res.status(200).send('successfully recieved the new product');
 });
+
+
 
 // There will be a test page available on the /test path of your server url
 // Remove this before launching your app

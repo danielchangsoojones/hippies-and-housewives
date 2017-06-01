@@ -14,7 +14,7 @@ function getPracticeOrder() {
         if (!error && response.statusCode == 200) {
             //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
             let orders = JSON.parse(body).orders;
-            uploadNewOrder(orders[0]);
+            exports.uploadNewOrder(orders[0]);
         } else {
             console.log(error);
         }
@@ -22,7 +22,7 @@ function getPracticeOrder() {
 }
 
 //MARK: saving a new order
-function uploadNewOrder(orderJSON) {
+exports.uploadNewOrder = function uploadNewOrder(orderJSON) {
     let customer = createCustomer(orderJSON);
     let order = createOrder(orderJSON, customer);
     createLineItems(orderJSON, order, customer);
@@ -153,7 +153,7 @@ function saveAllOrders(page) {
             }
 
             for (var i = 0; i < orders.length; i++) {
-                uploadNewOrder(orders[i]);
+                exports.uploadNewOrder(orders[i]);
             }
         } else {
             console.log(error);
