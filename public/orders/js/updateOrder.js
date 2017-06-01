@@ -1,11 +1,16 @@
+var Parse = require('parse/node');
+var initializeParse = require("../../resources/initializeParse.js");
 var OrderHelper = require("./orders.js");
 
 exports.updateOrder = function updateOrder(orderJSON) {
-    findLineItems(orderJSON).then(function(lineItems) {
-        updateLineItems(lineItems, orderJSON);
-    }, function(error) {
-        console.log(error);
-    })
+    if (orderJSON != undefined) {
+        findLineItems(orderJSON).then(function(lineItems) {
+            updateLineItems(lineItems, orderJSON);
+            setOrder(lineItems, orderJSON);
+        }, function(error) {
+            console.log(error);
+        });
+    }
 }
 
 function findLineItems(orderJSON) {
@@ -22,6 +27,7 @@ function findLineItems(orderJSON) {
     query.include("order");
     query.find({
         success: function(lineItems) {
+            console.log(lineItems);
             promise.resolve(lineItems);
         },
         error: function(error) {
@@ -33,7 +39,7 @@ function findLineItems(orderJSON) {
     return promise;
 }
 
-function updateOrder(lineItems, orderJSON) {
+function setOrder(lineItems, orderJSON) {
     if (lineItems[0] != undefined) {
         let order = lineItems[0].get("order");
         order.set("note", orderJSON.note);
@@ -60,4 +66,10 @@ function updateLineItems(lineItems, orderJSON) {
 
 function updateLineItem(lineItem, orderJSON) {
     lineItem.set("state", OrderHelper.getLineItemState(orderJSON));
+    lineItem.save(null, {
+        success: function(order) {},
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }

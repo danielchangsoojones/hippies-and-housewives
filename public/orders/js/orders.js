@@ -129,6 +129,7 @@ function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     return false;
 }
 
+console.log(saveAllOrders(1));
 
 //MARK: mass saving orders
 //start off at page 1 to get the entire orders database
@@ -149,6 +150,7 @@ function saveAllOrders(page) {
             for (var i = 0; i < orders.length; i++) {
                 exports.uploadNewOrder(orders[i]);
             }
+
         } else {
             console.log(error);
         }
