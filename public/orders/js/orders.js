@@ -35,7 +35,7 @@ function createOrder(orderJSON, customer) {
     //i.e. name = #HIPPIESANDHOUSEWIVEW1202<3
     order.set("name", orderJSON.name);
     order.set("orderPlaced", orderJSON.created_at);
-    order.set("shipmentStatus", getShipmentStatus(orderJSON));
+    order.set("shipmentStatus", exports.getShipmentStatus(orderJSON));
     return order
 }
 
@@ -65,7 +65,7 @@ function createLineItem(lineItemJSON, order, orderJSON) {
     lineItem.set("title", lineItemJSON.title);
     lineItem.set("variant_title", lineItemJSON.variant_title);
     lineItem.set("order", order);
-    lineItem.set("state", getLineItemState(orderJSON));
+    lineItem.set("state", exports.getLineItemState(orderJSON));
     return lineItem
 }
 
@@ -79,7 +79,7 @@ function saveAllComponents(objects) {
 }
 
 //MARK: getting order attributes
-function getShipmentStatus(orderJSON) {
+exports.getShipmentStatus = function getShipmentStatus(orderJSON) {
     let fulfillments = orderJSON.fulfillments
     //statuses: open, label printed, in-transit, delivered or failure. See Shopify Fulfillment Event documentation for better understanding
     var shipmentStatus;
@@ -99,20 +99,34 @@ function getShipmentStatus(orderJSON) {
 }
 
 //MARK: get line item attributes
-function getLineItemState(orderJSON) {
+exports.getLineItemState = function getLineItemState(orderJSON, shopifyLineItemID) {
     var state;
 
     if (orderJSON.closed_at != null) {
         state = "archived";
     } else if (orderJSON.cancelled_at != null) {
         state = "cancelled";
-    } else if (orderJSON.financial_status == "refunded") {
+    } else if (orderJSON.financial_status == "refunded" || isLineItemRefunded(orderJSON, shopifyLineItemID)) {
         state = "refunded";
     } else {
         state = "open";
     }
 
     return state;
+}
+
+function isLineItemRefunded(orderJSON, shopifyLineItemID) {
+    let refunds = orderJSON.refunds;
+    let refundedLineItems = refunds.refund_line_items;
+    for (var i = 0; i < refundedLineItems.length; i++) {
+        let refundLineItem = refundedLineItems[i];
+        if (refundLineItem.line_item_id == shopifyLineItemID) {
+            //this particular line item has been refunded
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

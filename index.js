@@ -52,6 +52,14 @@ app.post('/newOrder', function(req, res) {
   res.status(200).send('successfully recieved the new order');
 });
 
+app.post('/updateOrder', function(req, res) {
+  let updatedOrder = req.body;
+  console.log("recieved new webhook order creation for:" + updatedOrder.id);
+  let Update = require("./public/orders/js/updateOrder.js");
+  Update.updateOrder(updatedOrder);
+  res.status(200).send('successfully recieved the updated order');
+});
+
 //MARK: product paths
 app.post('/newProduct', function(req, res) {
   let newProduct = req.body;
