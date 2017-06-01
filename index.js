@@ -53,13 +53,22 @@ app.post('/newOrder', function(req, res) {
 });
 
 //MARK: product paths
-var productJS = require("./public/products/js/getProducts.js");
 app.post('/newProduct', function(req, res) {
   let newProduct = req.body;
   console.log("recieved new product creation from webhook for:" + newProduct.id);
+  var productJS = require("./public/products/js/getProducts.js");
   productJS.uploadNewProduct(newProduct)
 
   res.status(200).send('successfully recieved the new product');
+});
+
+app.post('/updateProduct', function(req, res) {
+  let updatedProduct = req.body;
+  console.log("recieved new product creation from webhook for:" + updatedProduct.id);
+  var Update = require("./public/products/js/updateProduct.js");
+  Update.updateProduct(updatedProduct);
+
+  res.status(200).send('successfully recieved the updated product');
 });
 
 

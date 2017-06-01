@@ -1,8 +1,6 @@
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
-var count = 0;
-
 //TODO: we want fabric to be a single pointer. Right now, fabric points all to an individual pointer, so we have multiple Innocence, etc.
 exports.getFabric = function getFabric(productJSON) {
     var promise = new Parse.Promise();
@@ -39,10 +37,10 @@ function createNewFabric(productJSON) {
 }
 
 //MARK: fabric attributes
-exports.getColor = function getColor(product) {
+exports.getColor = function getColor(productJSON) {
     var color;
 
-    let title = product.title;
+    let title = productJSON.title;
     //Take a title like (Belle Bottoms // Hamptons), and return Hamptons as the color. We can't use the options right now because not all products have an options field with color. Some don't for some reason.
     let index = title.indexOf("/");
     if (index != -1) {

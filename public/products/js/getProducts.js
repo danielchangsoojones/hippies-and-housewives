@@ -3,8 +3,6 @@ var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 let Fabric = require("../fabric/getFabric.js");
 
-console.log(getAllProducts(1));
-
 //MARK: upload new product
 exports.uploadNewProduct = function uploadNewProduct(productJSON) {
     Fabric.getFabric(productJSON).then(function(fabric) {
@@ -45,19 +43,19 @@ function getVariants(productJSON, product) {
     
     for (var v = 0; v < variantsJSON.length; v++) {
         let variantJSON = variantsJSON[v];
-        let variant = createVariant(variantJSON, productJSON, product);
+        let variant = exports.createVariant(variantJSON, productJSON, product);
         variants.push(variant);
     }
 
     return variants;
 }
 
-function createVariant(variantJSON, productJSON, product) {
+exports.createVariant = function createVariant(variantJSON, productJSON, product) {
     let ProductVariant = require('../../models/productVariant.js');
     let variant = new ProductVariant();
         
     variant.set("shopifyVariantID", variantJSON.id);
-    variant.set("size", getSize(productJSON, variantJSON));
+    variant.set("size", exports.getSize(productJSON, variantJSON));
     variant.set("product", product);
 
     return variant
@@ -88,7 +86,7 @@ function getAllProducts(page) {
 }
 
 //MARK: variant attributes
-function getSize(productJSON, variantJSON) {
+exports.getSize = function getSize(productJSON, variantJSON) {
     //an option is customizable data that you can place on variants, so on shopify most variants have size and color, but the problem is that not all have these options, so the order is messed up sometimes.
     let options = productJSON.options;
     let size = "size"
