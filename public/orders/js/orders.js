@@ -50,7 +50,6 @@ function createLineItems(orderJSON, order, customer) {
         getVariant.findProductVariant(lineItemJSON.variant_id, lineItemJSON.variant_title, lineItemJSON.title).then(function(variant) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
-            
             saveAllComponents([order, customer, lineItem])
         }, function(error) {
             console.log("couldn't find the variant");
@@ -120,17 +119,15 @@ function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     let refunds = orderJSON.refunds;
     let refundedLineItems = refunds.refund_line_items;
     if (refundedLineItems != undefined) {
-        for (var i = 0; i < refundedLineItems.length; i++) {
-        
-            let refundLineItem = refundedLineItems[i];
-        
-            if (refundLineItem.line_item_id == shopifyLineItemID) {
-                //this particular line item has been refunded
-                return true;
+    for (var i = 0; i < refundedLineItems.length; i++) {      
+        let refundLineItem = refundedLineItems[i];
+        if (refundLineItem.line_item_id == shopifyLineItemID) {
+            //this particular line item has been refunded
+            return true;
             }
         }
     }
-    
+
     return false;
 }
 
@@ -159,8 +156,6 @@ function saveAllOrders(page) {
         }
     });
 }
-
-console.log(getPracticeOrder());
 
 function getPracticeOrder() {
     let baseURL = require("../../resources/shopifyURL.js");
