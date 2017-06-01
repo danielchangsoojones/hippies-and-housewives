@@ -81,7 +81,7 @@ function updateVariants(productJSON, product) {
 
 function compareVariants(variants, productJSON, product) {
     let variantsJSON = productJSON.variants;
-    let currentVariantIDs = getCurrentVariantIDs(productJSON);
+    let currentVariantIDs = getCurrentVariantIDs(variants);
 
     for (var i = 0; i < variantsJSON.length; i++) {
         let variantJSON = variantsJSON[i];
@@ -119,7 +119,8 @@ function getCurrentVariantIDs(variants) {
         variantIDs.push(variant.get("shopifyVariantID"));
     }
     
-    console.log("our current variant ids in the getCurrentVariantIDs function:" + variantIDs);
+    console.log("our current variant ids in the getCurrentVariantIDs function:");
+    console.log(variantIDs);
     return variantIDs;
 }
 
