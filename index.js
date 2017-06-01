@@ -64,7 +64,7 @@ app.post('/newProduct', function(req, res) {
 
 app.post('/updateProduct', function(req, res) {
   let updatedProduct = req.body;
-  console.log("recieved new product creation from webhook for:" + updatedProduct.id);
+  console.log("recieved new updated product from webhook for:" + updatedProduct.id);
   var Update = require("./public/products/js/updateProduct.js");
   Update.updateProduct(updatedProduct);
 

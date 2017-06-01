@@ -50,7 +50,6 @@ function createLineItems(orderJSON, order, customer) {
         getVariant.findProductVariant(lineItemJSON.variant_id, lineItemJSON.variant_title, lineItemJSON.title).then(function(variant) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
-            console.log(variant);
             saveAllComponents([order, customer, lineItem])
         }, function(error) {
             console.log("couldn't find the variant");
