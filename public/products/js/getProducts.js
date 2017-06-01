@@ -1,14 +1,14 @@
 var request = require('request');
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
+let Fabric = require("../fabric/getFabric.js");
 
 console.log(getAllProducts(1));
 
 //MARK: upload new product
 function uploadNewProduct(productJSON) {
-    let Fabric = require("../fabric/getFabric.js");
     Fabric.getFabric(productJSON).then(function(fabric) {
-        let product = createProduct(fabric);
+        let product = createProduct(productJSON, fabric);
         let variants = getVariants(productJSON, product);
         saveAllComponents([product, fabric, variants]);
     }, function (error) {
@@ -32,7 +32,6 @@ function createProduct(productJSON, fabric) {
     let product = new ProductType();
 
     product.set("shopifyID", productJSON.id);
-    product.set("color", getColor(productJSON));
     product.set("title", productJSON.title);
     product.set("vendor", productJSON.vendor.toLowerCase());
     product.set("fabric", fabric);
@@ -77,6 +76,7 @@ function getAllProducts(page) {
                 getAllProducts(page + 1);
             }
 
+            console.log(products.length);
             for (var i = 0; i < products.length; i++) {
                 let productJSON = products[i];
                 uploadNewProduct(productJSON);
@@ -92,10 +92,11 @@ function getSize(productJSON, variantJSON) {
     //an option is customizable data that you can place on variants, so on shopify most variants have size and color, but the problem is that not all have these options, so the order is messed up sometimes.
     let options = productJSON.options;
     let size = "size"
-    if (options[0].name.toLowerCase() == size) {
+    
+    if (options[0] != undefined && options[0].name.toLowerCase() == size) {
         //size is the first option, sometimes size is the first option, other times it is the second option because someone did bad shopify data.
         return variantJSON.option1;
-    } else if (options[1].name.toLowerCase() == size) {
+    } else if (options[1] != undefined && options[1].name.toLowerCase() == size) {
         return variantJSON.option2;
     } else {
         return "Size Error"
