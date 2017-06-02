@@ -2,17 +2,21 @@ var Parse = require('parse/node');
 var initializeParse = require("../resources/initializeParse.js");
 
 exports.recieveInventory = function recieveInventory(productVariant) {
+    var promise = new Parse.Promise();
+
     if (productVariant != undefined) {
         let Inventory = require("../models/inventory.js");
         let inventory = new Inventory();
         inventory.set("productVariant", productVariant);
         
         allocateInventory(inventory, productVariant).then(function(objects) {
-            console.log(objects);
+            promise.resolve(objects);
         }, function(error) {
-            console.log(error);
-        })
+            promise.reject(error);
+        });
     }
+
+    return promise;
 }
 
 function allocateInventory(inventory, productVariant) {
