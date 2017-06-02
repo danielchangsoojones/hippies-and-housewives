@@ -48,6 +48,7 @@ function saveInventories(productVariant, quantity) {
     for (var i = 0; i < quantity; i++) {
         let Inventory = require('../../models/inventory.js');
         let inventory = new Inventory();
+        inventory.set("productVariant", productVariant);
         inventories.push(inventory);
     }
 
