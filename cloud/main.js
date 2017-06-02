@@ -4,27 +4,19 @@ Parse.Cloud.define('hello', function(req, res) {
 
 Parse.Cloud.define("searchProduct", function(req, res) {
   let searchText = req.params.searchText.toLowerCase();
-  let Search = require("../public/inventory/search/searchProducts.js");
-  Search.searchProductType(searchText).then(function(productTypes) {
-    console.log(productTypes);
-    console.log(productTypes.toJSON());
-    res.success(productTypes.toJSON());
-  }, function(error) {
-    res.error(error);
+  var ProductType = Parse.Object.extend("ProductType");
+  var query = new Parse.Query(ProductType);
+  query.startsWith("lowercaseTitle", searchText.toLowerCase());
+
+//For some reason, if I put this query in another file and then make a promise for it, the return array to my iOS is not Parse encoded, so I can't cast it. But, if I do the query in this function, then it works fine.
+  query.find({
+      success: function(products) {
+          res.success(products);
+      },
+      error: function(error) {
+          res.error(error);
+      }
   });
-
-  // var ProductType = Parse.Object.extend("ProductType");
-  // var query = new Parse.Query(ProductType);
-  //   query.startsWith("lowercaseTitle", searchText.toLowerCase());
-
-  //   query.find({
-  //       success: function(products) {
-  //           res.success(products);
-  //       },
-  //       error: function(error) {
-  //           res.error(error);
-  //       }
-  //   });
 });
 
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
