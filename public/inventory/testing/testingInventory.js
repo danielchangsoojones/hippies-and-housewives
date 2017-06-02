@@ -8,8 +8,8 @@ function testAllocation(objectID) {
     query.include("productVariant");
     query.first({
       success: function(inventory) {
-          let Allocate = require("../save/save.js");
-          Allocate.findMatchingLineItem(inventory);
+        //   let Allocate = require("../save/save.js");
+        //   Allocate.allocateInventories([inventory], inventory.get("productVariant"));
       },
       error: function(error) {
           console.log(error);
@@ -17,4 +17,4 @@ function testAllocation(objectID) {
   });
 }
 
-console.log(testAllocation("AILZcKIDB2"));
+console.log(testAllocation("OJ7MmPzarx"));

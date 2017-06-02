@@ -68,8 +68,8 @@ function saveInventories(productVariant, quantity) {
 function allocateInventories(inventories, productVariant) {
     console.log("allocating the inventory");
     for (var i = 0; i < inventories.length; i++) {
+        let inventory = inventories[i];
         findMatchingLineItem(inventory, productVariant).then(function(lineItem) {
-            let inventory = inventories[i];
             inventory.set("lineItem", lineItem);
             lineItem.set("inventory", inventory);
 
@@ -90,7 +90,6 @@ function findMatchingLineItem(inventory, productVariant) {
     
     query.first({
         success: function(lineItem) {
-            console.log("found matching line items");
             promise.resolve(lineItem);
         },
         error: function(error) {
