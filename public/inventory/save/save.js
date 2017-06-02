@@ -70,6 +70,7 @@ exports.findMatchingLineItem = function findMatchingLineItem(inventory) {
     let productVariant = inventory.get("productVariant");
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
+    console.log(productVariant);
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("inventory");
 
@@ -81,6 +82,6 @@ exports.findMatchingLineItem = function findMatchingLineItem(inventory) {
             promise.reject(error);
         }
     });
-    
+
     return promise;
 }
