@@ -55,6 +55,7 @@ function saveInventories(productVariant, quantity) {
     Parse.Object.saveAll(inventories, {
         success: function (results) {
             promise.resolve(inventories);
+            allocateInventories(inventories, productVariant);
         },
         error: function (error) {                                     
             promise.reject(inventories);
@@ -64,14 +65,26 @@ function saveInventories(productVariant, quantity) {
     return promise;
 }
 
-exports.findMatchingLineItem = function findMatchingLineItem(inventory) {
+function allocateInventories(inventories, productVariant) {
+    for (var i = 0; i < inventories.length; i++) {
+        findMatchingLineItem(inventory, productVariant).then(function(lineItem) {
+            let inventory = inventories[i];
+            inventory.set("lineItem", lineItem);
+            lineItem.set("inventory", inventory);
+
+            Parse.Object.saveAll([inventory, lineItem], {});
+        }, function(error) {
+            console.log(error);
+        });
+    }
+}
+
+findMatchingLineItem(inventory, productVariant) {
     var promise = new Parse.Promise();
 
-    let productVariant = inventory.get("productVariant");
-    console.log(productVariant);
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
-    // query.equalTo("productVariant", productVariant);
+    query.equalTo("productVariant", productVariant);
     query.doesNotExist("inventory");
     
     query.first({
