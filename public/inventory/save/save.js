@@ -90,6 +90,7 @@ function findMatchingLineItem(inventory, productVariant) {
     
     query.first({
         success: function(lineItem) {
+            console.log("found matching line items");
             promise.resolve(lineItem);
         },
         error: function(error) {

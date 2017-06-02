@@ -26,7 +26,7 @@ Parse.Cloud.define("saveInventory", function(req, res) {
 
   let SaveInventory = require("../public/inventory/save/save.js");
   SaveInventory.saveInventory(productTypeObjectID, size, quantity).then(function(inventories) {
-    res.success(inventories);
+    res.success();
   }, function(error) {
     res.error(error);
   });
