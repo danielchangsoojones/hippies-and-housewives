@@ -71,7 +71,7 @@ exports.findMatchingLineItem = function findMatchingLineItem(inventory) {
     console.log(productVariant);
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
-    query.equalTo("productVariant", productVariant);
+    // query.equalTo("productVariant", productVariant);
     query.doesNotExist("inventory");
     
     query.first({
