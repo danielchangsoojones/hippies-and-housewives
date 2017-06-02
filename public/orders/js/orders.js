@@ -49,7 +49,12 @@ function createLineItems(orderJSON, order, customer) {
         getVariant.findProductVariant(lineItemJSON.variant_id, lineItemJSON.variant_title, lineItemJSON.title).then(function(variant) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
-            saveAllComponents([order, customer, lineItem])
+            let Allocate = require("../allocate/allocateLineItem.js");
+            Allocate.allocateLineItem(variant, lineItem).then(function(objects) {
+                saveAllComponents([order, customer, objects])
+            }, function (error) {
+                console.log(error);
+            });
         }, function(error) {
             console.log("couldn't find the variant");
             console.log(error);
@@ -71,7 +76,9 @@ function createLineItem(lineItemJSON, order, orderJSON) {
 }
 
 function saveAllComponents(objects) {
-    Parse.Object.saveAll(objects, {
+    var flattenedObjects = [].concat.apply([], objects);
+
+    Parse.Object.saveAll(flattenedObjects, {
         success: function (results) {},
         error: function (error) {                                     
             console.log(error);

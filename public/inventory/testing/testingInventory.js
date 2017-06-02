@@ -8,4 +8,4 @@ function makeTestInventory(searchText, size) {
     });
 }
 
-console.log(makeTestInventory("yehyeh bottom", "S"));
+console.log(makeTestInventory("Beauty Bandeau Top", "L"));
