@@ -1,11 +1,20 @@
-function makeTestInventory(searchText, size) {
-    let Search = require("../search/searchProducts.js");
-    Search.searchProducts(searchText, size).then(function(products) {
-        var InventoryHelper = require("../getInventory.js");
-        InventoryHelper.recieveInventory(products[0]);
-    }, function(error) {
-        console.log(error);
-    });
+var Parse = require('parse/node');
+var initializeParse = require("../../resources/initializeParse.js");
+
+function testAllocation(objectID) {
+    var Inventory = Parse.Object.extend("Inventory");
+    var query = new Parse.Query(Inventory);
+    query.equalTo("objectId", objectID);
+    query.include("productVariant");
+    query.first({
+      success: function(inventory) {
+          let Allocate = require("../save/save.js");
+          Allocate.findMatchingLineItem(inventory);
+      },
+      error: function(error) {
+          console.log(error);
+      }
+  });
 }
 
-console.log(makeTestInventory("Beauty Bandeau Top", "L"));
+console.log(testAllocation("AILZcKIDB2"));
