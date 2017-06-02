@@ -43,3 +43,19 @@ Parse.Cloud.beforeSave("ProductType", function(request, response) {
 
   response.success();
 });
+
+Parse.Cloud.beforeSave("Inventory", function(request, response) {
+  if (request.object.isNew() && request.object.get("lineItem") == undefined) {
+    let Allocate = require("../public/inventory/save/save.js");
+    Allocate.findMatchingLineItem(request.object).then(function(lineItem) {
+      console.log("after saving the inventory");
+      console.log(lineItem);
+      request.object.set("lineItem", lineItem);
+      response.success();
+    }, function(error) {
+      response.error(error);
+    });
+  } else {
+    response.success();
+  }
+});

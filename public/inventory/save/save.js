@@ -63,3 +63,24 @@ function saveInventories(productVariant, quantity) {
 
     return promise;
 }
+
+exports.findMatchingLineItem = function findMatchingLineItem(inventory) {
+    var promise = new Parse.Promise();
+
+    let productVariant = inventory.get("productVariant");
+    var LineItem = Parse.Object.extend("LineItem");
+    var query = new Parse.Query(LineItem);
+    query.equalTo("productVariant", productVariant);
+    query.doesNotExist("inventory");
+
+    query.first({
+        success: function(lineItem) {
+            promise.resolve(lineItem);
+        },
+        error: function(error) {
+            promise.reject(error);
+        }
+    });
+    
+    return promise;
+}
