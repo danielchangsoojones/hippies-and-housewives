@@ -79,7 +79,7 @@ function allocateInventories(inventories, productVariant) {
     }
 }
 
-findMatchingLineItem(inventory, productVariant) {
+function findMatchingLineItem(inventory, productVariant) {
     var promise = new Parse.Promise();
 
     var LineItem = Parse.Object.extend("LineItem");
