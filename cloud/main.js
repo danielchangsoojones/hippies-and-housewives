@@ -6,6 +6,7 @@ Parse.Cloud.define("searchProduct", function(req, res) {
   let searchText = req.params.searchText.toLowerCase();
   let Search = require("../public/inventory/search/searchProducts.js");
   Search.searchProductType(searchText).then(function(productTypes) {
+    console.log(productTypes);
     res.success(productTypes);
   }, function(error) {
     res.error(error);
