@@ -53,10 +53,9 @@ function saveInventories(productVariant, quantity) {
     }
 
     Parse.Object.saveAll(inventories, {
-        success: function (results) {
-            allocateInventories(inventories, productVariant);
-            console.log(inventories);
+        success: function (inventories) {
             promise.resolve(inventories);
+            allocateInventories(inventories, productVariant);
         },
         error: function (error) {                                     
             promise.reject(inventories);
