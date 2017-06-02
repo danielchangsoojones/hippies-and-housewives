@@ -1,6 +1,25 @@
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
+exports.searchProductType = function searchProductType(searchText) {
+    var promise = new Parse.Promise();
+
+    var ProductType = Parse.Object.extend("ProductType");
+    var query = new Parse.Query(ProductType);
+    query.startsWith("lowercaseTitle", searchText.toLowerCase());
+
+    query.find({
+        success: function(products) {
+            promise.resolve(products);
+        },
+        error: function(error) {
+            promise.reject(error);
+        }
+    });
+
+    return promise;
+}
+
 exports.searchProducts = function searchProducts(searchText, size) {
     var promise = new Parse.Promise();
 
