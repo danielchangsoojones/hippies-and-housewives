@@ -1,4 +1,3 @@
-var request = require('request');
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 let Fabric = require("../fabric/getFabric.js");
@@ -59,29 +58,6 @@ exports.createVariant = function createVariant(variantJSON, productJSON, product
     variant.set("product", product);
 
     return variant
-}
-
-//MARK: retrieving mass products
-function getAllProducts(page) {
-    let baseURL = require("../../resources/shopifyURL.js");
-    var shopifyURL = baseURL + '/products.json';
-    var parameters = {limit : 250, fields : "id,variants,title,vendor,options", page : page};
-    request({url: shopifyURL, qs: parameters}, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            let products = JSON.parse(body).products;
-            if (products.length != 0) {
-                //we have not hit the most recent product because more exist beyond it
-                getAllProducts(page + 1);
-            }
-
-            for (var i = 0; i < products.length; i++) {
-                let productJSON = products[i];
-                exports.uploadNewProduct(productJSON);
-            }
-        } else {
-            console.log(error);
-        }
-    });
 }
 
 //MARK: variant attributes

@@ -65,6 +65,8 @@ function createLineItem(lineItemJSON, order, orderJSON) {
     lineItem.set("variant_title", lineItemJSON.variant_title);
     lineItem.set("order", order);
     lineItem.set("state", exports.getLineItemState(orderJSON, lineItemJSON.id));
+    lineItem.set("quantity", lineItemJSON.quantity);
+    lineItem.set("shopifyVariantID", lineItemJSON.variant_id);
     return lineItem
 }
 
