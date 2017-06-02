@@ -1,10 +1,10 @@
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
-exports.saveInventory = function saveInventory(productType, size, quantity) {
+exports.saveInventory = function saveInventory(productTypeObjectID, size, quantity) {
     var promise = new Parse.Promise();
 
-    getProductVariant(productType, size).then(function(productVariant) {
+    getProductVariant(productTypeObjectID, size).then(function(productVariant) {
         saveInventories(productVariant, quantity).then(function(inventories) {
             promise.resolve(inventories)
         }, function(error) {
@@ -17,13 +17,17 @@ exports.saveInventory = function saveInventory(productType, size, quantity) {
     return promise;
 }
 
-function getProductVariant(productType, size) {
+function getProductVariant(productTypeObjectID, size) {
     var promise = new Parse.Promise();
 
     var ProductVariant = Parse.Object.extend("ProductVariant");
     var query = new Parse.Query(ProductVariant);
-    query.equalTo("product", productType);
     query.equalTo("size", size);
+
+    var ProductType = Parse.Object.extend("ProductType");
+    var innerQuery = new Parse.Query(ProductType);
+    innerQuery.equalTo("objectId", productTypeObjectID);
+    query.matchesQuery("product", innerQuery);
 
     query.first({
         success: function(productVariant) {
