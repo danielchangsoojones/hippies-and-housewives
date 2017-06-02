@@ -54,8 +54,8 @@ function saveInventories(productVariant, quantity) {
 
     Parse.Object.saveAll(inventories, {
         success: function (results) {
-            promise.resolve(inventories);
             allocateInventories(inventories, productVariant);
+            promise.resolve(inventories);
         },
         error: function (error) {                                     
             promise.reject(inventories);
@@ -66,6 +66,7 @@ function saveInventories(productVariant, quantity) {
 }
 
 function allocateInventories(inventories, productVariant) {
+    console.log("allocating the inventory");
     for (var i = 0; i < inventories.length; i++) {
         findMatchingLineItem(inventory, productVariant).then(function(lineItem) {
             let inventory = inventories[i];
