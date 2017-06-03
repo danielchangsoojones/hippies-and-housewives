@@ -7,7 +7,7 @@ function testingPickList() {
     var PickList = require("../pickList.js");
     PickList.createPickList().then(function(results) {
         console.log("finished");
-        console.log(results[0]);
+        console.log(results);
     }, function(error) {
         console.log(error);
     })

@@ -1,7 +1,3 @@
-Parse.Cloud.define('hello', function(req, res) {
-  res.success('Hi');
-});
-
 Parse.Cloud.define("searchProduct", function(req, res) {
   let searchText = req.params.searchText.toLowerCase();
   var ProductType = Parse.Object.extend("ProductType");
@@ -34,8 +30,7 @@ Parse.Cloud.define("saveInventory", function(req, res) {
 
 Parse.Cloud.define("getPickList", function(req, res) {
   let PickList = require("../public/pickList/pickList.js");
-  //TODO: I have no idea what this promise will return
-  PickList.createPickList().then(function(orderDictionary) {
+  PickList.createPickList().then(function(results) {
     res.success(orderDictionary);
   }, function(error) {
     res.error(error);
