@@ -32,6 +32,18 @@ Parse.Cloud.define("saveInventory", function(req, res) {
   });
 });
 
+Parse.Cloud.define("getPickList", function(req, res) {
+  let PickList = require("../public/pickList/pickList.js");
+  //TODO: I have no idea what this promise will return
+  PickList.createPickList().then(function(orderDictionary) {
+    res.success(orderDictionary);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+
+
 
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
