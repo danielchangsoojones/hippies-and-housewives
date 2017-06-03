@@ -51,7 +51,7 @@ function createLineItems(orderJSON, order, customer) {
             lineItem.set("productVariant", variant);
             let Allocate = require("../allocate/allocateLineItem.js");
             Allocate.allocateLineItem(variant, lineItem).then(function(objects) {
-                saveAllComponents([order, customer, objects])
+                saveAllComponents([order, customer, objects], order);
             }, function (error) {
                 console.log(error);
             });
@@ -75,15 +75,27 @@ function createLineItem(lineItemJSON, order, orderJSON) {
     return lineItem
 }
 
-function saveAllComponents(objects) {
+function saveAllComponents(objects, order) {
     var flattenedObjects = [].concat.apply([], objects);
 
     Parse.Object.saveAll(flattenedObjects, {
-        success: function (results) {},
+        success: function (results) {
+            addLineItemToOrderRelation(order, results);
+        },
         error: function (error) {                                     
             console.log(error);
         },
     });
+}
+
+function addLineItemToOrderRelation(order, results) {
+    for (var i = 0; i < results.length; i++) {
+        if (results[i].className == "LineItem") {
+            var relation = order.relation("lineItems");
+            relation.add(results[i]);
+            order.save();
+        }
+    }
 }
 
 //MARK: getting order attributes
