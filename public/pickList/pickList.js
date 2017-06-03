@@ -13,6 +13,7 @@ exports.createPickList = function createPickList() {
     findCompletedLineItems().then(function(completedLineItems) {
         //TODO: I'm not sure how the syntax works for a multiPromise and what it returns, I hope it returns an array of resolves
         findCompletedOrders(completedLineItems).then(function(dictionaryItems) {
+            // console.log(dictionaryItems);
             promise.resolve(dictionaryItems);
         }, function(error) {
             promise.reject(error);
@@ -40,11 +41,11 @@ function findCompletedLineItems() {
     var packagedQuery = createCompletedLineItemsQuery();
     packagedQuery.equalTo("isPackaged", true);
 
-    //TODO: make sure this is the correct orQuery syntax
     var orQuery = Parse.Query.or(inventoryQuery, packagedQuery);
     orQuery.include("order");
 
-    //For some reason, if I put this query in another file and then make a promise for it, the return array to my iOS is not Parse encoded, so I can't cast it. But, if I do the query in this function, then it works fine.
+    //For some reason, if I put this query in another file and then make a promise for it, the return array to my iOS is not Parse encoded, so I can't cast it.
+    //But, if I query in cloud code, it works fine. Idk why somehting about JSON encoding and how the className is funky.
     orQuery.find({
         success: function(lineItems) {
           promise.resolve(lineItems);
@@ -58,7 +59,8 @@ function findCompletedLineItems() {
 }
 
 function createCompletedLineItemsQuery() {
-    var query = new Parse.Query(LineItem);
+    var ProductType = Parse.Object.extend("ProductType");
+    var query = new Parse.Query(ProductType);
     query.equalTo("state", "open");
 
     return query;
@@ -69,22 +71,18 @@ function findCompletedOrders(completedLineItems) {
 
     let orderDictionary = groupLineItemsToOrders(completedLineItems);
     
-    //TODO: check this syntax
     var completedOrderDictionary = {};
 
     var promises = [];
 
-    //TODO: figure out a way to iterate through orderDictionary
-    for(...) {
-        let order;
-        let completedOrderLineItems;
+    for(var order in orderDictionary) {
+        let completedOrderLineItems = orderDictionary[order];
         
          var promise = runIncompleteLineItemQuery(order, completedOrderLineItems);
          promises.push(promise);
     }
 
-    //TODO: this syntax is wrong, we want to make the promise resolve when all the order queries have run in parallel
-    multiPromise.when(promise);
+    multiPromise.all(promises);
 
     return multiPromise;
 }
@@ -97,7 +95,6 @@ function groupLineItemsToOrders(completedLineItems) {
         let lineItem = completedLineItems[i];
         let order = lineItem.get("order");
         
-        //TODO: I have no clue if this syntax is correct
         if (orderDictionary[order] == undefined) {
             //order key doesn't exist in dictionary yet
             orderDictionary[order] = [lineItem];
