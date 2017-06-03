@@ -79,23 +79,11 @@ function saveAllComponents(objects, order) {
     var flattenedObjects = [].concat.apply([], objects);
 
     Parse.Object.saveAll(flattenedObjects, {
-        success: function (results) {
-            addLineItemToOrderRelation(order, results);
-        },
+        success: function (results) {},
         error: function (error) {                                     
             console.log(error);
         },
     });
-}
-
-function addLineItemToOrderRelation(order, results) {
-    for (var i = 0; i < results.length; i++) {
-        if (results[i].className == "LineItem") {
-            var relation = order.relation("lineItems");
-            relation.add(results[i]);
-            order.save();
-        }
-    }
 }
 
 //MARK: getting order attributes
