@@ -59,32 +59,27 @@ function findCompletedLineItems() {
 }
 
 function createCompletedLineItemsQuery() {
-    var ProductType = Parse.Object.extend("ProductType");
-    var query = new Parse.Query(ProductType);
+    var LineItem = Parse.Object.extend("LineItem");
+    var query = new Parse.Query(LineItem);
     query.equalTo("state", "open");
 
     return query;
 }
 
 function findCompletedOrders(completedLineItems) {
-    var multiPromise = new Parse.Promise();
-
     let orderDictionary = groupLineItemsToOrders(completedLineItems);
-    
     var completedOrderDictionary = {};
 
     var promises = [];
+    for(var orderID in orderDictionary) {
+        let completedOrderLineItems = orderDictionary[orderID];
 
-    for(var order in orderDictionary) {
-        let completedOrderLineItems = orderDictionary[order];
-        
-         var promise = runIncompleteLineItemQuery(order, completedOrderLineItems);
+         var promise = runIncompleteLineItemQuery(completedOrderLineItems); 
          promises.push(promise);
     }
 
-    multiPromise.all(promises);
-
-    return multiPromise;
+    //waiting for the promises to run in parallel and then we grab them all at once when they are all done.
+    return Parse.Promise.when(promises);
 }
 
 function groupLineItemsToOrders(completedLineItems) {
@@ -97,7 +92,7 @@ function groupLineItemsToOrders(completedLineItems) {
         
         if (orderDictionary[order] == undefined) {
             //order key doesn't exist in dictionary yet
-            orderDictionary[order] = [lineItem];
+            orderDictionary[order.id] = [lineItem];
         } else {
             //order key already exists in dictionary because it a related line item was already iterated through
             orderDictionary[order].push(lineItem);
@@ -107,20 +102,24 @@ function groupLineItemsToOrders(completedLineItems) {
     return orderDictionary
 }
 
-function runIncompleteLineItemQuery(order, completedLineItems) {
+function runIncompleteLineItemQuery(completedLineItems) {
     var promise = new Parse.Promise();
+    let order = completedLineItems[0].get("order")
 
     var incompleteLineItemQuery = createIncompleteLineItemQuery(order);
-    incompleteLineItemQueryquery.first({
+    incompleteLineItemQuery.first({
         success: function(lineItem) {
             if (lineItem == undefined) {
                 //we couldn't find an incomplete line item, which means the entire order is ready to be picked
                 //TODO: we want to send back a item for the order dictionary, not sure of syntax
-                promise.resolve({order: completedLineItems});
+                console.log(completedLineItems)
+                let dict = {}
+                dict[order.id] = completedLineItems
+                promise.resolve(dict);
             } else {
                 //we found an incomplete line item, so don't pick this order
                 promise.resolve(undefined);
-                }
+            }
             },
             error: function(error) {
                 promise.reject(error);
@@ -131,12 +130,13 @@ function runIncompleteLineItemQuery(order, completedLineItems) {
 }
 
 function createIncompleteLineItemQuery(order) {
+    var LineItem = Parse.Object.extend("LineItem");
     var incompleteLineItemsQuery = new Parse.Query(LineItem);
     incompleteLineItemsQuery.equalTo("state", "open");
     incompleteLineItemsQuery.equalTo("order", order);
     incompleteLineItemsQuery.doesNotExist("inventory");
     incompleteLineItemsQuery.notEqualTo("isPackaged", true);
-
+    
     return incompleteLineItemsQuery;
 }
 
