@@ -12,9 +12,9 @@ exports.createPickList = function createPickList() {
 
     findCompletedLineItems().then(function(completedLineItems) {
         //TODO: I'm not sure how the syntax works for a multiPromise and what it returns, I hope it returns an array of resolves
-        findCompletedOrders(completedLineItems).then(function(dictionaryItems) {
-            // console.log(dictionaryItems);
-            promise.resolve(dictionaryItems);
+        findCompletedOrders(completedLineItems).then(function(results) {
+            let filteredArray = filterArray(results);
+            promise.resolve(filteredArray);
         }, function(error) {
             promise.reject(error);
         });
@@ -111,13 +111,9 @@ function runIncompleteLineItemQuery(completedLineItems) {
         success: function(lineItem) {
             if (lineItem == undefined) {
                 //we couldn't find an incomplete line item, which means the entire order is ready to be picked
-                //TODO: we want to send back a item for the order dictionary, not sure of syntax
-                console.log(completedLineItems)
-                let dict = {}
-                dict[order.id] = completedLineItems
-                promise.resolve(dict);
+                promise.resolve([order, completedLineItems]);
             } else {
-                //we found an incomplete line item, so don't pick this order
+                //we found an incomplete line item, so don't pick this order. 
                 promise.resolve(undefined);
             }
             },
@@ -138,5 +134,10 @@ function createIncompleteLineItemQuery(order) {
     incompleteLineItemsQuery.notEqualTo("isPackaged", true);
     
     return incompleteLineItemsQuery;
+}
+
+function filterArray(array) {
+    let filteredArray = array.filter(function(a){return a !== undefined})
+    return filteredArray
 }
 
