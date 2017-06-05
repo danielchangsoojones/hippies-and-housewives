@@ -7,6 +7,8 @@ function testingPickList() {
     Parse.Cloud.run("getPickList").then(function(results) {
         console.log("finished");
         console.log(results);
+        console.log("hiii");
+        console.log(JSON.stringify(results));
     }, function(error) {
         console.log(error);
     });

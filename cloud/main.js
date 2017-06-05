@@ -32,7 +32,9 @@ Parse.Cloud.define("getPickList", function(req, res) {
   let PickList = require("../public/pickList/pickList.js");
   PickList.createPickList().then(function(results) {
     console.log(results);
-    res.success(results);
+    console.log("stringified results");
+    console.log(JSON.stringify(results));
+    res.success(JSON.stringify(results));
   }, function(error) {
     res.error(error);
   });
