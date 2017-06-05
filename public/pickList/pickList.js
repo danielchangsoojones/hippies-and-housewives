@@ -60,6 +60,7 @@ function createCompletedLineItemsQuery() {
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
     query.equalTo("state", "open");
+    query.notEqualTo("isPicked", true);
 
     return query;
 }
