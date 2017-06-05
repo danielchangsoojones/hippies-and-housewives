@@ -134,6 +134,7 @@ function createIncompleteLineItemQuery(order) {
     incompleteLineItemsQuery.equalTo("order", order);
     incompleteLineItemsQuery.doesNotExist("inventory");
     incompleteLineItemsQuery.notEqualTo("isPackaged", true);
+    incompleteLineItemsQuery.notEqualTo("isPicked", true);
     
     return incompleteLineItemsQuery;
 }

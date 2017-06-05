@@ -38,9 +38,6 @@ Parse.Cloud.define("getPickList", function(req, res) {
   });
 });
 
-
-
-
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");
