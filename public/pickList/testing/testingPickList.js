@@ -1,12 +1,14 @@
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
+// console.log(testingPickListCloud());
 console.log(testingPickList());
 
 function testingPickList() {
     let PickList = require("../pickList.js");
   PickList.createPickList().then(function(results) {
-      console.log(Parse._encode(results))
+      console.log("yellow");
+    //   console.log(Parse._encode(results))
       console.log(results)
   }, function(error) {
     console.log(error);
@@ -15,10 +17,7 @@ function testingPickList() {
 
 function testingPickListCloud() {
     Parse.Cloud.run("getPickList").then(function(results) {
-        console.log("finished");
-        console.log(results);
-        console.log("hiii");
-        console.log(JSON.stringify(results));
+        
     }, function(error) {
         console.log(error);
     });

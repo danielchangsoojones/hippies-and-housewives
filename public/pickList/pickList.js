@@ -13,7 +13,7 @@ exports.createPickList = function createPickList() {
     findCompletedLineItems().then(function(completedLineItems) {
         findCompletedOrders(completedLineItems).then(function(results) {
             let filteredArray = filterArray(results);
-            promise.resolve(filteredArray);
+            promise.resolve(Parse._encode(filteredArray));
         }, function(error) {
             promise.reject(error);
         });
