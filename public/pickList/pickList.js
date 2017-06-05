@@ -113,6 +113,8 @@ function runIncompleteLineItemQuery(completedLineItems) {
                 // console.log(order.toJSON());
                 // console.log(completedLineItems);
                 // promise.resolve([order, completedLineItems]);
+                confirm.log("butter")
+                JSON.stringify(JSON.stringify(order));
                 promise.resolve(order);
             } else {
                 //we found an incomplete line item, so don't pick this order. 
