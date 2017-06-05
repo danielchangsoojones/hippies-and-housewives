@@ -4,15 +4,10 @@ var initializeParse = require("../../resources/initializeParse.js");
 console.log(testingPickList());
 
 function testingPickList() {
-    console.log("ugly")
     let PickList = require("../pickList.js");
   PickList.createPickList().then(function(results) {
-      console.log("hello");
-    console.log(results);
-    console.log("stringified results");
-    console.log(JSON.stringify(results));
-    console.log("parsing");
-    console.log(JSON.parse(JSON.stringify(results)));
+      console.log(Parse._encode(results))
+      console.log(results)
   }, function(error) {
     console.log(error);
   });

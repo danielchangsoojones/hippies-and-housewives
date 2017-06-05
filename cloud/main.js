@@ -31,12 +31,7 @@ Parse.Cloud.define("saveInventory", function(req, res) {
 Parse.Cloud.define("getPickList", function(req, res) {
   let PickList = require("../public/pickList/pickList.js");
   PickList.createPickList().then(function(results) {
-    console.log(results);
-    console.log("stringified results");
-    console.log(JSON.stringify(results));
-    console.log("parsing");
-    console.log(JSON.parse(JSON.stringify(results)));
-    res.success(results[0].toJSON());
+    res.success(Parse._encode(results));
   }, function(error) {
     res.error(error);
   });

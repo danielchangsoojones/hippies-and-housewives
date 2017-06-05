@@ -110,12 +110,7 @@ function runIncompleteLineItemQuery(completedLineItems) {
         success: function(lineItem) {
             if (lineItem == undefined) {
                 //we couldn't find an incomplete line item, which means the entire order is ready to be picked
-                // console.log(order.toJSON());
-                // console.log(completedLineItems);
-                // promise.resolve([order, completedLineItems]);
-                confirm.log("butter")
-                JSON.stringify(JSON.stringify(order));
-                promise.resolve(order);
+                promise.resolve([order, completedLineItems]);
             } else {
                 //we found an incomplete line item, so don't pick this order. 
                 promise.resolve(undefined);
