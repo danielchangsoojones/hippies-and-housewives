@@ -66,7 +66,6 @@ function createCompletedLineItemsQuery() {
 
 function findCompletedOrders(completedLineItems) {
     let orderDictionary = groupLineItemsToOrders(completedLineItems);
-    var completedOrderDictionary = {};
 
     var promises = [];
     for(var orderID in orderDictionary) {
@@ -83,19 +82,23 @@ function findCompletedOrders(completedLineItems) {
 function groupLineItemsToOrders(completedLineItems) {
     //{order : [line items]}
     var orderDictionary = {}
+    console.log(completedLineItems.length);
 
     for (var i = 0; i < completedLineItems.length; i++) {
         let lineItem = completedLineItems[i];
         let order = lineItem.get("order");
+        let orderID = order.id
         
-        if (orderDictionary[order] == undefined) {
+        if (orderDictionary[orderID] == undefined) {
             //order key doesn't exist in dictionary yet
-            orderDictionary[order.id] = [lineItem];
+            orderDictionary[orderID] = [lineItem];
         } else {
             //order key already exists in dictionary because it a related line item was already iterated through
-            orderDictionary[order].push(lineItem);
+            orderDictionary[orderID].push(lineItem);
         }
     }
+
+    console.log(orderDictionary);
 
     return orderDictionary
 }

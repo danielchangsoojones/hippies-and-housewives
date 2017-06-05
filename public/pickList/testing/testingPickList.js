@@ -1,6 +1,8 @@
 var Parse = require('parse/node');
 var initializeParse = require("../../resources/initializeParse.js");
 
+console.log(testingPickList());
+
 function testingPickList() {
 let PickList = require("../pickList.js");
   PickList.createPickList().then(function(results) {
