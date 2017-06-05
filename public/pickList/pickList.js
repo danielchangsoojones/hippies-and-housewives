@@ -13,6 +13,7 @@ exports.createPickList = function createPickList() {
     findCompletedLineItems().then(function(completedLineItems) {
         findCompletedOrders(completedLineItems).then(function(results) {
             let filteredArray = filterArray(results);
+            //For some reason, when I pass the results to Cloud code via a promise. The Object loses its class affiliation, so my iOS doesn't recieve an object, just JSON. Encoding the objects before sending to cloud code fixes this.
             promise.resolve(Parse._encode(filteredArray));
         }, function(error) {
             promise.reject(error);
@@ -43,8 +44,6 @@ function findCompletedLineItems() {
     var orQuery = Parse.Query.or(inventoryQuery, packagedQuery);
     orQuery.include("order");
 
-    //For some reason, if I put this query in another file and then make a promise for it, the return array to my iOS is not Parse encoded, so I can't cast it.
-    //But, if I query in cloud code, it works fine. Idk why somehting about JSON encoding and how the className is funky.
     orQuery.find({
         success: function(lineItems) {
           promise.resolve(lineItems);
