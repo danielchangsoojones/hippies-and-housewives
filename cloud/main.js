@@ -36,7 +36,7 @@ Parse.Cloud.define("getPickList", function(req, res) {
     console.log(JSON.stringify(results));
     console.log("parsing");
     console.log(JSON.parse(JSON.stringify(results)));
-    res.success(JSON.parse(JSON.stringify(results)));
+    res.success(results[0].toJSON());
   }, function(error) {
     res.error(error);
   });
