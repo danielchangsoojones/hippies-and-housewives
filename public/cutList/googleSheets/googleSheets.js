@@ -11,27 +11,14 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
-var lineItems = [];
+var lineItemsToCut = [];
 
-exports.createCutList = function createCutList(lineItems) {
+exports.createCutList = function createCutList(lineItemsToCut) {
   console.log("running cutlist");
-  // Load client secrets from a local file.
-  lineItems = lineItems;
-  fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-    if (err) {
-      console.log('Error loading client secret file: ' + err);
-      return;
-    }
-    // Authorize a client with the loaded credentials, then call the
-    // Google Sheets API.
-    authorize(JSON.parse(content), createSheet);
-  });
+  lineItems = lineItemsToCut;
+  let secretJSON = require("./client_secret.json");
+  authorize(secretJSON, createSheet);
 }
-
-//TODO: remove this
-console.log(exports.createCutList("hiii"));
-
-
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the

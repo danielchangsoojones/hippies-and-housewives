@@ -53,7 +53,6 @@ function findLineItemsToCut() {
 function createGoogleSheet(lineItems) {
     var promise = new Parse.Promise();
 
-console.log("hiii");
     var GoogleSheets = require("./googleSheets/googleSheets.js");    
     GoogleSheets.createCutList(lineItems).then(function(success) {
         promise.resolve(success);
