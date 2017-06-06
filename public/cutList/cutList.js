@@ -10,7 +10,7 @@ var initializeParse = require("../resources/initializeParse.js");
 exports.getCutList = function getCutList() {
     var promise = new Parse.Promise();
 
-    findLineItemsToCut().then(function(success) {
+    findLineItemsToCut().then(function(lineItems) {
         createGoogleSheet(lineItems).then(function(success) {
             if (success) {
                 promise.resolve(lineItems);
@@ -40,7 +40,6 @@ function findLineItemsToCut() {
 
     query.find({
       success: function(lineItems) {
-          console.log(lineItems);
           promise.resolve(lineItems);
       },
       error: function(error) {
@@ -54,19 +53,14 @@ function findLineItemsToCut() {
 function createGoogleSheet(lineItems) {
     var promise = new Parse.Promise();
 
-    return promise;
-    //TODO: create a google sheet
-}
+console.log("hiii");
+    var GoogleSheets = require("./googleSheets/googleSheets.js");    
+    GoogleSheets.createCutList(lineItems).then(function(success) {
+        promise.resolve(success);
+    }, function(error) {
+        promise.resolve(error);
+    })
 
-function addRowToGoogleSheet(lineItem) {
-    //TODO: send these to the google sheet
-    let order = lineItem.get("order");
-    let productVariant = lineItem.get("product");
-    let shopifyLineItemID = lineItem.get("shopifyLineItemID");
-    //i.e. #HippiesAndHousewives2645<3
-    let shopifyOrderID = order.get("name");
-    let itemName = order.get("title");
-    let size = productVariant.get("size");
-    let quantity = lineItem.get("quantity");
+    return promise;
 }
 
