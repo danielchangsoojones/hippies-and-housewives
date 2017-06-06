@@ -5,7 +5,7 @@ var googleAuth = require('google-auth-library');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+var SCOPES = ['https://www.googleapis.com/auth/drive'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
@@ -18,7 +18,7 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
   }
   // Authorize a client with the loaded credentials, then call the
   // Google Sheets API.
-  authorize(JSON.parse(content), listMajors);
+  authorize(JSON.parse(content), createSheet);
 });
 
 /**
@@ -96,31 +96,55 @@ function storeToken(token) {
   console.log('Token stored to ' + TOKEN_PATH);
 }
 
-/**
- * Print the names and majors of students in a sample spreadsheet:
- * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
- */
 function listMajors(auth) {
-  var sheets = google.sheets('v4');
-  sheets.spreadsheets.values.get({
-    auth: auth,
-    spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    range: 'Class Data!A2:E',
-  }, function(err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    }
-    var rows = response.values;
-    if (rows.length == 0) {
-      console.log('No data found.');
-    } else {
-      console.log('Name, Major:');
-      for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
-        // Print columns A and E, which correspond to indices 0 and 4.
-        console.log('%s, %s', row[0], row[4]);
+  
+}
+
+
+var sheets = google.sheets('v4');
+
+function createSheet(authClient) {
+  var request = {
+    // The spreadsheet to apply the updates to.
+    spreadsheetId: '1e3JHbtMhLxuERXuUKqb39wTvJlqw_9eM40HaFcCasws',
+
+    resource: {
+      // A list of updates to apply to the spreadsheet.
+      // Requests will be applied in the order they are specified.
+      // If any request is not valid, no requests will be applied.
+      requests: [
+          {
+      "addSheet": {
+        "properties": {
+          "title": "Deposits",
+          "gridProperties": {
+            "rowCount": 20,
+            "columnCount": 12
+          },
+          "tabColor": {
+            "red": 1.0,
+            "green": 0.3,
+            "blue": 0.4
+          }
+        }
       }
     }
+      ],  // TODO: Update placeholder value.
+
+      // TODO: Add desired properties to the request body.
+    },
+
+    auth: authClient
+  };
+
+  sheets.spreadsheets.batchUpdate(request, function(err, response) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    // TODO: Change code below to process the `response` object:
+    console.log(JSON.stringify(response, null, 2));
   });
 }
+   
