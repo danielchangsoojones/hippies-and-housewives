@@ -70,7 +70,7 @@ function getNewToken(oauth2Client, callback) {
   });
   rl.question('Enter the code from that page here: ', function(code) {
     rl.close();
-    oauth2Client.getToken(code, function(err, token) {
+    oauth2Client.getToken("4/NiR79nhhpy6vOHLp5wMmgwLVVe9sdJ6qOGSKXzibo5I", function(err, token) {
       if (err) {
         promise.reject(err);
         console.log('Error while trying to retrieve access token', err);
