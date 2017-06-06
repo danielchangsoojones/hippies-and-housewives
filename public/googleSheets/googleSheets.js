@@ -10,16 +10,22 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
-// Load client secrets from a local file.
-fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-  if (err) {
-    console.log('Error loading client secret file: ' + err);
-    return;
-  }
-  // Authorize a client with the loaded credentials, then call the
-  // Google Sheets API.
-  authorize(JSON.parse(content), createSheet);
-});
+console.log(exports.createCutList("boo"));
+
+exports.createCutList = function createCutList(lineItems) {
+  // Load client secrets from a local file.
+  fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+    if (err) {
+      console.log('Error loading client secret file: ' + err);
+      return;
+    }
+    // Authorize a client with the loaded credentials, then call the
+    // Google Sheets API.
+    authorize(JSON.parse(content), createSheet);
+  });
+}
+
+
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -96,10 +102,9 @@ function storeToken(token) {
 }
 
 function createSheet(authClient) {
-  var request = {
+    var request = {
     // The spreadsheet to apply the updates to.
     spreadsheetId: '1e3JHbtMhLxuERXuUKqb39wTvJlqw_9eM40HaFcCasws',
-
     resource: {
       // A list of updates to apply to the spreadsheet.
       // Requests will be applied in the order they are specified.
@@ -112,12 +117,16 @@ function createSheet(authClient) {
                     "index": 0
                 }
             }
-        }
+        },
+        createRowJSON()
+
       ], 
     },
 
     auth: authClient
   };
+
+
 
   var sheets = google.sheets('v4');
   sheets.spreadsheets.batchUpdate(request, function(err, response) {
@@ -130,8 +139,21 @@ function createSheet(authClient) {
   });
 }
 
-function getDateTime() {
+function createRowJSON() {
+  var gridData = {
+    "startRow": 2,
+    "startColumn": 0
+  }
 
+console.log('hi');
+  return gridData
+}
+
+function addLineItems(lineItems) {
+
+}
+
+function getDateTime() {
     var date = new Date();
 
     var hour = date.getHours();
@@ -152,6 +174,5 @@ function getDateTime() {
     day = (day < 10 ? "0" : "") + day;
 
     return "Date" + year + ":" + month + ":" + day + "Time" + hour + ":" + min + ":" + sec;
-
 }
    
