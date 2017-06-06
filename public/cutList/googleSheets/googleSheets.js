@@ -9,9 +9,11 @@ var initializeParse = require("../../resources/initializeParse.js");
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/drive'];
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
+// var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
+//     process.env.USERPROFILE) + '/.credentials/';
+var TOKEN_DIR = "./token"
+// var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
+var TOKEN_PATH = TOKEN_DIR + "/token.json";
 
 var lineItemsToCut = [];
 var promise = new Parse.Promise();
@@ -60,7 +62,7 @@ function authorize(credentials, callback) {
  */
 function getNewToken(oauth2Client, callback) {
   var authUrl = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
+    access_type: 'online',
     scope: SCOPES
   });
   console.log('Authorize this app by visiting this url: ', authUrl);
