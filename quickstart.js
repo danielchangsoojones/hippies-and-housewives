@@ -29,7 +29,6 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-    console.log(credentials.installed);
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
   var redirectUrl = credentials.installed.redirect_uris[0];
@@ -96,13 +95,6 @@ function storeToken(token) {
   console.log('Token stored to ' + TOKEN_PATH);
 }
 
-function listMajors(auth) {
-  
-}
-
-
-var sheets = google.sheets('v4');
-
 function createSheet(authClient) {
   var request = {
     // The spreadsheet to apply the updates to.
@@ -113,38 +105,53 @@ function createSheet(authClient) {
       // Requests will be applied in the order they are specified.
       // If any request is not valid, no requests will be applied.
       requests: [
-          {
-      "addSheet": {
-        "properties": {
-          "title": "Deposits",
-          "gridProperties": {
-            "rowCount": 20,
-            "columnCount": 12
-          },
-          "tabColor": {
-            "red": 1.0,
-            "green": 0.3,
-            "blue": 0.4
-          }
+        {
+            "addSheet": {
+                "properties": {
+                    "title": getDateTime(),
+                    "index": 0
+                }
+            }
         }
-      }
-    }
-      ],  // TODO: Update placeholder value.
-
-      // TODO: Add desired properties to the request body.
+      ], 
     },
 
     auth: authClient
   };
 
+  var sheets = google.sheets('v4');
   sheets.spreadsheets.batchUpdate(request, function(err, response) {
     if (err) {
       console.log(err);
       return;
     }
 
-    // TODO: Change code below to process the `response` object:
     console.log(JSON.stringify(response, null, 2));
   });
+}
+
+function getDateTime() {
+
+    var date = new Date();
+
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+
+    var year = date.getFullYear();
+
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+
+    return "Date" + year + ":" + month + ":" + day + "Time" + hour + ":" + min + ":" + sec;
+
 }
    
