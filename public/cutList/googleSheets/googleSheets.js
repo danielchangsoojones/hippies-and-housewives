@@ -45,8 +45,8 @@ function authorize(credentials, callback) {
   let token = require("../testing/token/token.json");
   console.log(token);
 
-  oauth2Client.credentials = JSON.parse(token);
-      callback(oauth2Client);
+  oauth2Client.credentials = token;
+  callback(oauth2Client);
 
   // fs.readFile(TOKEN_PATH, function(err, token) {
   //   if (err) {
