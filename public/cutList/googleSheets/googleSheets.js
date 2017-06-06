@@ -2,6 +2,7 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+var sheets = google.sheets('v4');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
@@ -10,10 +11,12 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
-console.log(exports.createCutList("boo"));
+var lineItems = [];
 
 exports.createCutList = function createCutList(lineItems) {
+  console.log("running cutlist");
   // Load client secrets from a local file.
+  lineItems = lineItems;
   fs.readFile('client_secret.json', function processClientSecrets(err, content) {
     if (err) {
       console.log('Error loading client secret file: ' + err);
@@ -24,6 +27,9 @@ exports.createCutList = function createCutList(lineItems) {
     authorize(JSON.parse(content), createSheet);
   });
 }
+
+//TODO: remove this
+console.log(exports.createCutList("hiii"));
 
 
 
@@ -118,18 +124,52 @@ function createSheet(authClient) {
                 }
             }
         },
-        createRowJSON()
-
       ], 
     },
 
     auth: authClient
   };
 
-
-
-  var sheets = google.sheets('v4');
   sheets.spreadsheets.batchUpdate(request, function(err, response) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    console.log(JSON.stringify(response, null, 2));
+    var json = JSON.parse(JSON.stringify(response, null, 2));
+
+    appendRows(authClient, response);
+  });
+}
+
+function appendRows(authClient, response) {
+  let sheetTitle = response.replies[0].addSheet.properties.title
+  let lineItemRows = createLineItemRowValues();
+  let numOfRows = lineItemRows.length;
+   var request = {
+    // The ID of the spreadsheet to update.
+    spreadsheetId: '1e3JHbtMhLxuERXuUKqb39wTvJlqw_9eM40HaFcCasws', 
+
+    // The A1 notation of a range to search for a logical table of data.
+    // Values will be appended after the last row of the table.
+    range: sheetTitle +  "!A1:D" + numOfRows,
+
+    // How the input data should be interpreted.
+    valueInputOption: 'USER_ENTERED', 
+
+    // How the input data should be inserted.
+    insertDataOption: 'INSERT_ROWS', 
+
+    resource: {
+      // TODO: Add desired properties to the request body.
+      "values": createLineItemRowValues()
+    },
+
+    auth: authClient
+  };
+
+  sheets.spreadsheets.values.append(request, function(err, response) {
     if (err) {
       console.log(err);
       return;
@@ -139,19 +179,23 @@ function createSheet(authClient) {
   });
 }
 
-function createRowJSON() {
-  var gridData = {
-    "startRow": 2,
-    "startColumn": 0
+function createLineItemRowValues() {
+  let lineItemArray = [];
+
+  //If you add/minus a column that you have to update the range to query because it will be off.
+  let headerRow = ["Line Item ID", "Item Title", "Size", "Order ID"];
+  lineItemArray.push(headerRow);
+
+  for (var i = 0; i < lineItems.length; i++) {
+    let lineItem = lineItems[i];
+    let order = lineItem.get("order");
+    let lineItemJSON = [lineItem.get("shopifyLineItemID"), lineItem.get("title"), lineItem.get("variant_title"), order.get("shopifyID")];
+    lineItemArray.push(lineItemJSON);
   }
 
-console.log('hi');
-  return gridData
+  return lineItemArray;
 }
 
-function addLineItems(lineItems) {
-
-}
 
 function getDateTime() {
     var date = new Date();
@@ -173,6 +217,7 @@ function getDateTime() {
     var day  = date.getDate();
     day = (day < 10 ? "0" : "") + day;
 
-    return "Date" + year + ":" + month + ":" + day + "Time" + hour + ":" + min + ":" + sec;
+    //IF YOU USE SEMICOLONS IN THE SHEET TITLE, THEN IT DOESN'T PARSE THE RANGE CORRECTLY
+    return "Date" + year + "-" + month + "-" + day + "Time" + hour + "-" + min + "-" + sec;
 }
    
