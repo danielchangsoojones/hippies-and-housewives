@@ -42,14 +42,20 @@ function authorize(credentials, callback) {
   var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
   // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, function(err, token) {
-    if (err) {
-      getNewToken(oauth2Client, callback);
-    } else {
-      oauth2Client.credentials = JSON.parse(token);
+  let token = require("../testing/token/token.json");
+  console.log(token);
+
+  oauth2Client.credentials = JSON.parse(token);
       callback(oauth2Client);
-    }
-  });
+
+  // fs.readFile(TOKEN_PATH, function(err, token) {
+  //   if (err) {
+  //     getNewToken(oauth2Client, callback);
+  //   } else {
+  //     oauth2Client.credentials = JSON.parse(token);
+  //     callback(oauth2Client);
+  //   }
+  // });
 }
 
 /**
