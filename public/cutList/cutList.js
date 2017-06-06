@@ -7,22 +7,41 @@ A label will have: Shopify Line Item ID, Shopify Order ID (i.e. #HippiesAndHouse
 var Parse = require('parse/node');
 var initializeParse = require("../resources/initializeParse.js");
 
-exports.getCutList() = function getCutList() {
+exports.getCutList = function getCutList() {
     var promise = new Parse.Promise();
 
-//TODO: can I just do for a promise query.find().then(createGoogleSheet(lineItems))
-    let query = createCutListQuery()
+    findLineItemsToCut().then(function(success) {
+        createGoogleSheet(lineItems).then(function(success) {
+            if (success) {
+                promise.resolve(lineItems);
+            } else {
+                promise.reject("failed to save to Google sheets");
+            }
+        }, function (error) {
+            promise.reject(error);
+        });
+    }, function(error) {
+        console.log(error);
+    });
+
+    return promise;
+}
+
+function findLineItemsToCut() {
+    var promise = new Parse.Promise();
+
+    var LineItem = Parse.Object.extend("LineItem");
+    var query = new Parse.Query(LineItem);
+    query.equalTo("state", "open");
+    query.notEqualTo("initiated", true);
+    query.doesNotExist("inventory");
+    //get the oldest items because we want to cut those first.
+    query.ascending("createdAt");
+
     query.find({
       success: function(lineItems) {
-          createGoogleSheet(lineItems).then(function(success) {
-              if (success) {
-                  promise.resolve(lineItems);
-              } else {
-                  promise.reject("failed to save to Google sheets");
-              }
-          }, function (error) {
-              promise.reject(error);
-          })
+          console.log(lineItems);
+          promise.resolve(lineItems);
       },
       error: function(error) {
           promise.reject(error);
@@ -30,16 +49,6 @@ exports.getCutList() = function getCutList() {
     });
 
     return promise;
-}
-
-function createCutListQuery() {
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
-    query.equalTo("state", "open");
-    query.equalTo("initiated", false)
-    query.doesNotExist("inventory");
-
-    return query
 }
 
 function createGoogleSheet(lineItems) {
