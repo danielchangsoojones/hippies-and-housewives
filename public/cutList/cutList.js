@@ -38,6 +38,7 @@ function findLineItemsToCut() {
     //get the oldest items because we want to cut those first.
     query.ascending("createdAt");
     query.include("order");
+    query.limit(60);
 
     query.find({
       success: function(lineItems) {
@@ -57,10 +58,20 @@ function createGoogleSheet(lineItems) {
     var GoogleSheets = require("./googleSheets/googleSheets.js");    
     GoogleSheets.createCutList(lineItems).then(function(success) {
         promise.resolve(success);
+        saveAllLineItemsAsInitiated(lineItems);
     }, function(error) {
         promise.resolve(error);
     })
 
     return promise;
+}
+
+function saveAllLineItemsAsInitiated(lineItems) {
+    for (var i = 0; i < lineItems.length; i++) {
+        let lineItem = lineItems[i];
+        lineItem.set("isInitiated", true);
+    }
+
+    Parse.Object.saveAll(lineItems);
 }
 
