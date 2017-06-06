@@ -3,6 +3,8 @@ var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var sheets = google.sheets('v4');
+var Parse = require('parse/node');
+var initializeParse = require("../../resources/initializeParse.js");
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
@@ -12,12 +14,15 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
 var lineItemsToCut = [];
+var promise = new Parse.Promise();
 
 exports.createCutList = function createCutList(lineItemsToCut) {
-  console.log("running cutlist");
+  console.log("sending to the google sheet");
   lineItems = lineItemsToCut;
   let secretJSON = require("./client_secret.json");
   authorize(secretJSON, createSheet);
+
+  return promise;
 }
 
 /**
@@ -67,6 +72,7 @@ function getNewToken(oauth2Client, callback) {
     rl.close();
     oauth2Client.getToken(code, function(err, token) {
       if (err) {
+        promise.reject(err);
         console.log('Error while trying to retrieve access token', err);
         return;
       }
@@ -119,7 +125,7 @@ function createSheet(authClient) {
 
   sheets.spreadsheets.batchUpdate(request, function(err, response) {
     if (err) {
-      console.log(err);
+      promise.reject(err);
       return;
     }
 
@@ -158,11 +164,12 @@ function appendRows(authClient, response) {
 
   sheets.spreadsheets.values.append(request, function(err, response) {
     if (err) {
-      console.log(err);
+      promise.reject(err);
       return;
     }
 
-    console.log(JSON.stringify(response, null, 2));
+    let success = true; 
+    promise.resolve(success);
   });
 }
 
@@ -176,7 +183,7 @@ function createLineItemRowValues() {
   for (var i = 0; i < lineItems.length; i++) {
     let lineItem = lineItems[i];
     let order = lineItem.get("order");
-    let lineItemJSON = [lineItem.get("shopifyLineItemID"), lineItem.get("title"), lineItem.get("variant_title"), order.get("shopifyID")];
+    let lineItemJSON = [lineItem.get("shopifyLineItemID"), lineItem.get("title"), lineItem.get("variant_title"), order.get("name")];
     lineItemArray.push(lineItemJSON);
   }
 

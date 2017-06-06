@@ -37,6 +37,7 @@ function findLineItemsToCut() {
     query.doesNotExist("inventory");
     //get the oldest items because we want to cut those first.
     query.ascending("createdAt");
+    query.include("order");
 
     query.find({
       success: function(lineItems) {
