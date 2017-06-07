@@ -28,11 +28,11 @@ exports.createCutList = function createCutList(lineItemsToCut) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  var oauth2Client = exports.getAuthClient();
+  var oauth2Client = exports.getAuthClient(credentials);
 
   // Get previously stored token. Daniel Jones had to edit the normal Google Sheets Quickstart to just pull a saved token on our server since
   //We only need one token because we only access one google account. Normally you would save tokens to your database for each user.
-  let token = require("../googleSheets/token/token.json");
+  let token = require("./token/token.json");
   oauth2Client.credentials = token;
   callback(oauth2Client);
 }
@@ -72,9 +72,12 @@ function createSheet(authClient) {
 
   sheets.spreadsheets.batchUpdate(request, function(err, response) {
     if (err) {
+      console.log(err);
       promise.reject(err);
       return;
     }
+
+    
 
     console.log(JSON.stringify(response, null, 2));
     var json = JSON.parse(JSON.stringify(response, null, 2));
