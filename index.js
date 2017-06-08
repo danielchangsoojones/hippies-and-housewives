@@ -7,6 +7,7 @@ var path = require('path');
 var bodyParser = require("body-parser");
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
+console.log(process.env.HI);
 
 if (!databaseUri) {
   console.log('DATABASE_URI not specified, falling back to localhost.');
