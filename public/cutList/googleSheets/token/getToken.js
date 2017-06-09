@@ -5,11 +5,7 @@ var googleAuth = require('google-auth-library');
 var TOKEN_DIR = "./"
 var TOKEN_PATH = TOKEN_DIR + "token.json";
 
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
-//SCOPES are setting permissions like Read Only, Read And Write, ect.
-//This scope has access to every file in the google drive account. Maximum scope.
-var SCOPES = ['https://www.googleapis.com/auth/drive'];
+console.log(generateToken());
 
 function generateToken() {
     let GoogleSheet = require("../googleSheets.js");
@@ -25,8 +21,14 @@ function generateToken() {
  * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
  */
 function getNewToken(oauth2Client) {
+  // If modifying these scopes, delete your previously saved credentials
+  // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
+  //SCOPES are setting permissions like Read Only, Read And Write, ect.
+  //This scope has access to every file in the google drive account. Maximum scope.
+  var SCOPES = ['https://www.googleapis.com/auth/drive'];
+
   var authUrl = oauth2Client.generateAuthUrl({
-    access_type: 'online',
+    access_type: 'offline',
     scope: SCOPES
   });
   console.log('Authorize this app by visiting this url: ', authUrl);
