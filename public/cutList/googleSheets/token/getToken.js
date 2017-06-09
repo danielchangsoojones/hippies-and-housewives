@@ -5,7 +5,7 @@ var googleAuth = require('google-auth-library');
 var TOKEN_DIR = "./"
 var TOKEN_PATH = TOKEN_DIR + "token.json";
 
-console.log(generateToken());
+
 
 function generateToken() {
     let GoogleSheet = require("../googleSheets.js");

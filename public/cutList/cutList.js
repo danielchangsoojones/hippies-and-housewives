@@ -72,6 +72,8 @@ function saveAllLineItemsAsInitiated(lineItems) {
         lineItem.set("isInitiated", true);
     }
 
+    console.log(lineItems);
+
     Parse.Object.saveAll(lineItems);
 }
 
