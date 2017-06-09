@@ -38,7 +38,6 @@ Parse.Cloud.define("getPickList", function(req, res) {
 });
 
 Parse.Cloud.define("createCutList", function(req, res) {
-  console.log("creating cut list");
   let CutList = require("../public/cutList/cutList.js");
   CutList.getCutList().then(function(results) {
     res.success("success");
