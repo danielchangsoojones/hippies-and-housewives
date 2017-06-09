@@ -1,6 +1,5 @@
 var request = require('request');
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 
 exports.findProductVariant = function findProductVariant(shopifyVariantID, variantTitle, productTitle) {
     var promise = new Parse.Promise();

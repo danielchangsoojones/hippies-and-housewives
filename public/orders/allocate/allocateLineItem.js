@@ -1,5 +1,4 @@
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 
 exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
     var promise = new Parse.Promise();

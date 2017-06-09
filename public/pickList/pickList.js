@@ -5,7 +5,6 @@ when it is 100% capable of being filled. This means that every order chosen for 
 pick list will have all of its line items ready.
 */
 var Parse = require('parse/node');
-var initializeParse = require("../resources/initializeParse.js");
 
 exports.createPickList = function createPickList() {
     var promise = new Parse.Promise();

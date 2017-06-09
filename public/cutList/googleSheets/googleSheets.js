@@ -4,7 +4,6 @@ var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var sheets = google.sheets('v4');
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 //Our cut list is connected to the hippiesresources@gmail.com account for the Daniel Magic Cut List.
 var spreadSheetID = "1kk8S8QUNUiIlYNBpQJ9O3L-ZXE-_BIVYjPmwqaIGmVw"
 

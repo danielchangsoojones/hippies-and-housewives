@@ -1,5 +1,4 @@
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 let Fabric = require("../fabric/getFabric.js");
 
 //MARK: upload new product

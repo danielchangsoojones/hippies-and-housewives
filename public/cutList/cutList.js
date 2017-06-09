@@ -5,7 +5,6 @@ The cut list then gets sent to a google sheet where Andrew can print out labels 
 A label will have: Shopify Line Item ID, Shopify Order ID (i.e. #HippiesAndHousewives2048), item name, size, quantity
 */
 var Parse = require('parse/node');
-// var initializeParse = require("../resources/initializeParse.js");
 
 exports.getCutList = function getCutList() {
     var promise = new Parse.Promise();
@@ -71,8 +70,6 @@ function saveAllLineItemsAsInitiated(lineItems) {
         let lineItem = lineItems[i];
         lineItem.set("isInitiated", true);
     }
-
-    console.log(lineItems);
 
     Parse.Object.saveAll(lineItems);
 }

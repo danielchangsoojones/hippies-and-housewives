@@ -1,5 +1,4 @@
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 
 exports.saveInventory = function saveInventory(productTypeObjectID, size, quantity) {
     var promise = new Parse.Promise();

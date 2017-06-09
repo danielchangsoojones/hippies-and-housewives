@@ -1,5 +1,4 @@
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 
 //TODO: we want fabric to be a single pointer. Right now, fabric points all to an individual pointer, so we have multiple Innocence, etc.
 exports.getFabric = function getFabric(productJSON) {

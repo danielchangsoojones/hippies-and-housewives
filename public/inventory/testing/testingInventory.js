@@ -1,5 +1,4 @@
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 
 function testAllocation(objectID) {
     var Inventory = Parse.Object.extend("Inventory");

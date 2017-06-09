@@ -1,5 +1,4 @@
 var Parse = require('parse/node');
-var initializeParse = require("../../resources/initializeParse.js");
 var OrderHelper = require("./orders.js");
 
 exports.updateOrder = function updateOrder(orderJSON) {
