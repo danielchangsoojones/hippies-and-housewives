@@ -46,7 +46,7 @@ Parse.Cloud.define("createCutList", function(req, res) {
   });
 });
 
-Parse.Cloud.define("archiveLineItems", function(req, res) {
+Parse.Cloud.define("tryLineItemsArchive", function(req, res) {
   let orderID = req.params.orderID;
   let Archive = require("../public/orders/archive/archiveOrder.js");
   Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {

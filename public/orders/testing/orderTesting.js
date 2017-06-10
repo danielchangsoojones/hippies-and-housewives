@@ -95,3 +95,14 @@ function deleteDuplicateOrders(duplicateOrders) {
         });
     }
 }
+
+
+
+function archiveOrder(orderID) {
+    let Archive = require("../archive/archiveOrder.js");
+    Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {
+        console.log(lineItems);
+    }, function(error) {
+        console.log(error);
+    });
+}
