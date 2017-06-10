@@ -1,10 +1,14 @@
 // Example express application adding the parse-server module to expose Parse
 // compatible API routes.
-
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 var path = require('path');
 var bodyParser = require("body-parser");
+
+var Parse = require('parse/node');
+Parse.initialize(process.env.APP_ID, process.env.MASTER_KEY);
+Parse.masterKey = process.env.MASTER_KEY;
+Parse.serverURL = process.env.SERVER_URL;
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
@@ -44,7 +48,6 @@ app.get('/', function(req, res) {
 
 //MARK: Order paths
 var orderJS = require("./public/orders/js/orders.js");
-var initializeParse = require("./public/resources/initializeParse.js");
 
 app.post('/newOrder', function(req, res) {
   console.log(process.env.APP_ID);
