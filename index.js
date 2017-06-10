@@ -44,6 +44,7 @@ app.get('/', function(req, res) {
 
 //MARK: Order paths
 var orderJS = require("./public/orders/js/orders.js");
+var initializeParse = require("./public/resources/initializeParse.js");
 
 app.post('/newOrder', function(req, res) {
   console.log(process.env.APP_ID);
