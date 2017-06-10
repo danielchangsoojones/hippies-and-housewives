@@ -46,6 +46,7 @@ app.get('/', function(req, res) {
 var orderJS = require("./public/orders/js/orders.js");
 
 app.post('/newOrder', function(req, res) {
+  console.log(process.env.APP_ID);
   let newOrder = req.body;
   console.log("recieved new webhook order creation for:" + newOrder.id);
   orderJS.uploadNewOrder(newOrder);
