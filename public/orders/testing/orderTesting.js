@@ -1,7 +1,5 @@
 var request = require('request');
 
-console.log(getPracticeOrder());
-
 //MARK: mass saving orders
 //start off at page 1 to get the entire orders database
 function saveAllOrders(page) {

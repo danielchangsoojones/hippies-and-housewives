@@ -1,3 +1,5 @@
+console.log(process.env.APP_ID);
+
 Parse.Cloud.define("searchProduct", function(req, res) {
   let searchText = req.params.searchText.toLowerCase();
   var ProductType = Parse.Object.extend("ProductType");
