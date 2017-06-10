@@ -46,6 +46,16 @@ Parse.Cloud.define("createCutList", function(req, res) {
   });
 });
 
+Parse.Cloud.define("archiveLineItems", function(req, res) {
+  let orderID = req.params.orderID;
+  let Archive = require("../public/orders/archive/archiveOrder.js");
+  Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {
+    res.success("success");
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");
