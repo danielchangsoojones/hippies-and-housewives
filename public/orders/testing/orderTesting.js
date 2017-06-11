@@ -2,8 +2,6 @@ var request = require('request');
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
-console.log(getDuplicateOrder());
-
 //MARK: mass saving orders
 //start off at page 1 to get the entire orders database
 function saveAllOrders(page) {
@@ -59,7 +57,7 @@ function getDuplicateOrder() {
       success: function(orders) {
           for (var i = 0; i < orders.length; i++) {
               let order = orders[i];
-              let shopifyOrderID = order.get("shopifyOrderID");
+              let shopifyOrderID = order.get("shopifyID");
               if (alreadyUsedOrderIDs.indexOf(shopifyOrderID) == -1) {
                   //first time seeing this order number
                   alreadyUsedOrderIDs.push(shopifyOrderID);
@@ -68,8 +66,7 @@ function getDuplicateOrder() {
                   duplicateOrders.push(order);
               }
           }
-
-          console.log(duplicateOrders);
+          deleteDuplicateOrders(duplicateOrders);
       },
       error: function(error) {
           console.log(error);
@@ -87,7 +84,7 @@ function deleteDuplicateOrders(duplicateOrders) {
 
         query.find({
             success: function(lineItems) {
-                //TODO: destroy all line items and the order
+                //TODO: destroy all line items and the order?
             },
             error: function(error) {
                 console.log(error);
@@ -96,7 +93,7 @@ function deleteDuplicateOrders(duplicateOrders) {
     }
 }
 
-
+console.log(archiveOrder("5Ngmi6EXnQ"));
 
 function archiveOrder(orderID) {
     let Archive = require("../archive/archiveOrder.js");
