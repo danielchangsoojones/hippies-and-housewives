@@ -93,8 +93,6 @@ function deleteDuplicateOrders(duplicateOrders) {
     }
 }
 
-console.log(archiveOrder("5Ngmi6EXnQ"));
-
 function archiveOrder(orderID) {
     let Archive = require("../archive/archiveOrder.js");
     Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {
