@@ -66,3 +66,18 @@ Parse.Cloud.beforeSave("ProductType", function(request, response) {
 
   response.success();
 });
+
+Parse.Cloud.beforeSave("LineItem", function(request, response) {
+  let isCut = request.object.get("isCut");
+  let isSewn = request.object.get("isSewn");
+  let isPackaged = request.object.get("isPackaged");
+  let isPicked = request.object.get("isPicked");
+  let isShipped = request.object.get("isShipped");
+
+  if (isCut || isSewn || isPackaged || isPicked || isShipped) {
+    //if it has been marked through the process, then make sure to set the item as initiated
+    request.object.set("isInitiated", true);
+  }
+
+  response.success();
+});

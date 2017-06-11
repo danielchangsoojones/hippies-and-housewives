@@ -101,3 +101,55 @@ function archiveOrder(orderID) {
         console.log(error);
     });
 }
+
+// getLineItemsForOrder();
+
+function getLineItemsForOrder() {
+    var readline = require('readline');
+    var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  rl.question('Enter the style here: ', function(style) {
+
+    rl.question('Enter the size here: ', function(size) {
+        rl.close();
+
+        var LineItem = Parse.Object.extend("LineItem");
+        var query = new Parse.Query(LineItem);
+        query.notEqualTo("isCut", true);
+        query.notEqualTo("isSewn",true);
+        query.notEqualTo("isInitiated", true);
+        query.notEqualTo("isPackaged", true);
+        query.notEqualTo("isPicked", true);
+        query.notEqualTo("isShipped", true);
+        query.equalTo("state", "open");
+
+    var ProductVariant = Parse.Object.extend("ProductVariant");
+    var innerQuery = new Parse.Query(ProductVariant);
+    var Product = Parse.Object.extend("ProductType");
+    var productQuery = new Parse.Query(Product);
+    productQuery.startsWith("lowercaseTitle", style.toLowerCase());
+    innerQuery.equalTo("size", size.toUpperCase());
+    innerQuery.matchesQuery("product", productQuery);
+    query.matchesQuery("productVariant", innerQuery);
+
+
+    query.first({
+      success: function(lineItem) {
+        if (lineItem == undefined) {
+            console.log("couldn't find a match");
+        } else {
+            console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItem.get("shopifyLineItemID"));
+        }
+      },
+      error: function(error) {
+          console.log(error);
+      }
+    });
+    });
+
+
+    
+  });
+}
