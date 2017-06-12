@@ -124,24 +124,31 @@ function findMatchingLineItem() {
         query.notEqualTo("isPackaged", true);
         query.notEqualTo("isPicked", true);
         query.notEqualTo("isShipped", true);
-        query.equalTo("state", "open");
 
     var ProductVariant = Parse.Object.extend("ProductVariant");
     var innerQuery = new Parse.Query(ProductVariant);
     var Product = Parse.Object.extend("ProductType");
     var productQuery = new Parse.Query(Product);
-    productQuery.startsWith("lowercaseTitle", style.toLowerCase());
-    innerQuery.equalTo("size", size.toUpperCase());
+    productQuery.startsWith("lowercaseTitle", style.toLowerCase().trim());
+    innerQuery.equalTo("size", size.toUpperCase().trim());
     innerQuery.matchesQuery("product", productQuery);
     query.matchesQuery("productVariant", innerQuery);
+    query.include("order");
 
-
-    query.first({
-      success: function(lineItem) {
-        if (lineItem == undefined) {
-            console.log("couldn't find a match");
+    query.find({
+      success: function(lineItems) {
+        if (lineItems.length == 0) {
+            console.log("couldn't find a match, please try re-typing and alert Daniel if that fails");
         } else {
-            saveAsCut(lineItem);
+            for (var i = 0; i < lineItems.length; i++) {
+                let lineItem = lineItems[i];
+                if (lineItem.get("state") == "open") {
+                    saveAsCut(lineItem);
+                    return;
+                }
+            }
+
+            console.log("no available line items, please put it in the extra cut bucket");
         }
       },
       error: function(error) {
@@ -159,7 +166,10 @@ function saveAsCut(lineItem) {
     lineItem.set("isCut", true);
     lineItem.save(null, {
             success: function(lineItem) {
+                console.log("successfully saved cut for:")
                 let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
+                let orderID = lineItem.get("order").get("name");
+                console.log("OrderID: "  + orderID);
                 console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
             },
             error: function(error) {
