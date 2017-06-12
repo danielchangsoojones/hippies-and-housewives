@@ -1,6 +1,7 @@
 var request = require('request');
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
+var readline = require('readline');
 
 //MARK: mass saving orders
 //start off at page 1 to get the entire orders database
@@ -102,10 +103,8 @@ function archiveOrder(orderID) {
     });
 }
 
-// getLineItemsForOrder();
-
-function getLineItemsForOrder() {
-    var readline = require('readline');
+//MARK: to integrate the software with our pipeline
+function findMatchingLineItem() {
     var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -151,5 +150,43 @@ function getLineItemsForOrder() {
 
 
     
+  });
+}
+
+getLineItemsForOrder();
+
+function getLineItemsForOrder() {
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  rl.question('Enter the orderID here: ', function(shopifyOrderID) {
+    rl.close();
+    var LineItem = Parse.Object.extend("LineItem");
+    var query = new Parse.Query(LineItem);
+
+    var Order = Parse.Object.extend("Order");
+    var innerQuery = new Parse.Query(Order);
+    let name = "#HippiesandHousewives" + shopifyOrderID + "<3";
+    console.log(name);
+    innerQuery.equalTo("name", name);
+    query.matchesQuery("order", innerQuery);
+
+    query.find({
+      success: function(lineItems) {
+        if (lineItems.length == 0) {
+            console.log("couldn't find a match");
+        } else {
+            for (var i = 0; i < lineItems.length; i++) {
+                let lineItem = lineItems[i];
+                console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItem.get("shopifyLineItemID"));
+            }
+        }
+      },
+      error: function(error) {
+          console.log(error);
+      }
+    });
   });
 }
