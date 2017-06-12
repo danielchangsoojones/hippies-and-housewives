@@ -141,8 +141,7 @@ function findMatchingLineItem() {
         if (lineItem == undefined) {
             console.log("couldn't find a match");
         } else {
-            let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
-            console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
+            saveAsCut(lineItem);
         }
       },
       error: function(error) {
@@ -154,6 +153,19 @@ function findMatchingLineItem() {
 
     
   });
+}
+
+function saveAsCut(lineItem) {
+    lineItem.set("isCut", true);
+    lineItem.save(null, {
+            success: function(lineItem) {
+                let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
+                console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+    });
 }
 
 function addIdDashes(id) {
