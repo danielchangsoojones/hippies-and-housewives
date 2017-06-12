@@ -163,8 +163,11 @@ var rl = readline.createInterface({
   });
 
   rl.question('Enter the orderID here: ', function(shopifyOrderID) {
-    rl.close();
-    var LineItem = Parse.Object.extend("LineItem");
+    rl.question('Enter the style here: ', function(style) {
+        rl.question('Enter the size here: ', function(size) {
+            rl.close();
+
+             var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
 
     var Order = Parse.Object.extend("Order");
@@ -173,21 +176,39 @@ var rl = readline.createInterface({
     innerQuery.equalTo("name", name);
     query.matchesQuery("order", innerQuery);
 
-    query.find({
-      success: function(lineItems) {
-        if (lineItems.length == 0) {
+     var ProductVariant = Parse.Object.extend("ProductVariant");
+    var variantQuery = new Parse.Query(ProductVariant);
+    var Product = Parse.Object.extend("ProductType");
+    var productQuery = new Parse.Query(Product);
+    productQuery.startsWith("lowercaseTitle", style.toLowerCase());
+    variantQuery.equalTo("size", size.toUpperCase());
+    variantQuery.matchesQuery("product", productQuery);
+    query.matchesQuery("productVariant", variantQuery);
+
+    query.first({
+      success: function(lineItem) {
+        if (lineItem == undefined) {
             console.log("couldn't find a match");
         } else {
-            for (var i = 0; i < lineItems.length; i++) {
-                let lineItem = lineItems[i];
-                let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
-                console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
-            }
+                lineItem.set("isPackaged", true);
+                lineItem.save(null, {
+                    success: function(lineItem) {
+                        console.log("successfully saved packaging for:");
+                        let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
+                        console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
         }
       },
       error: function(error) {
           console.log(error);
       }
+    });
+            
+        });
     });
   });
 }
