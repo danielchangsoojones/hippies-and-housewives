@@ -139,7 +139,8 @@ function findMatchingLineItem() {
         if (lineItem == undefined) {
             console.log("couldn't find a match");
         } else {
-            console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItem.get("shopifyLineItemID"));
+            let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
+            console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
         }
       },
       error: function(error) {
@@ -180,7 +181,8 @@ var rl = readline.createInterface({
         } else {
             for (var i = 0; i < lineItems.length; i++) {
                 let lineItem = lineItems[i];
-                console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItem.get("shopifyLineItemID"));
+                let lineItemID = addIdDashes(lineItem.get("shopifyLineItemID"));
+                console.log("LineItem: " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItemID);
             }
         }
       },
@@ -189,4 +191,10 @@ var rl = readline.createInterface({
       }
     });
   });
+}
+
+function addIdDashes(id) {
+    let str = id.toString();
+    let dashedID = str.substring(0,3) + '-' + str.substring(3, 6) + '-' + str.substring(6);
+    return dashedID;
 }
