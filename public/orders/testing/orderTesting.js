@@ -170,7 +170,6 @@ var rl = readline.createInterface({
     var Order = Parse.Object.extend("Order");
     var innerQuery = new Parse.Query(Order);
     let name = "#HippiesandHousewives" + shopifyOrderID + "<3";
-    console.log(name);
     innerQuery.equalTo("name", name);
     query.matchesQuery("order", innerQuery);
 
