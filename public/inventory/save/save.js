@@ -87,6 +87,7 @@ function findMatchingLineItem(inventory, productVariant) {
     var query = new Parse.Query(LineItem);
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("inventory");
+    query.equalTo("state", "open");
     query.notEqualTo("isInitiated", true);
     
     query.first({
