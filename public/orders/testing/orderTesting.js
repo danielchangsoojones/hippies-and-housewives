@@ -124,6 +124,7 @@ function findMatchingLineItem() {
         query.notEqualTo("isPackaged", true);
         query.notEqualTo("isPicked", true);
         query.notEqualTo("isShipped", true);
+        query.doesNotExist("inventory");
 
     var ProductVariant = Parse.Object.extend("ProductVariant");
     var innerQuery = new Parse.Query(ProductVariant);
