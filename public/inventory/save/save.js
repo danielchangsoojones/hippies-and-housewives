@@ -68,7 +68,7 @@ function allocateInventories(inventories, productVariant) {
     console.log("allocating the inventory");
     for (var i = 0; i < inventories.length; i++) {
         let inventory = inventories[i];
-        findMatchingLineItem(inventory, productVariant).then(function(lineItem) {
+        findMatchingLineItem(inventory, productVariant, i).then(function(lineItem) {
             //TODO: if you saved like 50 inventories at once, then they might get the same line item and they would jsut have all inventories allocated to the same inventory
             inventory.set("lineItem", lineItem);
             lineItem.set("inventory", inventory);
@@ -80,7 +80,7 @@ function allocateInventories(inventories, productVariant) {
     }
 }
 
-function findMatchingLineItem(inventory, productVariant) {
+function findMatchingLineItem(inventory, productVariant, itemsToSkip) {
     var promise = new Parse.Promise();
 
     var LineItem = Parse.Object.extend("LineItem");
@@ -89,6 +89,9 @@ function findMatchingLineItem(inventory, productVariant) {
     query.doesNotExist("inventory");
     query.equalTo("state", "open");
     query.notEqualTo("isInitiated", true);
+    //if someone saves 15 inventory items at once, you want to skip the ones that would be saved for the ones before it.
+    //so we don't save the same LineItem to multiple Inventories
+    query.skip(itemsToSkip);
     
     query.first({
         success: function(lineItem) {

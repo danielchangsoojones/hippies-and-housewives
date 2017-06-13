@@ -15,5 +15,3 @@ function testAllocation(objectID) {
       }
   });
 }
-
-console.log(testAllocation("OJ7MmPzarx"));
