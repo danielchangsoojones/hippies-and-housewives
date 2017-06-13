@@ -69,6 +69,7 @@ function allocateInventories(inventories, productVariant) {
     for (var i = 0; i < inventories.length; i++) {
         let inventory = inventories[i];
         findMatchingLineItem(inventory, productVariant).then(function(lineItem) {
+            //TODO: if you saved like 50 inventories at once, then they might get the same line item and they would jsut have all inventories allocated to the same inventory
             inventory.set("lineItem", lineItem);
             lineItem.set("inventory", inventory);
 
@@ -86,6 +87,7 @@ function findMatchingLineItem(inventory, productVariant) {
     var query = new Parse.Query(LineItem);
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("inventory");
+    query.notEqualTo("isInitiated", true);
     
     query.first({
         success: function(lineItem) {
