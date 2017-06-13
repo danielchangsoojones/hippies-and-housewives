@@ -148,7 +148,7 @@ function findMatchingLineItem() {
                 }
             }
 
-            console.log("no available line items, please put it in the extra cut bucket");
+            console.log("no available line items, please put it in the inventory bucket");
         }
       },
       error: function(error) {
