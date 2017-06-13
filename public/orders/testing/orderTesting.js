@@ -143,7 +143,7 @@ function findMatchingLineItem() {
             for (var i = 0; i < lineItems.length; i++) {
                 let lineItem = lineItems[i];
                 if (lineItem.get("state") == "open") {
-                    saveAsCut(lineItem);
+                    saveAsSewn(lineItem);
                     return;
                 }
             }
@@ -162,8 +162,8 @@ function findMatchingLineItem() {
   });
 }
 
-function saveAsCut(lineItem) {
-    lineItem.set("isCut", true);
+function saveAsSewn(lineItem) {
+    lineItem.set("isSewn", true);
     lineItem.save(null, {
             success: function(lineItem) {
                 console.log("successfully saved cut for:")
