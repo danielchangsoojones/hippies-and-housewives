@@ -129,7 +129,7 @@ function findMatchingLineItem() {
     var innerQuery = new Parse.Query(ProductVariant);
     var Product = Parse.Object.extend("ProductType");
     var productQuery = new Parse.Query(Product);
-    productQuery.startsWith("lowercaseTitle", style.toLowerCase().trim());
+    productQuery.equalTo("lowercaseTitle", style.toLowerCase().trim());
     innerQuery.equalTo("size", size.toUpperCase().trim());
     innerQuery.matchesQuery("product", productQuery);
     query.matchesQuery("productVariant", innerQuery);
