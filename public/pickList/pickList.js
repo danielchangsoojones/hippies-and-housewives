@@ -42,9 +42,11 @@ function findCompletedLineItems() {
 
     var orQuery = Parse.Query.or(inventoryQuery, packagedQuery);
     orQuery.include("order");
+    orQuery.limit(10000);
 
     orQuery.find({
         success: function(lineItems) {
+            // console.log(lineItems);
           promise.resolve(lineItems);
         },
         error: function(error) {
@@ -96,8 +98,6 @@ function groupLineItemsToOrders(completedLineItems) {
             orderDictionary[orderID].push(lineItem);
         }
     }
-
-    console.log(orderDictionary);
 
     return orderDictionary
 }
