@@ -82,7 +82,6 @@ function findCompletedOrders(completedLineItems) {
 function groupLineItemsToOrders(completedLineItems) {
     //{order : [line items]}
     var orderDictionary = {}
-    console.log(completedLineItems.length);
 
     for (var i = 0; i < completedLineItems.length; i++) {
         let lineItem = completedLineItems[i];
