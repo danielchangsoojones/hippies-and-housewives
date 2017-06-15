@@ -103,8 +103,6 @@ function archiveOrder(orderID) {
     });
 }
 
-findMatchingLineItem();
-
 //MARK: to integrate the software with our pipeline
 function findMatchingLineItem() {
     var rl = readline.createInterface({

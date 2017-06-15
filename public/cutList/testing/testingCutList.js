@@ -10,12 +10,15 @@ var Parse = require('parse/node');
 //     });
 // }
 
-function getZenCutList() {
+getZenCutList("Ballerina Princess");
+
+function getZenCutList(color) {
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
-    query.endsWith("title", "Midnight Garden");
+    query.endsWith("title", color);
     query.equalTo("state", "open");
     query.notEqualTo("isInitiated", true);
+    query.doesNotExist("inventory");
     query.include("order");
     
     query.find({
@@ -25,7 +28,7 @@ function getZenCutList() {
               let lineItem = lineItems[i];
               console.log(lineItem.get("shopifyLineItemID")  + ", " + lineItem.get("title") + ", " +  lineItem.get("variant_title") + ", " + lineItem.get("order").get("name"));
           }
-          console.log();
+          console.log(lineItems.length);
       },
       error: function(error) {
           res.error(error);

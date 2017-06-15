@@ -8,16 +8,14 @@ var Parse = require('parse/node');
 //     query.include("productVariant");
 //     query.first({
 //       success: function(inventory) {
-//         //   let Allocate = require("../save/save.js");
-//         //   Allocate.allocateInventories([inventory], inventory.get("productVariant"));
+//           let Allocate = require("../save/save.js");
+//           Allocate.allocateInventories([inventory], inventory.get("productVariant"));
 //       },
 //       error: function(error) {
 //           console.log(error);
 //       }
 //   });
 // }
-
-getBrokenInventory("Pure // Mimosa", "M");
 
 function getBrokenInventory(productName, size) {
   //delete the line items inventory
