@@ -11,7 +11,6 @@ var Parse = require('parse/node');
 // }
 
 
-getZenCutList();
 function getZenCutList() {
     var readline = require('readline');
 
