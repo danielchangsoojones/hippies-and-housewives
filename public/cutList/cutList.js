@@ -32,12 +32,11 @@ function findLineItemsToCut() {
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
     query.equalTo("state", "open");
-    query.notEqualTo("initiated", true);
+    query.notEqualTo("isInitiated", true);
     query.doesNotExist("inventory");
     //get the oldest items because we want to cut those first.
     query.ascending("createdAt");
     query.include("order");
-    query.limit(60);
 
     query.find({
       success: function(lineItems) {

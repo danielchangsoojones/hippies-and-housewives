@@ -10,8 +10,6 @@ var Parse = require('parse/node');
 //     });
 // }
 
-getZenCutList("Fire Engine");
-
 function getZenCutList(color) {
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
