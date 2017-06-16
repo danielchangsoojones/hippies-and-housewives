@@ -10,8 +10,21 @@ var Parse = require('parse/node');
 //     });
 // }
 
-function getZenCutList(color) {
-    var LineItem = Parse.Object.extend("LineItem");
+
+getZenCutList();
+function getZenCutList() {
+    var readline = require('readline');
+
+    var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    rl.question('Enter the color here (must perfectly match i.e. Malibu): ', function(color) {
+        rl.close();
+
+
+        var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
     query.endsWith("title", color);
     query.equalTo("state", "open");
@@ -32,5 +45,6 @@ function getZenCutList(color) {
       error: function(error) {
           res.error(error);
       }
+    });
     });
 }
