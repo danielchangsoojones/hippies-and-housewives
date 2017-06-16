@@ -57,7 +57,7 @@ function createGoogleSheet(lineItems) {
     var GoogleSheets = require("./googleSheets/googleSheets.js");    
     GoogleSheets.createCutList(lineItems).then(function(success) {
         promise.resolve(success);
-        saveAllLineItemsAsInitiated(lineItems);
+        // saveAllLineItemsAsInitiated(lineItems);
     }, function(error) {
         promise.resolve(error);
     })
@@ -68,7 +68,8 @@ function createGoogleSheet(lineItems) {
 function saveAllLineItemsAsInitiated(lineItems) {
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
-        lineItem.set("isInitiated", true);
+        //TODO: not saving line items as initiated yet because the cutting production is not good enough to do this yet. 
+        // lineItem.set("isInitiated", true);
     }
 
     Parse.Object.saveAll(lineItems);

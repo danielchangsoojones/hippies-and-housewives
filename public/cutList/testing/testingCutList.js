@@ -10,7 +10,7 @@ var Parse = require('parse/node');
 //     });
 // }
 
-getZenCutList("Ballerina Princess");
+getZenCutList("Fire Engine");
 
 function getZenCutList(color) {
     var LineItem = Parse.Object.extend("LineItem");
@@ -20,6 +20,7 @@ function getZenCutList(color) {
     query.notEqualTo("isInitiated", true);
     query.doesNotExist("inventory");
     query.include("order");
+    query.limit(10000);
     
     query.find({
       success: function(lineItems) {
