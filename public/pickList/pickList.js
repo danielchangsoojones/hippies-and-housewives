@@ -46,7 +46,6 @@ function findCompletedLineItems() {
 
     orQuery.find({
         success: function(lineItems) {
-            // console.log(lineItems);
           promise.resolve(lineItems);
         },
         error: function(error) {
