@@ -18,22 +18,17 @@ var Parse = require('parse/node');
 // }
 
 function getBrokenInventory(productName, size) {
-  //delete the line items inventory
-  //delete the inventory
-  //find Inventory via Product Title and Product Variant Size
   var Inventory = Parse.Object.extend("Inventory");
   var query = new Parse.Query(Inventory);
 
   let ProductVariant = Parse.Object.extend("ProductVariant");
   var variantQuery = new Parse.Query(ProductVariant);
   let upperCaseSize = size.toUpperCase();
-  console.log(upperCaseSize);
   variantQuery.equalTo("size", upperCaseSize);
 
   let Product = Parse.Object.extend("ProductType");
   var productQuery = new Parse.Query(Product);
   let lowercaseProductName = productName.toLowerCase();
-  console.log(lowercaseProductName);
   productQuery.equalTo("lowercaseTitle", lowercaseProductName);
   variantQuery.matchesQuery("product", productQuery);
 

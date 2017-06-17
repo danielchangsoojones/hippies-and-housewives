@@ -7,6 +7,7 @@ exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
     var query = new Parse.Query(Inventory);
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("lineItem");
+    query.notEqualTo("isDeleted", true);
 
     query.first({
         success: function(inventory) {
