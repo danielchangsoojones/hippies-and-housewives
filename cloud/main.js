@@ -61,7 +61,7 @@ Parse.Cloud.define("removeInventory", function(req, res) {
   let size = req.params.size;
   let Inventory = require("../public/inventory/remove/removeInventory.js");
   Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {    
-    res.success(Parse._encode(inventory));
+    res.success(inventory);
   }, function(error) {
     res.error(error);
   });

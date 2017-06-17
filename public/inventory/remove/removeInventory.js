@@ -4,7 +4,7 @@ exports.removeInventory = function removeInventory(productTypeObjectID, size) {
     var promise = new Parse.Promise();
 
     findInventory(productTypeObjectID, size).then(function(inventory) {
-        promise.resolve(inventory);
+        promise.resolve(Parse._encode(inventory));
     }, function(error) {
         promise.reject(error);
     });
