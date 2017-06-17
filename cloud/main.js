@@ -56,6 +56,17 @@ Parse.Cloud.define("tryLineItemsArchive", function(req, res) {
   });
 });
 
+Parse.Cloud.define("removeInventory", function(req, res) {
+  let productTypeObjectID = req.params.productTypeObjectID;
+  let size = req.params.size;
+  let Inventory = require("../public/inventory/remove/removeInventory.js");
+  Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {
+    res.success(inventory);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");
