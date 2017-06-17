@@ -89,7 +89,7 @@ function saveAllComponents(objects, order) {
 //MARK: getting order attributes
 exports.getShipmentStatus = function getShipmentStatus(orderJSON) {
     let fulfillments = orderJSON.fulfillments
-    //statuses: open, label printed, in-transit, delivered or failure. See Shopify Fulfillment Event documentation for better understanding
+    //statuses: open, label printed, internal shipping bin, in-transit, delivered or failure. See Shopify Fulfillment Event documentation for better understanding
     var shipmentStatus;
 
     if (fulfillments.length == 0 || fulfillments[0].shipment_status == null) {
