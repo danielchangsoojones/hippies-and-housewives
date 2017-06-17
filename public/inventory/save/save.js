@@ -19,15 +19,7 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
 function getProductVariant(productTypeObjectID, size) {
     var promise = new Parse.Promise();
 
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var query = new Parse.Query(ProductVariant);
-    query.equalTo("size", size);
-
-    var ProductType = Parse.Object.extend("ProductType");
-    var innerQuery = new Parse.Query(ProductType);
-    innerQuery.equalTo("objectId", productTypeObjectID);
-    query.matchesQuery("product", innerQuery);
-
+    let query = exports.createProductVariantQuery(productTypeObjectID, size);
     query.first({
         success: function(productVariant) {
             promise.resolve(productVariant);
@@ -38,6 +30,19 @@ function getProductVariant(productTypeObjectID, size) {
     });
 
     return promise;
+}
+
+exports.createProductVariantQuery = function createProductVariantQuery(productTypeObjectID, size) {
+    var ProductVariant = Parse.Object.extend("ProductVariant");
+    var query = new Parse.Query(ProductVariant);
+    query.equalTo("size", size);
+
+    var ProductType = Parse.Object.extend("ProductType");
+    var innerQuery = new Parse.Query(ProductType);
+    innerQuery.equalTo("objectId", productTypeObjectID);
+    query.matchesQuery("product", innerQuery);
+
+    return query;
 }
 
 function saveInventories(productVariant, quantity) {
