@@ -102,7 +102,3 @@ var readline = require('readline');
 //         console.log(error);
 //     });
 // }
-
-function setOrderAddresses() {
-
-}
