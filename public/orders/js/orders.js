@@ -34,7 +34,7 @@ function createOrder(orderJSON, customer) {
     order.set("name", orderJSON.name);
     order.set("orderPlaced", orderJSON.created_at);
     order.set("shipmentStatus", exports.getShipmentStatus(orderJSON));
-    order.set("shippingAddress", exports.createAddress(orderJSON));
+    order.set("shippingAddress", createAddress(orderJSON));
     return order
 }
 
@@ -141,9 +141,14 @@ function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     return false;
 }
 
-exports.createAddress = function createAddress(orderJSON) {
+createAddress = function createAddress(orderJSON) {
     let Address = require('../../models/address.js');
     let address = new Address();
+    
+    return exports.setAddress(address, orderJSON);
+}
+
+exports.setAddress = function setAddress(address, orderJSON) {
     let addressJSON = orderJSON.shipping_address;
     address.set("firstName", addressJSON.first_name);
     address.set("lastName", addressJSON.last_name);
@@ -154,6 +159,6 @@ exports.createAddress = function createAddress(orderJSON) {
     address.set("state", addressJSON.province);
     address.set("zip", addressJSON.zip);
     address.set("country", addressJSON.country);
-
+    
     return address;
 }

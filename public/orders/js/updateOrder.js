@@ -24,6 +24,7 @@ function findLineItems(orderJSON) {
     query.matchesQuery("order", innerQuery);
 
     query.include("order");
+    query.include("order.address");
     query.find({
         success: function(lineItems) {
             console.log(lineItems);
@@ -44,7 +45,7 @@ function setOrder(lineItems, orderJSON) {
         order.set("note", orderJSON.note);
         order.set("shipmentStatus", OrderHelper.getShipmentStatus(orderJSON));
         order.set("name", orderJSON.name);
-        order.set("address", updateAddress(orderJSON));
+        order.set("address", updateAddress(orderJSON, order));
         
         order.save(null, {
             success: function(order) {},
@@ -75,8 +76,9 @@ function updateLineItem(lineItem, orderJSON) {
     });
 }
 
-function updateAddress(orderJSON) {
+function updateAddress(orderJSON, order) {
+    let address = order.get("shippingAddress");
     let Update = require("./orders.js");
-    let updatedAddress = Update.createAddress(orderJSON);
+    let updatedAddress = Update.setAddress(address, orderJSON);
     return updatedAddress;
 }
