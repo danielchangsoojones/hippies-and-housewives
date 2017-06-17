@@ -155,6 +155,7 @@ exports.createAddress = function createAddress(orderJSON) {
     address.set("zip", addressJSON.zip);
     address.set("country", addressJSON.country);
     console.log(address);
+    console.log(orderJSON);
 
     return address;
 }
