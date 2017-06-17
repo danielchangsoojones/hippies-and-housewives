@@ -154,6 +154,7 @@ exports.createAddress = function createAddress(orderJSON) {
     address.set("state", addressJSON.province);
     address.set("zip", addressJSON.zip);
     address.set("country", addressJSON.country);
+    console.log(address);
 
     return address;
 }
