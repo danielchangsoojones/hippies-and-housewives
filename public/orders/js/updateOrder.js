@@ -24,7 +24,7 @@ function findLineItems(orderJSON) {
     query.matchesQuery("order", innerQuery);
 
     query.include("order");
-    query.include("order.address");
+    query.include("order.shippingAddress");
     query.find({
         success: function(lineItems) {
             console.log(lineItems);
