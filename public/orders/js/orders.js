@@ -34,7 +34,7 @@ function createOrder(orderJSON, customer) {
     order.set("name", orderJSON.name);
     order.set("orderPlaced", orderJSON.created_at);
     order.set("shipmentStatus", exports.getShipmentStatus(orderJSON));
-    order.set("shippingAddress", createAddress(orderJSON));
+    order.set("shippingAddress", exports.createAddress(orderJSON));
     return order
 }
 
@@ -141,7 +141,7 @@ function isLineItemRefunded(orderJSON, shopifyLineItemID) {
     return false;
 }
 
-createAddress = function createAddress(orderJSON) {
+exports.createAddress = function createAddress(orderJSON) {
     let Address = require('../../models/address.js');
     let address = new Address();
     

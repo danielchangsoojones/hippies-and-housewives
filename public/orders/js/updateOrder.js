@@ -45,7 +45,7 @@ function setOrder(lineItems, orderJSON) {
         order.set("note", orderJSON.note);
         order.set("shipmentStatus", OrderHelper.getShipmentStatus(orderJSON));
         order.set("name", orderJSON.name);
-        order.set("address", updateAddress(orderJSON, order));
+        order.set("shippingAddress", updateAddress(orderJSON, order));
         
         order.save(null, {
             success: function(order) {},
@@ -77,8 +77,13 @@ function updateLineItem(lineItem, orderJSON) {
 }
 
 function updateAddress(orderJSON, order) {
-    let address = order.get("shippingAddress");
     let Update = require("./orders.js");
-    let updatedAddress = Update.setAddress(address, orderJSON);
-    return updatedAddress;
+    let address = order.get("shippingAddress");
+    if (address == undefined) {
+        let newAddress = Update.createAddress(orderJSON);
+        return newAddress;
+    } else {
+        let updatedAddress = Update.setAddress(address, orderJSON);
+        return updatedAddress;
+    }
 }
