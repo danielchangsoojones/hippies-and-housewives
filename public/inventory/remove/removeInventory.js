@@ -19,7 +19,7 @@ function findInventory(productTypeObjectID, size) {
     let existingLineItemsQuery = createExistingLineItemsQuery(productTypeObjectID, size);
 
     var orQuery = Parse.Query.or(nonExistentLineItemQuery, existingLineItemsQuery);
-    orQuery.include("productVariant.product.title");
+    orQuery.include("productVariant");
     orQuery.include("lineItem");
 
     orQuery.find().then(function(inventories) {
