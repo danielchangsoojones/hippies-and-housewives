@@ -47,10 +47,10 @@ Parse.Cloud.define("createCutList", function(req, res) {
 });
 
 Parse.Cloud.define("archiveShopifyOrder", function(req, res) {
-  let orderID = req.params.orderID;
+  let shopifyOrderID = req.params.shopifyOrderID;
   let Archive = require("../public/orders/archive/archiveOrder.js");
-  Archive.archiveShopifyOrder(orderID).then(function(lineItems) {
-    res.success("success");
+  Archive.archiveShopifyOrder(shopifyOrderID).then(function(success) {
+    res.success(success);
   }, function(error) {
     res.error(error);
   });
