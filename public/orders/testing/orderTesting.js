@@ -32,7 +32,7 @@ var readline = require('readline');
 
 // function getPracticeOrder() {
 //     let baseURL = require("../../resources/shopifyURL.js");
-//     var shopifyURL = baseURL + '/orders/4920141833.json';
+//     var shopifyURL = baseURL + '/orders/4979680009.json';
 //     var parameters = {};
 //     request({url: shopifyURL, qs: parameters}, function (error, response, body) {
 //         if (!error && response.statusCode == 200) {
@@ -92,13 +92,4 @@ var readline = require('readline');
 //             }
 //         });
 //     }
-// }
-
-// function archiveOrder(orderID) {
-//     let Archive = require("../archive/archiveOrder.js");
-//     Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {
-//         console.log(lineItems);
-//     }, function(error) {
-//         console.log(error);
-//     });
 // }
