@@ -17,33 +17,13 @@ var Parse = require('parse/node');
 //   });
 // }
 
-function getBrokenInventory(productName, size) {
-  var Inventory = Parse.Object.extend("Inventory");
-  var query = new Parse.Query(Inventory);
-
-  let ProductVariant = Parse.Object.extend("ProductVariant");
-  var variantQuery = new Parse.Query(ProductVariant);
-  let upperCaseSize = size.toUpperCase();
-  variantQuery.equalTo("size", upperCaseSize);
-
-  let Product = Parse.Object.extend("ProductType");
-  var productQuery = new Parse.Query(Product);
-  let lowercaseProductName = productName.toLowerCase();
-  productQuery.equalTo("lowercaseTitle", lowercaseProductName);
-  variantQuery.matchesQuery("product", productQuery);
-
-  query.matchesQuery("productVariant", variantQuery);
-
-  query.include("productVariant");
-  query.find({
-      success: function(inventories) {
-          console.log(inventories);
-      },
-      error: function(error) {
-          console.log(error);
-      }
-  });
-
-
-
+removeInventory("uxE8PdFqkP", "S")
+function removeInventory(productTypeObjectID, size) {
+    let Inventory = require("../remove/removeInventory.js");
+    Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {
+        console.log(inventory);
+    }, function(error) {
+        console.log(error);
+    })
+    
 }

@@ -18,7 +18,7 @@ function findInventory(productTypeObjectID, size) {
     let nonExistentLineItemQuery = createNonExistentLineItemsQuery(productTypeObjectID, size);
     let existingLineItemsQuery = createExistingLineItemsQuery(productTypeObjectID, size);
 
-    var orQuery = Parse.Query.or([nonExistentLineItemQuery, existingLineItemsQuery]);
+    var orQuery = Parse.Query.or(nonExistentLineItemQuery, existingLineItemsQuery);
     orQuery.include("productVariant.product.title");
     orQuery.include("lineItem");
 
@@ -41,15 +41,21 @@ function createNonExistentLineItemsQuery(productTypeObjectID, size) {
 
 function createExistingLineItemsQuery(productTypeObjectID, size) {
     var query = createInventoryQuery(productTypeObjectID, size);
-    query.equalTo("state", "open");
-    query.notEqualTo("isDeleted", true);
-    query.notEqualTo("isPicked", true);
+
+    var LineItem = Parse.Object.extend("LineItem");
+    var lineItemQuery = new Parse.Query(LineItem);
+    lineItemQuery.equalTo("state", "open");
+    lineItemQuery.notEqualTo("isDeleted", true);
+    lineItemQuery.notEqualTo("isPicked", true);
+    query.matchesQuery("lineItem", lineItemQuery);
+
     return query;
 }
 
 function createInventoryQuery(productTypeObjectID, size) {
     var Inventory = Parse.Object.extend("Inventory");
     var query = new Parse.Query(Inventory);
+    query.notEqualTo("isDeleted", true);
 
     let Save = require("../save/save.js");
     let productVariantQuery = Save.createProductVariantQuery(productTypeObjectID, size);
@@ -66,7 +72,16 @@ function siftInventories(inventories) {
         let lineItem = inventory.get("lineItem");
         if (lineItem == undefined) {
             //we found an inventory without a line item
-            promise.resolve(inventory);
+            inventory.set("isDeleted", true);
+            inventory.save(null, {
+                success: function(inventory) {
+                    promise.resolve(inventory);
+                },
+                error: function(error) {
+                    promise.reject(error);
+                }
+            });
+            return promise;
         }
     }
 
@@ -76,16 +91,18 @@ function siftInventories(inventories) {
         let firstInventory = inventories[0];
         let lineItem = firstInventory.get("lineItem");
         lineItem.unset("inventory");
-        inventory.unset("lineItem");
-        inventory.set("isDeleted", true);
-        Parse.Object.saveAll([lineItem, inventory], {
+        firstInventory.unset("lineItem");
+        firstInventory.set("isDeleted", true);
+        Parse.Object.saveAll([lineItem, firstInventory], {
             success: function (results) {
-                promise.resolve(inventory);
+                promise.resolve(firstInventory);
             },
             error: function (error) {                                     
                 promise.resolve(error);
             },
         });
+    } else {
+        promise.reject("failed to find any matching inventory");
     }
 
     return promise;
