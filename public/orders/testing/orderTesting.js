@@ -46,59 +46,63 @@ var readline = require('readline');
 //     });
 // }
 
-function getDuplicateOrder() {
-    let alreadyUsedOrderIDs = [];
-    var duplicateOrders = [];
+// function getDuplicateOrder() {
+//     let alreadyUsedOrderIDs = [];
+//     var duplicateOrders = [];
     
-    var Order = Parse.Object.extend("Order");
-    var query = new Parse.Query(Order);
-    query.limit(10000);
+//     var Order = Parse.Object.extend("Order");
+//     var query = new Parse.Query(Order);
+//     query.limit(10000);
 
-    query.find({
-      success: function(orders) {
-          for (var i = 0; i < orders.length; i++) {
-              let order = orders[i];
-              let shopifyOrderID = order.get("shopifyID");
-              if (alreadyUsedOrderIDs.indexOf(shopifyOrderID) == -1) {
-                  //first time seeing this order number
-                  alreadyUsedOrderIDs.push(shopifyOrderID);
-              } else {
-                  //it's a duplicate order number
-                  duplicateOrders.push(order);
-              }
-          }
-          deleteDuplicateOrders(duplicateOrders);
-      },
-      error: function(error) {
-          console.log(error);
-      }
-    });
-}
+//     query.find({
+//       success: function(orders) {
+//           for (var i = 0; i < orders.length; i++) {
+//               let order = orders[i];
+//               let shopifyOrderID = order.get("shopifyID");
+//               if (alreadyUsedOrderIDs.indexOf(shopifyOrderID) == -1) {
+//                   //first time seeing this order number
+//                   alreadyUsedOrderIDs.push(shopifyOrderID);
+//               } else {
+//                   //it's a duplicate order number
+//                   duplicateOrders.push(order);
+//               }
+//           }
+//           deleteDuplicateOrders(duplicateOrders);
+//       },
+//       error: function(error) {
+//           console.log(error);
+//       }
+//     });
+// }
 
-function deleteDuplicateOrders(duplicateOrders) {
-    for (var i = 0; i < duplicateOrders.length; i++) {
-        let order = duplicateOrders[i];
+// function deleteDuplicateOrders(duplicateOrders) {
+//     for (var i = 0; i < duplicateOrders.length; i++) {
+//         let order = duplicateOrders[i];
         
-        var LineItem = Parse.Object.extend("LineItem");
-        var query = new Parse.Query(LineItem);
-        query.equalTo("order", order);
+//         var LineItem = Parse.Object.extend("LineItem");
+//         var query = new Parse.Query(LineItem);
+//         query.equalTo("order", order);
 
-        query.find({
-            success: function(lineItems) {
-                //TODO: destroy all line items and the order?
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-    }
-}
+//         query.find({
+//             success: function(lineItems) {
+//                 //TODO: destroy all line items and the order?
+//             },
+//             error: function(error) {
+//                 console.log(error);
+//             }
+//         });
+//     }
+// }
 
-function archiveOrder(orderID) {
-    let Archive = require("../archive/archiveOrder.js");
-    Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {
-        console.log(lineItems);
-    }, function(error) {
-        console.log(error);
-    });
+// function archiveOrder(orderID) {
+//     let Archive = require("../archive/archiveOrder.js");
+//     Archive.checkIfOrderShouldArchive(orderID).then(function(lineItems) {
+//         console.log(lineItems);
+//     }, function(error) {
+//         console.log(error);
+//     });
+// }
+
+function setOrderAddresses() {
+
 }
