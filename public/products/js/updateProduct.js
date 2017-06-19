@@ -24,7 +24,6 @@ function findProduct(productJSON) {
             if (product == undefined) {
                 //product does not exist yet, so save it
                 var getProduct = require("./getProducts.js");
-                console.log("was sent to update a product, but creating it instead");
                 getProduct.uploadNewProduct(productJSON);
                 promise.reject("product did not exist, so we created it in the database");
             } else {
