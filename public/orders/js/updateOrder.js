@@ -27,12 +27,10 @@ function findLineItems(orderJSON) {
     query.include("order.shippingAddress");
     query.find({
         success: function(lineItems) {
-            console.log(lineItems);
             promise.resolve(lineItems);
         },
         error: function(error) {
             promise.reject(error);
-            console.log("Error: " + error.code + " " + error.message);
         }
     });
 
