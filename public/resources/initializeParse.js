@@ -10,9 +10,9 @@ var masterKey;
 var serverURL;
 
 if (configuration == production) {
-    // appId = "hippiesAndHousewives123SHDJ4852";
-    // masterKey = "hippiesAndHousewives485738FHDJSK";
-    // serverURL = "https://hippies-and-housewives.herokuapp.com/parse";
+    appId = "hippiesAndHousewives123SHDJ4852";
+    masterKey = "hippiesAndHousewives485738FHDJSK";
+    serverURL = "https://hippies-and-housewives.herokuapp.com/parse";
 } else if (configuration == development) {
     appId = "hippiesAndHousewivesDevelop489305028";
     masterKey = "hippiesAndHousewivesDevelop4850385933";
