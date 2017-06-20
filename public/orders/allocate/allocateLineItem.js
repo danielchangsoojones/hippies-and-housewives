@@ -16,6 +16,8 @@ exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
                 //no matching item found, so create a new one
                 let Item = require("../../models/item.js");
                 let newItem = new Item();
+                var Unique = require("../../inventory/save/save.js");
+                newItem.set("uniqueID", Unique.createUniqueID());
                 setItem = newItem
             }
             lineItem.set("item", setItem);
