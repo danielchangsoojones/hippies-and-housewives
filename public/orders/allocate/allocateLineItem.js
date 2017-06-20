@@ -11,15 +11,16 @@ exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
 
     query.first({
         success: function(item) {
+            var setItem = item;
             if (item == undefined) {
-                //no matching item found, just returning the initial lineItem
-                promise.resolve(lineItem);
-            } else {
-                //found matching item, so allocate both ways
-                item.set("lineItem", lineItem);
-                lineItem.set("item", item);
-                promise.resolve([lineItem, item]);
+                //no matching item found, so create a new one
+                let Item = require("../../models/item.js");
+                let newItem = new Item();
+                setItem = newItem
             }
+            lineItem.set("item", setItem);
+            setItem.set("lineItem", lineItem);
+            promise.resolve([lineItem, item]);
         },
         error: function(error) {
             promise.reject(error);

@@ -5,7 +5,7 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
 
     getProductVariant(productTypeObjectID, size).then(function(productVariant) {
         saveInventories(productVariant, quantity).then(function(inventories) {
-            promise.resolve(inventories)
+            promise.resolve(inventories);
         }, function(error) {
             promise.reject(error);
         });
