@@ -97,6 +97,8 @@ Parse.Cloud.define("inputMassCuts", function(req, res) {
     if (item == undefined) {
       res.error("item not created");
     } else {
+      console.log("In the successful cloud function");
+      console.log(item);
       let success = true;
       res.success(success);
     }

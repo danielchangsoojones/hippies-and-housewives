@@ -50,6 +50,7 @@ function createItem(productVariant, currentUser, position) {
 function createCut(item, currentUser) {
     let Cut = require("../../models/tracking/cut.js");
     let cut = new Cut();
+    //For some reason, user can't be an object, it must be a pointer
     let pointerUser = { __type: "Pointer", className:"_User", objectId: currentUser.id};
     cut.set("user", pointerUser);
     return cut;
