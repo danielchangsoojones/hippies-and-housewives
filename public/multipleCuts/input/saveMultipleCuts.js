@@ -6,9 +6,10 @@ exports.saveMultipleCuts = function saveMultipleCuts(productTypeObjectID, size, 
     for (var i = 0; i < quantity; i++) {
         let promise = new Parse.Promise();
 
-        var Find = require("../../inventory/save/save.js");
-        Find.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
-            return createItem(productVariant)
+        getProductVariant(productTypeObjectID, size, i).then(function (result) {
+            let productVariant = result.productVariant;
+            let position = result.position;
+            return createItem(productVariant, currentUser, position);
         }).then(function (item) {
             promise.resolve(item);
         }, function (error) {
@@ -21,7 +22,7 @@ exports.saveMultipleCuts = function saveMultipleCuts(productTypeObjectID, size, 
     return Parse.Promise.when(promises);
 }
 
-function createItem(productVariant, currentUser) {
+function createItem(productVariant, currentUser, position) {
     var promise = new Parse.Promise();
 
     if (productVariant == undefined) {
@@ -32,13 +33,14 @@ function createItem(productVariant, currentUser) {
         item.set("productVariant", productVariant);
         item.set("cut", createCut(item, currentUser));
         item.set("group", createGroup());
-        item.save(null, {
-            success: function(item) {
-                promise.resolve(item);
-            },
-            error: function(error) {
+        var Allocate = require("../../items/allocate/allocateItem.js");
+        Allocate.allocateItem(item, position).then(function(objects) {
+            let SaveAll = require("../../orders/js/orders.js");
+            return SaveAll.saveAllComponents(objects)
+        }).then(function(results) {
+                promise.resolve(results);
+            }, function(error) {
                 promise.reject(error);
-            }
         });
     }
 
@@ -56,4 +58,17 @@ function createGroup() {
     let Group = require("../../models/group.js");
     let group = new Group();
     return group;
+}
+
+function getProductVariant(productTypeObjectID, size, position) {
+    var promise = new Parse.Promise();
+
+    var Find = require("../../inventory/save/save.js");
+    Find.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
+        promise.resolve({productVariant: productVariant, position: position})
+    }, function (error) {
+        promise.reject(error);
+    });
+
+    return promise;
 }
