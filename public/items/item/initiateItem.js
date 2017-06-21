@@ -11,7 +11,7 @@ exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
         let initiate = new Initiate();
         let hi = {"__type":"Pointer","className":"Initiate", "objectId": "fjksidkfil"}
         console.log(initiate);
-        // console.log(Parse._encode(initiate));
+        console.log(Parse._encode(hi));
         item.set("initiate", hi);
     }
 }
