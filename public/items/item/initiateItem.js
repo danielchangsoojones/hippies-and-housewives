@@ -10,6 +10,7 @@ exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
         let Initiate = require("../../models/tracking/initiate.js");
         let initiate = new Initiate();
         let hi = {"__type":"Pointer","className":"Initiate", "objectId": "fjksidkfil"}
+        console.log("heyyyy")
         console.log(initiate);
         console.log(Parse._encode(hi));
         item.set("initiate", hi);
