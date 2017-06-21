@@ -3,7 +3,7 @@ var Parse = require('parse/node');
 exports.saveInventory = function saveInventory(productTypeObjectID, size, quantity) {
     var promise = new Parse.Promise();
 
-    getProductVariant(productTypeObjectID, size).then(function(productVariant) {
+    exports.getProductVariant(productTypeObjectID, size).then(function(productVariant) {
         saveInventories(productVariant, quantity).then(function(inventories) {
             promise.resolve(inventories);
         }, function(error) {
@@ -16,7 +16,7 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
     return promise;
 }
 
-function getProductVariant(productTypeObjectID, size) {
+exports.getProductVariant = function getProductVariant(productTypeObjectID, size) {
     var promise = new Parse.Promise();
 
     let query = exports.createProductVariantQuery(productTypeObjectID, size);

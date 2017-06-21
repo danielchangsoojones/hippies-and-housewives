@@ -67,6 +67,24 @@ Parse.Cloud.define("removeInventory", function(req, res) {
   });
 });
 
+Parse.Cloud.define("inputMassCuts", function(req, res) {
+  let productTypeObjectID = req.params.productTypeObjectID;
+  let size = req.params.size;
+  let quantity = req.params.quantity;
+
+  let MassCuts = require("../public/multipleCuts/input/saveMultipleCuts.js");
+  MassCuts.saveMultipleCuts(productTypeObjectID, size, quantity, req.user).then(function(item) {
+    if (item == undefined) {
+      res.error("item not created");
+    } else {
+      let success = true;
+      res.success(success);
+    }
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");

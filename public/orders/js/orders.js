@@ -79,7 +79,9 @@ function saveAllComponents(objects, order) {
     var flattenedObjects = [].concat.apply([], objects);
 
     Parse.Object.saveAll(flattenedObjects, {
-        success: function (results) {},
+        success: function (results) {
+            console.log(results);
+        },
         error: function (error) {                                     
             console.log(error);
         },
