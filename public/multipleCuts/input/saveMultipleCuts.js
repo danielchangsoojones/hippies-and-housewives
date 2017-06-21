@@ -50,7 +50,8 @@ function createItem(productVariant, currentUser, position) {
 function createCut(item, currentUser) {
     let Cut = require("../../models/tracking/cut.js");
     let cut = new Cut();
-    cut.set("user", currentUser);
+    let pointerUser = { __type: "Pointer", className:"_User", objectId: currentUser.id};
+    cut.set("user", pointerUser);
     return cut;
 }
 
