@@ -15,6 +15,16 @@ Parse.Cloud.define("searchProduct", function(req, res) {
   });
 });
 
+Parse.Cloud.define("searchColor", function(req, res) {
+  let searchText = req.params.searchText;
+  let Search = require("../public/fabric/searchColor.js");
+  Search.searchColor(searchText).then(function(fabrics) {
+    res.success(fabrics);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 Parse.Cloud.define("saveInventory", function(req, res) {
   let productTypeObjectID = req.params.productTypeObjectID;
   let size = req.params.size;

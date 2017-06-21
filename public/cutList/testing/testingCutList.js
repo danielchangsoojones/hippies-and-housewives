@@ -10,7 +10,6 @@ var Parse = require('parse/node');
 //     });
 // }
 
-
 function getZenCutList() {
     var readline = require('readline');
 
