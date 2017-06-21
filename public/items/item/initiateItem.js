@@ -1,18 +1,12 @@
 var Parse = require('parse/node');
 
-exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
+exports.checkItemInitiation = function checkItemInitiation(item) {
     let cut = item.get("cut");
     let sewn = item.get("sewn");
     let package = item.get("package");
-    let initiate = item.get("initiate");
+    let isInitiated = item.get("isInitiated");
 
-    if ((cut != undefined || sewn != undefined || package != undefined) && initiate == undefined) {
-        let Initiate = require("../../models/tracking/initiate.js");
-        let initiate = new Initiate();
-        let hi = {"__type":"Pointer","className":"Initiate", "objectId": "fjksidkfil"}
-        console.log("heyyyy")
-        console.log(initiate);
-        console.log(Parse._encode(hi));
-        item.set("initiate", hi);
+    if (cut != undefined || sewn != undefined || package != undefined) {
+        item.set("isInitiated", true);
     }
 }

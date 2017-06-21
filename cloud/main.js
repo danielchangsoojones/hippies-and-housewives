@@ -106,7 +106,7 @@ Parse.Cloud.beforeSave("Item", function(request, response) {
   }
 
   var Initiation = require("../public/items/item/initiateItem.js");
-  Initiation.checkItemInitiation(request.object, request.user);
+  Initiation.checkItemInitiation(request.object);
 
   response.success();
 });
