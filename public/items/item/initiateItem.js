@@ -6,7 +6,7 @@ exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
 
     if ((cut != undefined || sewn != undefined || package != undefined) && initiate == undefined) {
         let Initiate = require("../../models/tracking/initiate.js");
-        let initiate = { __type:"Pointer", className: "Initiate"}
+        let initiate = new Initiate();
         console.log(initiate);
         // initiate.set("user", currentUser);
         item.set("initiate", initiate);
