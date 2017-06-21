@@ -1,3 +1,5 @@
+var Parse = require('parse/node');
+
 exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
     let cut = item.get("cut");
     let sewn = item.get("sewn");
@@ -8,7 +10,8 @@ exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
         let Initiate = require("../../models/tracking/initiate.js");
         let initiate = new Initiate();
         console.log(initiate);
+        console.log(Parse._encode(initiate));
         // initiate.set("user", currentUser);
-        item.set("initiate", initiate);
+        item.set("initiate", Parse._encode(initiate));
     }
 }
