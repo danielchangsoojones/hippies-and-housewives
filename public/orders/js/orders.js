@@ -89,7 +89,8 @@ exports.saveAllComponents = function saveAllComponents(objects) {
         success: function (results) {
             promise.resolve(results);
         },
-        error: function (error) {                                     
+        error: function (error) {
+            console.log("hey we're getting the huge error");                                     
             promise.reject(error);
         },
     });
