@@ -46,3 +46,13 @@ function getZenCutList() {
     });
     });
 }
+
+getOneColorCutList("fire engine");
+function getOneColorCutList(color) {
+    var OneColorCutList = require("../oneColor/oneColorCutList.js");
+    OneColorCutList.getOneColorCutList(color).then(function(success) {
+        console.log(success);
+    }, function (error) {
+        console.log(error);
+    });
+}

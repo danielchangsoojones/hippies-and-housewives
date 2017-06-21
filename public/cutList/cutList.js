@@ -10,7 +10,7 @@ exports.getCutList = function getCutList() {
     var promise = new Parse.Promise();
 
     findLineItemsToCut().then(function(lineItems) {
-        createGoogleSheet(lineItems).then(function(success) {
+        exports.createGoogleSheet(lineItems).then(function(success) {
             if (success) {
                 promise.resolve(lineItems);
             } else {
@@ -50,7 +50,7 @@ function findLineItemsToCut() {
     return promise;
 }
 
-function createGoogleSheet(lineItems) {
+exports.createGoogleSheet = function createGoogleSheet(lineItems) {
     var promise = new Parse.Promise();
 
     var GoogleSheets = require("./googleSheets/googleSheets.js");    
@@ -59,7 +59,7 @@ function createGoogleSheet(lineItems) {
         // saveAllLineItemsAsInitiated(lineItems);
     }, function(error) {
         promise.resolve(error);
-    })
+    });
 
     return promise;
 }

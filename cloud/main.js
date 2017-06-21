@@ -56,6 +56,16 @@ Parse.Cloud.define("createCutList", function(req, res) {
   });
 });
 
+Parse.Cloud.define("getOneColorCutList", function(req, res) {
+  let color = req.params.color;
+  let CutList = require("../public/cutList/oneColor/oneColorCutList.js");
+  CutList.getOneColorCutList(color).then(function(success) {
+    res.success(success);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 Parse.Cloud.define("archiveShopifyOrder", function(req, res) {
   let shopifyOrderID = req.params.shopifyOrderID;
   let Archive = require("../public/orders/archive/archiveOrder.js");
