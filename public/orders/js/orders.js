@@ -84,6 +84,7 @@ exports.saveAllComponents = function saveAllComponents(objects) {
     }
 
     var flattenedObjects = [].concat.apply([], arr);
+    console.log(flattenedObjects[0].get("cut").get("user"));
 
     Parse.Object.saveAll(flattenedObjects, {
         success: function (results) {
