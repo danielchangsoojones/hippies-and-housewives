@@ -26,6 +26,7 @@ function findLineItem(productVariant, lineItemsToSkip) {
     var query = new Parse.Query(LineItem);
     query.doesNotExist("item");
     query.equalTo("productVariant", productVariant);
+    query.equalTo("state", "open");
     query.skip(lineItemsToSkip);
 
     return query.first();

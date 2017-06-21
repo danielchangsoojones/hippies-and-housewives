@@ -13,7 +13,7 @@ exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
     query.first({
         success: function(item) {
             if (item == undefined) {
-                //no matching item found, so create a new one
+                //no matching item found
                 promise.resolve(lineItem);
             } else {
                 item.set("lineItem", lineItem);

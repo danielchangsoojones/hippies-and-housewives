@@ -110,3 +110,15 @@ Parse.Cloud.beforeSave("LineItem", function(request, response) {
 
   response.success();
 });
+
+Parse.Cloud.beforeSave("Item", function(request, response) {
+  let uniqueID = request.object.get("uniqueID");
+
+  if (uniqueID == undefined) {
+    //the item doesn't have a unique id yet
+    var Unique = require("../public/items/item/uniqueID.js");
+    Unique.createUniqueID(request.object);
+  }
+
+  response.success();
+});
