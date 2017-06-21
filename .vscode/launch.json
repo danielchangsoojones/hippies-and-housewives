@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Input Multiple Cuts",
+            "program": "${workspaceRoot}/public/multipleCuts/testing/testingMultipleCuts.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Order Testing",
             "program": "${workspaceRoot}/public/orders/testing/orderTesting.js"
         }
