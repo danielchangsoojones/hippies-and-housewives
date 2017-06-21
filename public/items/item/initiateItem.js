@@ -10,7 +10,7 @@ exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
         let Initiate = require("../../models/tracking/initiate.js");
         let initiate = new Initiate();
         console.log(initiate);
-        console.log(Parse._encode(initiate));
-        item.set("initiate", cut);
+        // console.log(Parse._encode(initiate));
+        // item.set("initiate", cut);
     }
 }
