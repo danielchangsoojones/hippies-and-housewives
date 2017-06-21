@@ -11,7 +11,6 @@ exports.checkItemInitiation = function checkItemInitiation(item, currentUser) {
         let initiate = new Initiate();
         console.log(initiate);
         console.log(Parse._encode(initiate));
-        // initiate.set("user", currentUser);
-        item.set("initiate", Parse._encode(initiate));
+        item.set("initiate", cut);
     }
 }
