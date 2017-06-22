@@ -17,6 +17,8 @@ function findLineItems(orderJSON) {
 
     var LineItem = require("../../models/lineItem.js");
     var query = LineItem.query();
+    //overriding default state == open because we want to update any line items of any status
+    query.exists("state");
 
     var Order = require("../../models/order.js");
     var innerQuery = Order.query();
