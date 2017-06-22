@@ -1,16 +1,10 @@
 var Parse = require('parse/node');
+var CustomParseObject = require("./super.js")
 var className = "Item";
 
-class Item extends Parse.Object {
+class Item extends CustomParseObject {
   constructor() {
-    // Pass the ClassName to the Parse.Object constructor
     super(className);
-  }
-
-  static query() {
-    var query = new Parse.Query(this);
-    query.notEqualTo("isDeleted", true);
-    return query;
   }
 }
 
