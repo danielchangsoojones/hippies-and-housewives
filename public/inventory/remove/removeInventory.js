@@ -66,18 +66,18 @@ function createInventoryQuery(productTypeObjectID, size) {
     return query
 }
 
-function siftInventories(inventories) {
+function siftInventories(items) {
     var promise = new Parse.Promise();
 
-    for(var i = 0; i < inventories.length; i++) {
-        let inventory = inventories[i];
-        let lineItem = inventory.get("lineItem");
+    for(var i = 0; i < items.length; i++) {
+        let item = items[i];
+        let lineItem = item.get("lineItem");
         if (lineItem == undefined) {
             //we found an inventory without a line item
-            inventory.set("isDeleted", true);
-            inventory.save(null, {
-                success: function(inventory) {
-                    promise.resolve(inventory);
+            item.set("isDeleted", true);
+            item.save(null, {
+                success: function(item) {
+                    promise.resolve(item);
                 },
                 error: function(error) {
                     promise.reject(error);
