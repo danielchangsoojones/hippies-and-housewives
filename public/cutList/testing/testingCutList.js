@@ -47,7 +47,6 @@ function getZenCutList() {
     });
 }
 
-getOneColorCutList("fire engine");
 function getOneColorCutList(color) {
     var OneColorCutList = require("../oneColor/oneColorCutList.js");
     OneColorCutList.getOneColorCutList(color).then(function(success) {

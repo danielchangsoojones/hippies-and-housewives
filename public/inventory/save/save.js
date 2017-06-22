@@ -1,19 +1,59 @@
 var Parse = require('parse/node');
 
 exports.saveInventory = function saveInventory(productTypeObjectID, size, quantity) {
-    var promise = new Parse.Promise();
+    var promises = [];
 
-    exports.getProductVariant(productTypeObjectID, size).then(function(productVariant) {
-        saveInventories(productVariant, quantity).then(function(inventories) {
-            promise.resolve(inventories);
-        }, function(error) {
+    for (var i = 0; i < quantity; i++) {
+        let promise = new Parse.Promise();
+        promises.push(promise);
+        checkIfGroupItem(i).then(function (groupItem) {
+            if (groupItem == undefined) {
+                //no groupItem found
+                let lineItemsToSkip = quantity - i;
+                createNewInventory(productTypeObjectID, size, lineItemsToSkip).then(function(item) {
+                    promise.resolve(item);
+                }, function(error) {
+                    promise.reject(error);
+                });
+            } else {
+                setAsPackaged(groupItem);
+                promise.resolve(groupItem);
+            }
+        }, function (error) {
             promise.reject(error);
         });
-    }, function(error) {
-        promise.reject(error);
-    });
+    }
 
-    return promise;
+    return Parse.Promise.when(promises);
+}
+
+/*
+a group item is an item that was associated with a group and we used it to initiate a line item
+Say, we send a bunch of swimsuits off to a factory, and we need to make sure those line items are initiated,
+so they don't get double cut. But, they have no label, so when they are placed into inventory, we need to match them back up
+*/
+function checkIfGroupItem(itemsToSkip) {
+    var Item = Parse.Object.extend("Item");
+    var query = new Parse.Query(Item);
+    query.exists("group");
+    query.doesNotExist("package");
+    query.skip(itemsToSkip);
+
+    return query.first();
+}
+
+function setAsPackaged(item) {
+    //package states: in inventory, waiting for identified pick
+    let Package = require("../../models/tracking/package.js");
+    var package = new Package();
+    package.set("state", "in inventory");
+    item.set("package", package);
+}
+
+function createNewInventory(productTypeObjectID, size, lineItemsToSkip) {
+    return exports.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
+        return saveInventory(productVariant, lineItemsToSkip);
+    });
 }
 
 exports.getProductVariant = function getProductVariant(productTypeObjectID, size) {
@@ -21,10 +61,10 @@ exports.getProductVariant = function getProductVariant(productTypeObjectID, size
 
     let query = exports.createProductVariantQuery(productTypeObjectID, size);
     query.first({
-        success: function(productVariant) {
+        success: function (productVariant) {
             promise.resolve(productVariant);
         },
-        error: function(error) {
+        error: function (error) {
             promise.reject(error);
         }
     });
@@ -45,67 +85,45 @@ exports.createProductVariantQuery = function createProductVariantQuery(productTy
     return query;
 }
 
-function saveInventories(productVariant, quantity) {
+function saveInventory(productVariant, lineItemsToSkip) {
+    let Item = require('../../models/item.js');
+    let item = new Item();
+    item.set("productVariant", productVariant);
+    setAsPackaged(item);
+    return allocateInventory(item, productVariant, lineItemsToSkip);
+}
+
+function allocateInventory(item, productVariant, lineItemsToSkip) {
     var promise = new Parse.Promise();
-    var inventories = [];
-
-    for (var i = 0; i < quantity; i++) {
-        let Inventory = require('../../models/inventory.js');
-        let inventory = new Inventory();
-        inventory.set("productVariant", productVariant);
-        inventories.push(inventory);
-    }
-
-    Parse.Object.saveAll(inventories, {
-        success: function (inventories) {
-            promise.resolve(inventories);
-            allocateInventories(inventories, productVariant);
-        },
-        error: function (error) {                                     
-            promise.reject(inventories);
-        },
+    findMatchingLineItem(item, productVariant, lineItemsToSkip).then(function (lineItem) {
+        if (lineItem == undefined) {
+            //couldn't allocate
+            return item.save();
+        } else {
+            //allocated
+            item.set("lineItem", lineItem);
+            lineItem.set("item", item);
+            return Parse.Object.saveAll([item, lineItem]);
+        }
+    }).then(function(objects) {
+        promise.resolve(item);
+    }, function(error) {
+        promise.reject(error);
     });
 
     return promise;
 }
 
-function allocateInventories(inventories, productVariant) {
-    console.log("allocating the inventory");
-    for (var i = 0; i < inventories.length; i++) {
-        let inventory = inventories[i];
-        findMatchingLineItem(inventory, productVariant, i).then(function(lineItem) {
-            //TODO: if you saved like 50 inventories at once, then they might get the same line item and they would jsut have all inventories allocated to the same inventory
-            inventory.set("lineItem", lineItem);
-            lineItem.set("inventory", inventory);
-
-            Parse.Object.saveAll([inventory, lineItem], {});
-        }, function(error) {
-            console.log(error);
-        });
-    }
-}
-
-function findMatchingLineItem(inventory, productVariant, itemsToSkip) {
-    var promise = new Parse.Promise();
-
+function findMatchingLineItem(inventory, productVariant, lineItemsToSkip) {
     var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
     query.equalTo("productVariant", productVariant);
-    query.doesNotExist("inventory");
+    query.doesNotExist("item");
     query.equalTo("state", "open");
     query.notEqualTo("isInitiated", true);
     //if someone saves 15 inventory items at once, you want to skip the ones that would be saved for the ones before it.
     //so we don't save the same LineItem to multiple Inventories
-    query.skip(itemsToSkip);
-    
-    query.first({
-        success: function(lineItem) {
-            promise.resolve(lineItem);
-        },
-        error: function(error) {
-            promise.reject(error);
-        }
-    });
+    query.skip(lineItemsToSkip);
 
-    return promise;
+    return query.first();
 }
