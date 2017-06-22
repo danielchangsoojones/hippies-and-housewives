@@ -9,7 +9,8 @@ class LineItem extends CustomParseObject {
 
   static states() {
     let states = {
-      open: "open"
+      open: "open",
+      refunded: "refunded"
     }
     return states
   }
