@@ -6,10 +6,11 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
     for (var i = 0; i < quantity; i++) {
         let promise = new Parse.Promise();
         promises.push(promise);
-        checkIfGroupItem(i).then(function (groupItem) {
+        checkIfGroupItem(i).then(function (result) {
+            let groupItem = result.item;
             if (groupItem == undefined) {
                 //no groupItem found
-                let lineItemsToSkip = quantity - i;
+                let lineItemsToSkip = quantity - result.i - 1;
                 createNewInventory(productTypeObjectID, size, lineItemsToSkip).then(function(item) {
                     promise.resolve(item);
                 }, function(error) {
@@ -17,10 +18,13 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
                 });
             } else {
                 setAsPackaged(groupItem);
-                groupItem.save(null, function(groupItem) {
-                    promise.resolve(groupItem);
-                }, function(error) {
-                    promise.reject(error);
+                groupItem.save(null, {
+                    success: function (groupItem) {
+                        promise.resolve(groupItem);
+                    },
+                    error: function (error) {
+                        promise.reject(error);
+                    }
                 });
             }
         }, function (error) {
@@ -43,7 +47,16 @@ function checkIfGroupItem(itemsToSkip) {
     query.doesNotExist("package");
     query.skip(itemsToSkip);
 
-    return query.first();
+    var promise = new Parse.Promise();
+
+    query.first(function(item) {
+        let result = {item: item, i: itemsToSkip}
+        promise.resolve(result);
+    }, function(error) {
+        promise.reject(error);
+    });
+
+    return promise;
 }
 
 function setAsPackaged(item) {
