@@ -104,25 +104,29 @@ function runIncompleteLineItemQuery(completedLineItems) {
 }
 
 function createIncompleteLineItemQuery(order) {
-    var incompleteLineItemsQuery = LineItem.query();
-    incompleteLineItemsQuery.equalTo("order", order);
-
-    let nonExistentItemQuery = createItemDoesNotExistQuery(incompleteLineItemsQuery);
-    let nonPackagedItemQuery = createItemIsNotPackagedQuery(incompleteLineItemsQuery);
-    
+    let nonExistentItemQuery = createItemDoesNotExistQuery(order);
+    let nonPackagedItemQuery = createItemIsNotPackagedQuery(order);
     return Parse.Query.or(nonExistentItemQuery, nonPackagedItemQuery);
 }
 
-function createItemDoesNotExistQuery(lineItemQuery) {
+function createItemDoesNotExistQuery(order) {
+    let lineItemQuery = createCommonIncompleteLineItemQuery(order);
     lineItemQuery.doesNotExist("item");
     return lineItemQuery;
 }
 
-function createItemIsNotPackagedQuery(lineItemQuery) {
+function createItemIsNotPackagedQuery(order) {
+    let lineItemQuery = createCommonIncompleteLineItemQuery(order);
     let itemQuery = Item.query();
     itemQuery.doesNotExist("package");
     lineItemQuery.matchesQuery("item", itemQuery);
     return lineItemQuery;
+}
+
+function createCommonIncompleteLineItemQuery(order) {
+    var incompleteLineItemsQuery = LineItem.query();
+    incompleteLineItemsQuery.equalTo("order", order);
+    return incompleteLineItemsQuery;
 }
 
 function filterArray(array) {
