@@ -12,3 +12,15 @@ exports.checkItemInitiation = function checkItemInitiation(item) {
         item.set("isInitiated", true);
     }
 }
+
+exports.checkLineItemInitiation = function checkLineItemInitiation(lineItem) {
+    let pick = lineItem.get("pick");
+    let ship = lineItem.get("ship");
+
+    if (pick != undefined || ship != undefined) {
+        let item = lineItem.get("item");
+        console.log(item.get("isInitiated"));
+        item.set("isInitiated", true);
+        item.save();
+    }
+}

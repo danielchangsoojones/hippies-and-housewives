@@ -126,24 +126,8 @@ Parse.Cloud.beforeSave("Item", function(request, response) {
 });
 
 Parse.Cloud.afterSave("LineItem", function(request, response) {
-  let pick = request.object.get("pick");
-
-  if (pick != undefined) {
-    let item = request.object.get("item");
-    item.set("isInitiated", true);
-    item.save();
-  }
+  var Initiation = require("../public/items/item/initiateItem.js");
+  Initiation.checkLineItemInitiation(request.object);
 
   response.success();
-
-  // if (uniqueID == undefined) {
-  //   //the item doesn't have a unique id yet
-  //   var Unique = require("../public/items/item/uniqueID.js");
-  //   Unique.createUniqueID(request.object);
-  // }
-
-  // var Initiation = require("../public/items/item/initiateItem.js");
-  // Initiation.checkItemInitiation(request.object);
-
-  // response.success();
 });
