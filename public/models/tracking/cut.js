@@ -1,12 +1,13 @@
 var Parse = require('parse/node');
+var CustomParseObject = require("../super.js");
 var className = "Cut";
 
-class Cut extends Parse.Object {
+class Cut extends CustomParseObject {
   constructor() {
-    // Pass the ClassName to the Parse.Object constructor
     super(className);
   }
 }
 
 Parse.Object.registerSubclass(className, Cut);
 module.exports = Cut;
+exports.cut = new Cut();

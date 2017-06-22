@@ -1,12 +1,13 @@
 var Parse = require('parse/node');
+var CustomParseObject = require("../super.js");
 var className = "Initiate";
 
-class Initiate extends Parse.Object {
+class Initiate extends CustomParseObject {
   constructor() {
-    // Pass the ClassName to the Parse.Object constructor
     super(className);
   }
 }
 
 Parse.Object.registerSubclass(className, Initiate);
 module.exports = Initiate;
+exports.initiate = new Initiate();

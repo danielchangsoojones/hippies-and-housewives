@@ -1,12 +1,13 @@
 var Parse = require('parse/node');
+var CustomParseObject = require("./super.js");
 var className = "Fabric";
 
-class Fabric extends Parse.Object {
+class Fabric extends CustomParseObject {
   constructor() {
-    // Pass the ClassName to the Parse.Object constructor
     super(className);
   }
 }
 
 Parse.Object.registerSubclass(className, Fabric);
 module.exports = Fabric;
+exports.fabric = new Fabric();
