@@ -19,7 +19,6 @@ exports.checkLineItemInitiation = function checkLineItemInitiation(lineItem) {
 
     if (pick != undefined || ship != undefined) {
         let item = lineItem.get("item");
-        console.log(item.get("isInitiated"));
         item.set("isInitiated", true);
         item.save();
     }
