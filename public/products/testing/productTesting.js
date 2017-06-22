@@ -2,6 +2,16 @@ var request = require('request');
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
+searchProduct("izzy");
+function searchProduct(searchText) {
+    var Search = require("../search/searchProduct.js");
+    Search.searchProduct(searchText).then(function(products) {
+        console.log(products);
+    }, function(error) {
+        console.log(error);
+    });
+}
+
 //MARK: retrieving mass products
 // function getAllProducts(page) {
 //     let baseURL = require("../../resources/shopifyURL.js");

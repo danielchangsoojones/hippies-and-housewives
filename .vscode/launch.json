@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Product Type Testing",
+            "program": "${workspaceRoot}/public/products/testing/productTesting.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Cut List Testing",
             "program": "${workspaceRoot}/public/cutList/testing/testingCutList.js"
         },
