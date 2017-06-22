@@ -20,6 +20,5 @@ function removeInventory(productTypeObjectID, size) {
         console.log(inventory);
     }, function(error) {
         console.log(error);
-    })
-    
+    });
 }
