@@ -6,14 +6,15 @@ var sheets = google.sheets('v4');
 var Parse = require('parse/node');
 //Our cut list is connected to the hippiesresources@gmail.com account for the Daniel Magic Cut List.
 //TODO: not sure why, but somehow the id can change sometimes...
-var spreadSheetID = "1e3JHbtMhLxuERXuUKqb39wTvJlqw_9eM40HaFcCasws"
+var spreadSheetID = "1DzNjm3RCL9-Sg3u1B_0jAR-lIzeCxohIrGQyOpJNqzU"
 
-var lineItemsToCut = [];
 var promise = new Parse.Promise();
+var lineItems = [];
 
 exports.createCutList = function createCutList(lineItemsToCut) {
   console.log("sending to the google sheet");
   lineItems = lineItemsToCut;
+  console.log(lineItems);
   let secretJSON = require("./client_secret.json");
   authorize(secretJSON, createSheet);
 
@@ -60,7 +61,11 @@ function createSheet(authClient) {
             "addSheet": {
                 "properties": {
                     "title": getDateTime(),
-                    "index": 0
+                    "index": 0,
+                    "gridProperties": {
+                      "rowCount": 1,
+                      "columnCount": 1
+                    }
                 }
             }
         },
