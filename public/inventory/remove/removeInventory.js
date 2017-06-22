@@ -89,8 +89,8 @@ function siftInventories(items) {
 
     //if we couldn't find any unallocated inventories, then we'll have to do the second best thing
     //which means stealing this inventory from another line item
-    if (inventories.length > 0) {
-        let firstInventory = inventories[0];
+    if (items.length > 0) {
+        let firstInventory = items[0];
         let lineItem = firstInventory.get("lineItem");
         lineItem.unset("item");
         firstInventory.unset("lineItem");
