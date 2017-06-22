@@ -1,9 +1,8 @@
 var Parse = require('parse/node');
 
 exports.getOneColorCutList = function getOneColorCutList(color) {
-    var LineItem = require("../../models/lineItem.js");
-    var query = LineItem.query();
-    query.doesNotExist("item");
+    let CutList = require("../cutList.js");
+    let query = CutList.createLineItemsToCutQuery();
     
     let productVariantQuery = createFabricColorQuery(color);
     query.matchesQuery("productVariant", productVariantQuery);

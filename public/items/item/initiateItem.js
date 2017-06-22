@@ -4,7 +4,6 @@ exports.checkItemInitiation = function checkItemInitiation(item) {
     let cut = item.get("cut");
     let sewn = item.get("sewn");
     let package = item.get("package");
-    let isInitiated = item.get("isInitiated");
 
     if (cut != undefined || sewn != undefined || package != undefined) {
         //I can't figure out how to save a pointer correctly in a Parse Before Save function.
