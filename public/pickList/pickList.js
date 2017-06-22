@@ -105,19 +105,24 @@ function runIncompleteLineItemQuery(completedLineItems) {
 
 function createIncompleteLineItemQuery(order) {
     var incompleteLineItemsQuery = LineItem.query();
-
-    let itemQuery = Item.query();
-    itemQuery.doesNotExist("package");
     incompleteLineItemsQuery.equalTo("order", order);
-    incompleteLineItemsQuery.doesNotExist("inventory");
-    incompleteLineItemsQuery.notEqualTo("isPackaged", true);
-    incompleteLineItemsQuery.notEqualTo("isPicked", true);
+
+    let nonExistentItemQuery = createItemDoesNotExistQuery(incompleteLineItemsQuery);
+    let nonPackagedItemQuery = createItemIsNotPackagedQuery(incompleteLineItemsQuery);
     
-    return incompleteLineItemsQuery;
+    return Parse.Query.or(nonExistentItemQuery, nonPackagedItemQuery);
 }
 
-function createItemDoesNotExistQuery() {
+function createItemDoesNotExistQuery(lineItemQuery) {
+    lineItemQuery.doesNotExist("item");
+    return lineItemQuery;
+}
 
+function createItemIsNotPackagedQuery(lineItemQuery) {
+    let itemQuery = Item.query();
+    itemQuery.doesNotExist("package");
+    lineItemQuery.matchesQuery("item", itemQuery);
+    return lineItemQuery;
 }
 
 function filterArray(array) {

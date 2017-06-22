@@ -1,3 +1,4 @@
+require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
 function testingPickList() {
