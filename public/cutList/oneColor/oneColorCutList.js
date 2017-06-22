@@ -16,14 +16,14 @@ exports.getOneColorCutList = function getOneColorCutList(color) {
 }
 
 function createFabricColorQuery(color) {
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var variantQuery = new Parse.Query(ProductVariant);
+    var ProductVariant = require("../../models/productVariant.js");
+    var variantQuery = ProductVariant.query();
 
-    var ProductType = Parse.Object.extend("ProductType");
-    var productTypeQuery = new Parse.Query(ProductType);
+    var ProductType = require("../../models/productType.js");
+    var productTypeQuery = ProductType.query();
 
-    var Fabric = Parse.Object.extend("Fabric");
-    var fabricQuery = new Parse.Query(Fabric);
+    var Fabric = require("../../models/fabric.js");
+    var fabricQuery = Fabric.query();
     fabricQuery.equalTo("color", color);
     productTypeQuery.matchesQuery("fabric", fabricQuery);
     variantQuery.matchesQuery("product", productTypeQuery);

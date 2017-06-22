@@ -3,8 +3,8 @@ var Parse = require('parse/node');
 exports.searchColor = function searchColor(searchText) {
     var promise = new Parse.Promise();
 
-    var Fabric = Parse.Object.extend("Fabric");
-    var query = new Parse.Query(Fabric);
+    var Fabric = require("../models/fabric.js");
+    var query = Fabric.query();
     query.startsWith("color", searchText.toLowerCase());
 
     //For some reason, if I put this query in another file and then make a promise for it, the return array to my iOS is not Parse encoded, so I can't cast it. But, if I do the query in this function, then it works fine.

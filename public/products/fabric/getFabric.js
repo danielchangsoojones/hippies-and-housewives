@@ -4,8 +4,8 @@ var Parse = require('parse/node');
 exports.getFabric = function getFabric(productJSON) {
     var promise = new Parse.Promise();
 
-    var Fabric = Parse.Object.extend("Fabric");
-    var query = new Parse.Query(Fabric);
+    var Fabric = require('../../models/fabric.js');
+    var query = Fabric.query();
 
     query.equalTo("color", exports.getColor(productJSON));
 

@@ -18,8 +18,8 @@ function findLineItems(orderJSON) {
     var LineItem = require("../../models/lineItem.js");
     var query = LineItem.query();
 
-    var Order = Parse.Object.extend("Order");
-    var innerQuery = new Parse.Query(Order);
+    var Order = require("../../models/order.js");
+    var innerQuery = Order.query();
     innerQuery.equalTo("shopifyID", orderJSON.id);
     query.matchesQuery("order", innerQuery);
 

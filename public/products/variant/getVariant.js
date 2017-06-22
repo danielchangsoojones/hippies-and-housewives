@@ -26,8 +26,8 @@ exports.findProductVariant = function findProductVariant(shopifyVariantID, varia
 }
 
 function createQuery(shopifyVariantID, variantTitle, productTitle) {
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var idQuery = new Parse.Query(ProductVariant);
+    var ProductVariant = require("../../models/productVariant.js");
+    var idQuery = ProductVariant.query();
     idQuery.equalTo("shopifyVariantID", shopifyVariantID);
 
     var addTitleMatchQuery = false;
@@ -35,8 +35,8 @@ function createQuery(shopifyVariantID, variantTitle, productTitle) {
     if (variantTitle != undefined && productTitle != undefined) {
         titleMatchQuery.equalTo("size", systemizeVariantTitle(variantTitle));
         
-        var ProductType = Parse.Object.extend("ProductType");
-        let innerQuery = new Parse.Query(ProductType);
+        var ProductType = require("../../models/productType.js");
+        let innerQuery = ProductType.query();
         innerQuery.equalTo("title", productTitle);
         titleMatchQuery.matchesQuery("product", innerQuery);
 

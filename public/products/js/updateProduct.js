@@ -1,5 +1,6 @@
 var Parse = require('parse/node');
 var getProducts = require("./getProducts.js");
+let ProductType = require("../../models/productType.js");
 
 exports.updateProduct = function updateProduct(productJSON) {
     findProduct(productJSON).then(function(product) {
@@ -12,9 +13,7 @@ exports.updateProduct = function updateProduct(productJSON) {
 
 function findProduct(productJSON) {
     var promise = new Parse.Promise();
-
-    var ProductType = Parse.Object.extend("ProductType");
-    var query = new Parse.Query(ProductType);
+    var query = ProductType.query();
 
     query.equalTo("shopifyID", productJSON.id);
     query.include("fabric");
@@ -60,11 +59,10 @@ function translateUpdatedProduct(product, productJSON) {
 
 //MARK: updated variants
 function updateVariants(productJSON, product) {
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var query = new Parse.Query(ProductVariant);
+    let ProductVariant = require("../../models/productVariant.js");
+    var query = ProductVariant.query();
 
-    var ProductType = Parse.Object.extend("ProductType");
-    var innerQuery = new Parse.Query(ProductType);
+    var innerQuery = new ProductType.query();
     innerQuery.equalTo("shopifyID", productJSON.id);
     query.matchesQuery("product", innerQuery);
 

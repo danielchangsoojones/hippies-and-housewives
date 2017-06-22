@@ -54,10 +54,9 @@ function createInventoryQuery(productTypeObjectID, size) {
     var Item = require("../../models/item.js");
     var query = Item.query();
 
-    var Package = Parse.Object.extend("Package");
-    var packageQuery = new Parse.Query(Package);
+    var Package = require("../../models/tracking/package.js");
+    var packageQuery = Package.query();
     packageQuery.equalTo("state", "in inventory");
-    packageQuery.notEqualTo("isDeleted", true);
     query.matchesQuery("package", packageQuery);
     
     let Save = require("../save/save.js");

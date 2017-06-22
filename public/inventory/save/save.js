@@ -90,12 +90,12 @@ exports.getProductVariant = function getProductVariant(productTypeObjectID, size
 }
 
 exports.createProductVariantQuery = function createProductVariantQuery(productTypeObjectID, size) {
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var query = new Parse.Query(ProductVariant);
+    var ProductVariant = require("../../models/productVariant.js");
+    var query = ProductVariant.query();
     query.equalTo("size", size);
 
-    var ProductType = Parse.Object.extend("ProductType");
-    var innerQuery = new Parse.Query(ProductType);
+    var ProductType = require("../../models/productType.js");
+    var innerQuery = ProductType.query();
     innerQuery.equalTo("objectId", productTypeObjectID);
     query.matchesQuery("product", innerQuery);
 

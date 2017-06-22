@@ -28,108 +28,86 @@ var Parse = require('parse/node');
 
 //MARK: duplicate products.
 //TODO: this doesn't check to make sure that inventory is safe, so the inventory could still be bad data.
-function getDuplicateProduct() {
-    let alreadyUsedProductIDs = [];
-    var duplicateProducts = [];
+// function getDuplicateProduct() {
+//     let alreadyUsedProductIDs = [];
+//     var duplicateProducts = [];
     
-    var ProductType = Parse.Object.extend("ProductType");
-    var query = new Parse.Query(ProductType);
-    query.limit(10000);
+//     let ProductType = require("../../models/productType.js");
+//     var query = ProductType.query();
+//     query.limit(10000);
 
-    query.find({
-      success: function(products) {
-          for (var i = 0; i < products.length; i++) {
-              let product = products[i];
-              let shopifyProductID = product.get("shopifyID");
-              if (alreadyUsedProductIDs.indexOf(shopifyProductID) == -1) {
-                  //first time seeing this product number
-                  alreadyUsedProductIDs.push(shopifyProductID);
-              } else {
-                  //it's a duplicate product number
-                  deleteDuplicateProduct(product);
-              }
-          }
-      },
-      error: function(error) {
-          console.log(error);
-      }
-    });
-}
+//     query.find({
+//       success: function(products) {
+//           for (var i = 0; i < products.length; i++) {
+//               let product = products[i];
+//               let shopifyProductID = product.get("shopifyID");
+//               if (alreadyUsedProductIDs.indexOf(shopifyProductID) == -1) {
+//                   //first time seeing this product number
+//                   alreadyUsedProductIDs.push(shopifyProductID);
+//               } else {
+//                   //it's a duplicate product number
+//                   deleteDuplicateProduct(product);
+//               }
+//           }
+//       },
+//       error: function(error) {
+//           console.log(error);
+//       }
+//     });
+// }
 
-function deleteDuplicateProduct(duplicateProduct) {
-        var ProductVariant = Parse.Object.extend("ProductVariant");
-        var query = new Parse.Query(ProductVariant);
-        query.equalTo("product", duplicateProduct);
+// function deleteDuplicateProduct(duplicateProduct) {
+//         var ProductVariant = Parse.Object.extend("ProductVariant");
+//         var query = new Parse.Query(ProductVariant);
+//         query.equalTo("product", duplicateProduct);
 
-        query.find({
-            success: function(variants) {
-                let objects = [variants, duplicateProduct];
-                var flattenedObjects = [].concat.apply([], objects);
-                Parse.Object.destroyAll(flattenedObjects);
-                matchLineItems();
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-}
+//         query.find({
+//             success: function(variants) {
+//                 let objects = [variants, duplicateProduct];
+//                 var flattenedObjects = [].concat.apply([], objects);
+//                 Parse.Object.destroyAll(flattenedObjects);
+//                 matchLineItems();
+//             },
+//             error: function(error) {
+//                 console.log(error);
+//             }
+//         });
+// }
 
-function matchLineItems() {
-    var LineItem = require("../../models/lineItem.js");
-    var query = LineItem.query();
-    query.limit(10000);
-    query.include("productVariant");
+// function matchLineItems() {
+//     var LineItem = require("../../models/lineItem.js");
+//     var query = LineItem.query();
+//     query.limit(10000);
+//     query.include("productVariant");
 
-    query.find({
-        success: function(lineItems) {
-            for(var i = 0; i < lineItems.length; i++) {
-                let lineItem = lineItems[i];
-                if (lineItem.get("productVariant") == undefined) {
-                     associateProductVariant(lineItem);
-                }
-            }
-        }, 
-        error: function(error) {
-            console.log(error);
-        }
-    })
-}
+//     query.find({
+//         success: function(lineItems) {
+//             for(var i = 0; i < lineItems.length; i++) {
+//                 let lineItem = lineItems[i];
+//                 if (lineItem.get("productVariant") == undefined) {
+//                      associateProductVariant(lineItem);
+//                 }
+//             }
+//         }, 
+//         error: function(error) {
+//             console.log(error);
+//         }
+//     })
+// }
 
-function associateProductVariant(lineItem) {
-    var ProductVariant = Parse.Object.extend("ProductVariant");
-    var query = new Parse.Query(ProductVariant);
+// function associateProductVariant(lineItem) {
+//     var ProductVariant = Parse.Object.extend("ProductVariant");
+//     var query = new Parse.Query(ProductVariant);
     
-    query.equalTo("shopifyVariantID", lineItem.get("shopifyVariantID"));
+//     query.equalTo("shopifyVariantID", lineItem.get("shopifyVariantID"));
 
-    query.first({
-        success: function(variant) {
-            lineItem.set("productVariant", variant);
-            lineItem.save();
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-}
-
-function checkNullInventory() {
-    var Inventory = Parse.Object.extend("Inventory");
-    var query = new Parse.Query(Inventory);
-    query.limit(10000);
-    query.include("productVariant");
-
-    query.find({
-        success: function(inventories) {
-            for (var i = 0; i < inventories.length; i++) {
-                let inventory = inventories[i];
-                if (inventory.get("productVariant") == undefined) {
-                    console.log(inventory);
-                }
-                
-            }
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    })
-}
+//     query.first({
+//         success: function(variant) {
+//             lineItem.set("productVariant", variant);
+//             lineItem.save();
+//         },
+//         error: function(error) {
+//             console.log(error);
+//         }
+//     });
+// }
