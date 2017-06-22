@@ -52,10 +52,15 @@ function createExistingLineItemsQuery(productTypeObjectID, size) {
 }
 
 function createInventoryQuery(productTypeObjectID, size) {
-    var Inventory = Parse.Object.extend("Inventory");
-    var query = new Parse.Query(Inventory);
-    query.notEqualTo("isDeleted", true);
+    var Item = require("../../models/item.js");
+    var query = Item.query();
 
+    var Package = Parse.Object.extend("Package");
+    var packageQuery = new Parse.Query(Package);
+    packageQuery.equalTo("state", "in inventory");
+    packageQuery.notEqualTo("isDeleted", true);
+    query.matchesQuery("package", packageQuery);
+    
     let Save = require("../save/save.js");
     let productVariantQuery = Save.createProductVariantQuery(productTypeObjectID, size);
     query.matchesQuery("productVariant", productVariantQuery);
@@ -89,7 +94,7 @@ function siftInventories(inventories) {
     if (inventories.length > 0) {
         let firstInventory = inventories[0];
         let lineItem = firstInventory.get("lineItem");
-        lineItem.unset("inventory");
+        lineItem.unset("item");
         firstInventory.unset("lineItem");
         firstInventory.set("isDeleted", true);
         Parse.Object.saveAll([lineItem, firstInventory], {

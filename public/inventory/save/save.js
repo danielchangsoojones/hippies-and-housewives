@@ -41,8 +41,8 @@ Say, we send a bunch of swimsuits off to a factory, and we need to make sure tho
 so they don't get double cut. But, they have no label, so when they are placed into inventory, we need to match them back up
 */
 function checkIfGroupItem(itemsToSkip) {
-    var Item = Parse.Object.extend("Item");
-    var query = new Parse.Query(Item);
+    var Item = require("../../models/item.js");
+    var query = Item.query();
     query.exists("group");
     query.doesNotExist("package");
     query.skip(itemsToSkip);
@@ -103,8 +103,7 @@ exports.createProductVariantQuery = function createProductVariantQuery(productTy
 }
 
 function saveInventory(productVariant, lineItemsToSkip) {
-    let Item = require('../../models/item.js');
-    let item = new Item();
+    let item = require('../../models/item.js').item;
     item.set("productVariant", productVariant);
     setAsPackaged(item);
     return allocateInventory(item, productVariant, lineItemsToSkip);

@@ -4,8 +4,8 @@ var Parse = require('parse/node');
 exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
     var promise = new Parse.Promise();
     
-    var Item = Parse.Object.extend("Item");
-    var query = new Parse.Query(Item);
+    var Item = require("../../models/item.js");
+    var query = Item.query();
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("lineItem");
     query.notEqualTo("isDeleted", true);

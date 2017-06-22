@@ -22,7 +22,7 @@ function getZenCutList() {
         rl.close();
 
 
-        var LineItem = Parse.Object.extend("LineItem");
+    var LineItem = Parse.Object.extend("LineItem");
     var query = new Parse.Query(LineItem);
     query.endsWith("title", color);
     query.equalTo("state", "open");
