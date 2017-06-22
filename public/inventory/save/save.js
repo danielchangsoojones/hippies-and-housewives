@@ -17,7 +17,11 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
                 });
             } else {
                 setAsPackaged(groupItem);
-                promise.resolve(groupItem);
+                groupItem.save(null, function(groupItem) {
+                    promise.resolve(groupItem);
+                }, function(error) {
+                    promise.reject(error);
+                });
             }
         }, function (error) {
             promise.reject(error);
