@@ -1,17 +1,10 @@
 Parse.Cloud.define("searchProduct", function(req, res) {
   let searchText = req.params.searchText.toLowerCase();
-  var ProductType = require("../public/models/productType.js");
-  var query = ProductType.query();
-  query.startsWith("lowercaseTitle", searchText.toLowerCase());
-
-//For some reason, if I put this query in another file and then make a promise for it, the return array to my iOS is not Parse encoded, so I can't cast it. But, if I do the query in this function, then it works fine.
-  query.find({
-      success: function(products) {
-          res.success(products);
-      },
-      error: function(error) {
-          res.error(error);
-      }
+  let Search = require("../public/products/search/searchProduct.js");
+  Search.searchProduct(searchText).then(function(products) {
+    res.success(products);
+  }, function(error) {
+    res.error(error);
   });
 });
 
