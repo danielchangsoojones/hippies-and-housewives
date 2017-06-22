@@ -22,7 +22,7 @@ exports.allocateItem = function allocateItem(item, lineItemsToSkip) {
 }
 
 function findLineItem(productVariant, lineItemsToSkip) {
-    var LineItem = Parse.Object.extend("LineItem");
+    var LineItem = require("../../models/lineItem.js");
     var query = new Parse.Query(LineItem);
     query.doesNotExist("item");
     query.equalTo("productVariant", productVariant);

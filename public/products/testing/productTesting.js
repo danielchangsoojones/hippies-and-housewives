@@ -75,8 +75,8 @@ function deleteDuplicateProduct(duplicateProduct) {
 }
 
 function matchLineItems() {
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
+    var LineItem = require("../../models/lineItem.js");
+    var query = LineItem.query();
     query.limit(10000);
     query.include("productVariant");
 

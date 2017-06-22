@@ -15,8 +15,8 @@ exports.updateOrder = function updateOrder(orderJSON) {
 function findLineItems(orderJSON) {
     var promise = new Parse.Promise();
 
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
+    var LineItem = require("../../models/lineItem.js");
+    var query = LineItem.query();
 
     var Order = Parse.Object.extend("Order");
     var innerQuery = new Parse.Query(Order);

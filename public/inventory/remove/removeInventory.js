@@ -41,10 +41,9 @@ function createNonExistentLineItemsQuery(productTypeObjectID, size) {
 function createExistingLineItemsQuery(productTypeObjectID, size) {
     var query = createInventoryQuery(productTypeObjectID, size);
 
-    var LineItem = Parse.Object.extend("LineItem");
-    var lineItemQuery = new Parse.Query(LineItem);
+    var LineItem = require("../../models/lineItem.js");
+    var lineItemQuery = LineItem.query();
     lineItemQuery.equalTo("state", "open");
-    lineItemQuery.notEqualTo("isDeleted", true);
     lineItemQuery.notEqualTo("isPicked", true);
     query.matchesQuery("lineItem", lineItemQuery);
 

@@ -57,8 +57,8 @@ function findCompletedLineItems() {
 }
 
 function createCompletedLineItemsQuery() {
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
+    var LineItem = require("../models/lineItem.js");
+    var query = LineItem.query();
     query.equalTo("state", "open");
     query.notEqualTo("isPicked", true);
 
@@ -125,8 +125,8 @@ function runIncompleteLineItemQuery(completedLineItems) {
 }
 
 function createIncompleteLineItemQuery(order) {
-    var LineItem = Parse.Object.extend("LineItem");
-    var incompleteLineItemsQuery = new Parse.Query(LineItem);
+    var LineItem = require("../models/lineItem.js");
+    var incompleteLineItemsQuery = LineItem.query();
     incompleteLineItemsQuery.equalTo("state", "open");
     incompleteLineItemsQuery.equalTo("order", order);
     incompleteLineItemsQuery.doesNotExist("inventory");

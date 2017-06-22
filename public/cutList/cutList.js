@@ -29,8 +29,8 @@ exports.getCutList = function getCutList() {
 function findLineItemsToCut() {
     var promise = new Parse.Promise();
 
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
+    var LineItem = require("../models/lineItem.js");
+    var query = LineItem.query();
     query.equalTo("state", "open");
     query.notEqualTo("isInitiated", true);
     query.doesNotExist("inventory");

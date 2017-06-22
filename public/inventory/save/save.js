@@ -131,8 +131,8 @@ function allocateInventory(item, productVariant, lineItemsToSkip) {
 }
 
 function findMatchingLineItem(inventory, productVariant, lineItemsToSkip) {
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
+    var LineItem = require("../../models/lineItem.js");
+    var query = LineItem.query();
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("item");
     query.equalTo("state", "open");

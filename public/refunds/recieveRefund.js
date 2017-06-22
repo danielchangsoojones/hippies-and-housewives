@@ -18,8 +18,8 @@ exports.getLineItemIDsFromRefund = function getLineItemsFromRefund(refundJSON) {
 }
 
 function updateLineItemsState(shopifyLineItemIDs) {
-    var LineItem = Parse.Object.extend("LineItem");
-    var query = new Parse.Query(LineItem);
+    var LineItem = require("../models/lineItem.js");
+    var query = LineItem.query();
 
     query.containedIn("shopifyLineItemID", shopifyLineItemIDs);
     
