@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Pick List Testing",
+            "program": "${workspaceRoot}/public/pickList/testing/testingPickList.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Product Type Testing",
             "program": "${workspaceRoot}/public/products/testing/productTesting.js"
         },

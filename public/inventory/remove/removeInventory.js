@@ -43,7 +43,6 @@ function createExistingLineItemsQuery(productTypeObjectID, size) {
 
     var LineItem = require("../../models/lineItem.js");
     var lineItemQuery = LineItem.query();
-    lineItemQuery.equalTo("state", "open");
     lineItemQuery.notEqualTo("isPicked", true);
     query.matchesQuery("lineItem", lineItemQuery);
 

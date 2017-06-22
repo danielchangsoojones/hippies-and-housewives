@@ -25,9 +25,8 @@ function getZenCutList() {
     var LineItem = require("../../models/lineItem.js");
     var query = LineItem.query();
     query.endsWith("title", color);
-    query.equalTo("state", "open");
     query.notEqualTo("isInitiated", true);
-    query.doesNotExist("inventory");
+    query.doesNotExist("item");
     query.include("order");
     query.limit(10000);
     

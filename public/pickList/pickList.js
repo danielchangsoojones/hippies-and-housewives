@@ -5,18 +5,18 @@ when it is 100% capable of being filled. This means that every order chosen for 
 pick list will have all of its line items ready.
 */
 var Parse = require('parse/node');
+let LineItem = require("../models/lineItem.js");
+let Item = require("../models/item.js");
 
 exports.createPickList = function createPickList() {
     var promise = new Parse.Promise();
 
     findCompletedLineItems().then(function(completedLineItems) {
-        findCompletedOrders(completedLineItems).then(function(results) {
-            let filteredArray = filterArray(results);
-            //For some reason, when I pass the results to Cloud code via a promise. The Object loses its class affiliation, so my iOS doesn't recieve an object, just JSON. Encoding the objects before sending to cloud code fixes this.
-            promise.resolve(Parse._encode(filteredArray));
-        }, function(error) {
-            promise.reject(error);
-        });
+        return findCompletedOrders(completedLineItems)
+    }).then(function(results) {
+        let filteredArray = filterArray(results);
+        //For some reason, when I pass the results to Cloud code via a promise. The Object loses its class affiliation, so my iOS doesn't recieve an object, just JSON. Encoding the objects before sending to cloud code fixes this.
+        promise.resolve(Parse._encode(filteredArray));
     }, function(error) {
         promise.reject(error);
     });
@@ -32,37 +32,17 @@ line items in that order that aren't completed. If we get no results, then that 
 for every received line item, but it's the best way Daniel can think of accomplishing this.
 */
 function findCompletedLineItems() {
-    var promise = new Parse.Promise();
+    let query = LineItem.query();
+    query.doesNotExist("pick");
 
-    var inventoryQuery = createCompletedLineItemsQuery();
-    inventoryQuery.exists("inventory");
+    let itemQuery = Item.query();
+    itemQuery.exists("package");
+    query.matchesQuery("item", itemQuery);
 
-    var packagedQuery = createCompletedLineItemsQuery();
-    packagedQuery.equalTo("isPackaged", true);
+    query.limit(10000);
+    query.include("order");
 
-    var orQuery = Parse.Query.or(inventoryQuery, packagedQuery);
-    orQuery.include("order");
-    orQuery.limit(10000);
-
-    orQuery.find({
-        success: function(lineItems) {
-          promise.resolve(lineItems);
-        },
-        error: function(error) {
-          promise.reject(error);
-        }
-    });
-
-    return promise;
-}
-
-function createCompletedLineItemsQuery() {
-    var LineItem = require("../models/lineItem.js");
-    var query = LineItem.query();
-    query.equalTo("state", "open");
-    query.notEqualTo("isPicked", true);
-
-    return query;
+    return query.find();
 }
 
 function findCompletedOrders(completedLineItems) {
@@ -76,7 +56,6 @@ function findCompletedOrders(completedLineItems) {
          promises.push(promise);
     }
 
-    //waiting for the promises to run in parallel and then we grab them all at once when they are all done.
     return Parse.Promise.when(promises);
 }
 
@@ -125,15 +104,20 @@ function runIncompleteLineItemQuery(completedLineItems) {
 }
 
 function createIncompleteLineItemQuery(order) {
-    var LineItem = require("../models/lineItem.js");
     var incompleteLineItemsQuery = LineItem.query();
-    incompleteLineItemsQuery.equalTo("state", "open");
+
+    let itemQuery = Item.query();
+    itemQuery.doesNotExist("package");
     incompleteLineItemsQuery.equalTo("order", order);
     incompleteLineItemsQuery.doesNotExist("inventory");
     incompleteLineItemsQuery.notEqualTo("isPackaged", true);
     incompleteLineItemsQuery.notEqualTo("isPicked", true);
     
     return incompleteLineItemsQuery;
+}
+
+function createItemDoesNotExistQuery() {
+
 }
 
 function filterArray(array) {

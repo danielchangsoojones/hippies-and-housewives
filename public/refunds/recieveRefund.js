@@ -20,6 +20,8 @@ exports.getLineItemIDsFromRefund = function getLineItemsFromRefund(refundJSON) {
 function updateLineItemsState(shopifyLineItemIDs) {
     var LineItem = require("../models/lineItem.js");
     var query = LineItem.query();
+    //overriding the open state on normal line items
+    query.exists("state");
 
     query.containedIn("shopifyLineItemID", shopifyLineItemIDs);
     
