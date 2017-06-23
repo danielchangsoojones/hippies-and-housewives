@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Metrics",
+            "program": "${workspaceRoot}/public/metrics/numberOfCuts.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Transpose Data",
             "program": "${workspaceRoot}/public/resources/transposeData.js"
         },
