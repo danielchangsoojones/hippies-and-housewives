@@ -111,6 +111,7 @@ function saveInventory(productVariant, lineItemsToSkip) {
 }
 
 function allocateInventory(item, productVariant, lineItemsToSkip) {
+    console.log("allocating inventories");
     var promise = new Parse.Promise();
     findMatchingLineItem(item, productVariant, lineItemsToSkip).then(function (lineItem) {
         if (lineItem == undefined) {
