@@ -103,7 +103,8 @@ exports.createProductVariantQuery = function createProductVariantQuery(productTy
 }
 
 function saveInventory(productVariant, lineItemsToSkip) {
-    let item = require('../../models/item.js').item;
+    let Item = require('../../models/item.js');
+    let item = new Item();
     item.set("productVariant", productVariant);
     setAsPackaged(item);
     return allocateInventory(item, productVariant, lineItemsToSkip);
