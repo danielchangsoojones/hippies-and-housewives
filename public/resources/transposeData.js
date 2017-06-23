@@ -6,6 +6,7 @@ var Parse = require('parse/node');
 var num = 1;
 
 //TODO: we are not setting the product variant right now, but we need to or else it won't be set
+//TODO: we need to add unique ID's to every item
 // function transposeData() {
 //     var LineItem = require("../models/lineItem.js");
 //     let query = LineItem.query();
@@ -215,12 +216,33 @@ var num = 1;
 //     return item;
 // }
 
-// function saveAll(objects) {
-//     var Flatten = require("../orders/js/orders.js");
-//     Flatten.saveAllComponents(objects).then(function (results) {
-//         console.log(results);
-//     }, function (error) {
-//         console.log(error);
+function saveAll(objects) {
+    var Flatten = require("../orders/js/orders.js");
+    Flatten.saveAllComponents(objects).then(function (results) {
+        console.log(results);
+    }, function (error) {
+        console.log(error);
+    });
+}
+
+//MARK: unqiue ID's
+// function addUniqueIDs() {
+//     let query = Item.query();
+//     query.limit(10000);
+//     query.find({
+//         success: function(items) {
+//             var itemsArray = [];
+//             for(var i = 0; i < items.length; i++) {
+//                 let item = items[i];
+//                 var Unique = require("../items/item/uniqueID.js");
+//                 Unique.createUniqueID(item);
+//                 itemsArray.push(item);
+//             }
+//             saveAll(itemsArray);
+//         },
+//         error: function(error) {
+//             console.log(error);
+//         }
 //     });
 // }
 
