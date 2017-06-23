@@ -6,29 +6,32 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
     for (var i = 0; i < quantity; i++) {
         let promise = new Parse.Promise();
         promises.push(promise);
-        checkIfGroupItem(i).then(function (result) {
-            let groupItem = result.item;
-            if (groupItem == undefined) {
-                //no groupItem found
-                let lineItemsToSkip = quantity - result.i - 1;
-                createNewInventory(productTypeObjectID, size, lineItemsToSkip).then(function(item) {
-                    promise.resolve(item);
-                }, function(error) {
-                    promise.reject(error);
-                });
-            } else {
-                setAsPackaged(groupItem);
-                groupItem.save(null, {
-                    success: function (groupItem) {
-                        promise.resolve(groupItem);
-                    },
-                    error: function (error) {
+
+        exports.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
+            checkIfGroupItem(i, productVariant).then(function (result) {
+                let groupItem = result.item;
+                if (groupItem == undefined) {
+                    //no groupItem found
+                    let lineItemsToSkip = quantity - result.i;
+                    createNewInventory(productVariant, lineItemsToSkip).then(function (item) {
+                        promise.resolve(item);
+                    }, function (error) {
                         promise.reject(error);
-                    }
-                });
-            }
-        }, function (error) {
-            promise.reject(error);
+                    });
+                } else {
+                    setAsPackaged(groupItem);
+                    groupItem.save(null, {
+                        success: function (groupItem) {
+                            promise.resolve(groupItem);
+                        },
+                        error: function (error) {
+                            promise.reject(error);
+                        }
+                    });
+                }
+            }, function (error) {
+                promise.reject(error);
+            });
         });
     }
 
@@ -40,12 +43,13 @@ a group item is an item that was associated with a group and we used it to initi
 Say, we send a bunch of swimsuits off to a factory, and we need to make sure those line items are initiated,
 so they don't get double cut. But, they have no label, so when they are placed into inventory, we need to match them back up
 */
-function checkIfGroupItem(itemsToSkip) {
+function checkIfGroupItem(itemsToSkip, productVariant) {
     var Item = require("../../models/item.js");
     var query = Item.query();
     query.exists("group");
     query.doesNotExist("package");
     query.skip(itemsToSkip);
+    query.equalTo("productVariant", productVariant);
 
     var promise = new Parse.Promise();
 
@@ -65,12 +69,6 @@ function setAsPackaged(item) {
     var package = new Package();
     package.set("state", "in inventory");
     item.set("package", package);
-}
-
-function createNewInventory(productTypeObjectID, size, lineItemsToSkip) {
-    return exports.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
-        return saveInventory(productVariant, lineItemsToSkip);
-    });
 }
 
 exports.getProductVariant = function getProductVariant(productTypeObjectID, size) {
@@ -102,7 +100,7 @@ exports.createProductVariantQuery = function createProductVariantQuery(productTy
     return query;
 }
 
-function saveInventory(productVariant, lineItemsToSkip) {
+function createNewInventory(productVariant, lineItemsToSkip) {
     let Item = require('../../models/item.js');
     let item = new Item();
     item.set("productVariant", productVariant);
