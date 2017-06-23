@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Transpose Data",
+            "program": "${workspaceRoot}/public/resources/transposeData.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Pick List Testing",
             "program": "${workspaceRoot}/public/pickList/testing/testingPickList.js"
         },

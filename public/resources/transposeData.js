@@ -1,6 +1,9 @@
 let Package = require("../models/tracking/package.js");
 let Item = require("../models/item.js");
+require("./initializeParse.js");
+var Parse = require('parse/node');
 
+transposeData();
 function transposeData() {
     var LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
@@ -10,9 +13,10 @@ function transposeData() {
 
     query.find({
         success: function(lineItems) {
-            lineItems.array.forEach(function(lineItem) {
-                
-            }, this);
+            for (var i = 0; i < lineItems.length; i++) {
+                let lineItem = lineItems[i];
+                transposeLineItem(lineItem);
+            }
         },
         error: function(error) {
             console.log(error);
@@ -40,20 +44,20 @@ function transposeLineItem(lineItem) {
 
     item.set("lineItem", lineItem);
     lineItem.set("item", item);
-    
-    lineItem.save(null, {
-        success: function (lineItem) {
-            console.log("successfully saved");
-        },
-        error: function (error) {
-            console.log(error);
-        }
+
+    Parse.Object.saveAll([lineItem, item], {
+            success: function (results) {
+               console.log(results);
+            },
+            error: function (error) {                                     
+                console.log(error);
+            }
     });
 }
 
 function createInventoryItem(lineItem) {
     let item = new Item();
-    let package = new Package();
+    var package = new Package();
     package.set("state", Package.states().in_inventory);
     item.set("package", package);
 
@@ -82,19 +86,19 @@ function createAttributedItem(lineItem) {
     }
     if(isPackaged == true) {
         let Package = require("../models/tracking/package.js");
-        let package = new Package();
+        var package = new Package();
         package.set("state", Package.states().waiting_for_identified_pick);
-        item.set("package", Package);
+        item.set("package", package);
     }
     if(isPicked) {
         let Pick = require("../models/tracking/pick.js");
         let pick = new Pick();
-        item.set("pick", pick);
+        lineItem.set("pick", pick);
     }
     if (isShipped) {
         let Ship = require("../models/tracking/ship.js");
         let ship = new Ship();
-        item.set("ship", ship);
+        lineItem.set("ship", ship);
     }
     if (isWithMike) {
         let Group = require("../models/group.js");
