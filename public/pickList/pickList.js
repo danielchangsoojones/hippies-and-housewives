@@ -39,7 +39,6 @@ function findCompletedLineItems() {
     itemQuery.exists("package");
     query.matchesQuery("item", itemQuery);
 
-    query.limit(200);
     query.include("order");
 
     return query.find();
