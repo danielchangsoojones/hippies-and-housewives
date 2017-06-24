@@ -4,8 +4,7 @@ require("./initializeParse.js");
 var Parse = require('parse/node');
 
 var num = 1;
-
-transposeData();
+//TODO: set any line item unique ids to this unique id so we don't create new ones where there might be stickers
 function transposeData() {
     var LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
@@ -184,6 +183,29 @@ function saveAll(objects) {
 function addUniqueID(item) {
     var Unique = require("../items/item/uniqueID.js");
     Unique.createUniqueID(item);
+}
+
+setUniqueIDFromLineItems();
+function setUniqueIDFromLineItems() {
+    let query = Item.query();
+    query.exists("lineItem");
+    query.include("lineItem");
+    query.limit(10000);
+    query.find({
+        success: function(items) {
+            for (var i = 0; i < items.length; i++) {
+                console.log(i);
+                let item = items[i];
+                let lineItem = item.get("lineItem");
+                let shopifyLineItemID = lineItem.get("shopifyLineItemID");
+                item.set("uniqueID", shopifyLineItemID);
+            }
+            saveAll(items);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    })
 }
 
 
