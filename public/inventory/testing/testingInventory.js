@@ -3,8 +3,8 @@ var Parse = require('parse/node');
 
 testInventorySave();
 function testInventorySave() {
-    let productTypeObjectID = "xDrFQ8cVIv";
-    let size = "XS";
+    let productTypeObjectID = "IRWM7WulrO";
+    let size = "XL";
     let quantity = 5;
     var Saving = require("../save/save.js");
     Saving.saveInventory(productTypeObjectID, size, quantity).then(function(items) {

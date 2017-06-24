@@ -7,12 +7,13 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
         let promise = new Parse.Promise();
         promises.push(promise);
 
-        exports.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
-            checkIfGroupItem(i, productVariant).then(function (result) {
+        exports.getProductVariant(productTypeObjectID, size, i).then(function (productVariantResult) {
+            let productVariant = productVariantResult.productVariant;
+            checkIfGroupItem(productVariantResult.i, productVariant).then(function (result) {
                 let groupItem = result.item;
                 if (groupItem == undefined) {
                     //no groupItem found
-                    let lineItemsToSkip = quantity - result.i;
+                    let lineItemsToSkip = quantity - result.i - 1;
                     createNewInventory(productVariant, lineItemsToSkip).then(function (item) {
                         promise.resolve(item);
                     }, function (error) {
@@ -46,11 +47,11 @@ so they don't get double cut. But, they have no label, so when they are placed i
 function checkIfGroupItem(itemsToSkip, productVariant) {
     var Item = require("../../models/item.js");
     var query = Item.query();
+    query.equalTo("productVariant", productVariant);
     query.exists("group");
     query.doesNotExist("package");
     query.skip(itemsToSkip);
-    query.equalTo("productVariant", productVariant);
-
+    
     var promise = new Parse.Promise();
 
     query.first(function(item) {
@@ -71,13 +72,14 @@ function setAsPackaged(item) {
     item.set("package", package);
 }
 
-exports.getProductVariant = function getProductVariant(productTypeObjectID, size) {
+exports.getProductVariant = function getProductVariant(productTypeObjectID, size, i) {
     var promise = new Parse.Promise();
 
     let query = exports.createProductVariantQuery(productTypeObjectID, size);
     query.first({
         success: function (productVariant) {
-            promise.resolve(productVariant);
+            let result = {productVariant: productVariant, i: i};
+            promise.resolve(result);
         },
         error: function (error) {
             promise.reject(error);
