@@ -1,7 +1,6 @@
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
-testInventorySave();
 function testInventorySave() {
     let productTypeObjectID = "IRWM7WulrO";
     let size = "XL";
@@ -14,6 +13,7 @@ function testInventorySave() {
     });
 }
 
+removeInventory("4OzWExWdcL", "XXL");
 function removeInventory(productTypeObjectID, size) {
     let Inventory = require("../remove/removeInventory.js");
     Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {
