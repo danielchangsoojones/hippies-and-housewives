@@ -8,7 +8,7 @@ exports.saveMultipleCuts = function saveMultipleCuts(productTypeObjectID, size, 
 
         getProductVariant(productTypeObjectID, size, i).then(function (result) {
             let productVariant = result.productVariant;
-            let position = result.position;
+            let position = result.i;
             return createItem(productVariant, currentUser, position);
         }).then(function (item) {
             promise.resolve(item);
@@ -66,8 +66,8 @@ function getProductVariant(productTypeObjectID, size, position) {
     var promise = new Parse.Promise();
 
     var Find = require("../../inventory/save/save.js");
-    Find.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
-        promise.resolve({productVariant: productVariant, position: position})
+    Find.getProductVariant(productTypeObjectID, size, position).then(function (result) {
+        promise.resolve(result);
     }, function (error) {
         promise.reject(error);
     });
