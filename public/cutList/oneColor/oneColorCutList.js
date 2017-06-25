@@ -9,7 +9,6 @@ exports.getOneColorCutList = function getOneColorCutList(color) {
     query.limit(10000);
 
     return query.find().then(function(lineItems) {
-        var CutList = require("../cutList.js");
         return CutList.createGoogleSheet(lineItems);
     });
 }
