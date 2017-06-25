@@ -138,7 +138,8 @@ function createLineItemRowValues() {
   for (var i = 0; i < lineItems.length; i++) {
     let lineItem = lineItems[i];
     let order = lineItem.get("order");
-    let lineItemJSON = [lineItem.get("shopifyLineItemID"), lineItem.get("title"), lineItem.get("variant_title"), order.get("name")];
+    let item = lineItem.get("item");
+    let lineItemJSON = [item.get("uniqueID"), lineItem.get("title"), lineItem.get("variant_title"), order.get("name")];
     lineItemArray.push(lineItemJSON);
   }
 

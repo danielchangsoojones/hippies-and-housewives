@@ -4,7 +4,7 @@ require("./initializeParse.js");
 var Parse = require('parse/node');
 
 var num = 1;
-//TODO: set any line item unique ids to this unique id so we don't create new ones where there might be stickers
+
 function transposeData() {
     var LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
@@ -59,9 +59,9 @@ function transposeLineItem(lineItem) {
     num++;
 
     addProductVariantToItem(item, lineItem);
-    addUniqueID(item);
-    lineItem.set("item", item);
+    addUniqueID(item, lineItem);
     item.set("lineItem", lineItem);
+    lineItem.set("item", item);
 
     return [item, lineItem];
 }
@@ -180,32 +180,89 @@ function saveAll(objects) {
 }
 
 //MARK: unqiue ID's
-function addUniqueID(item) {
-    var Unique = require("../items/item/uniqueID.js");
-    Unique.createUniqueID(item);
+function addUniqueID(item, lineItem) {
+    item.set("uniqueID", lineItem.get("shopifyLineItemID"));
 }
 
-setUniqueIDFromLineItems();
-function setUniqueIDFromLineItems() {
-    let query = Item.query();
-    query.exists("lineItem");
-    query.include("lineItem");
+function getUndefinedItems() {
+    var LineItem = require("../models/lineItem.js");
+    let query = LineItem.query();
+    query.exists("item");
+    query.include("item");
     query.limit(10000);
     query.find({
-        success: function(items) {
-            for (var i = 0; i < items.length; i++) {
-                console.log(i);
-                let item = items[i];
-                let lineItem = item.get("lineItem");
-                let shopifyLineItemID = lineItem.get("shopifyLineItemID");
-                item.set("uniqueID", shopifyLineItemID);
+        success: function(lineItems) {
+            var count = 0;
+            for (var i = 0; i < lineItems.length; i++) {
+                let lineItem = lineItems[i];
+                let item = lineItem.get("item");
+                if (item == undefined) {
+                    console.log(lineItem.id);
+                    console.log(count);
+                    count++;
+                }
             }
-            saveAll(items);
         },
         error: function(error) {
             console.log(error);
         }
     })
 }
+
+// function deleteAllItems() {
+//     createDeleteQuery("Item");
+//     createDeleteQuery("Cut");
+//     createDeleteQuery("Group");
+//     createDeleteQuery("Package");
+//     createDeleteQuery("Pick");
+//     createDeleteQuery("Sewn");
+//     createDeleteQuery("Ship");
+//     unsetItemFromLineItem();
+// }
+
+// function unsetItemFromLineItem() {
+//     let LineItem = Parse.Object.extend("LineItem");
+//     let query = new Parse.Query(LineItem);
+//     query.limit(10000);
+//     query.exists("item");
+//     query.find({
+//         success: function(lineItems) {
+//             var lineItemsArray = [];
+//             for (var i = 0; i < lineItems.length; i++) {
+//                 let lineItem = lineItems[i];
+//                 lineItem.unset("item");
+//                 lineItemsArray.push(lineItem);
+//             }
+//             Parse.Object.saveAll(lineItemsArray, {
+//                 success: function(lineItems) {
+//                     console.log("unset all items from line items");
+//                 },
+//                 error: function(error) {
+//                     console.log(error);
+//                 }
+//             })
+//         },
+//         error: function(error) {
+//             console.log(error);
+//         }
+//     })
+// }
+
+// function createDeleteQuery(objectName) {
+//     let Object = Parse.Object.extend(objectName);
+//     let query = new Parse.Query(Object);
+//     deleteQuery(query);
+// }
+
+// function deleteQuery(query) {
+//     query.limit(10000);
+//     query.find(function(objects) {
+//         return Parse.Object.destroyAll(objects);
+//     }).then(function(objects) {
+//         console.log("deleted all Parse Objects");
+//     }, function(error) {
+//         console.log(error);
+//     });
+// }
 
 
