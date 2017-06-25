@@ -27,8 +27,7 @@ function findLineItem(productVariant, lineItemsToSkip) {
     // var LineItem = require("../../models/lineItem.js");
     // var query = new Parse.Query(LineItem);
     // query.doesNotExist("item");
-    // query.equalTo("productVariant", productVariant);
-    // query.equalTo("state", "open");
+    query.equalTo("productVariant", productVariant);
 
     // var Item = require("../../models/item.js");
     // let itemQuery = Item.query();
