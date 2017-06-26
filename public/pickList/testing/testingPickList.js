@@ -3,8 +3,8 @@ var Parse = require('parse/node');
 
 testingPickList();
 function testingPickList() {
-  let PickList = require("../pickList.js");
-  PickList.createPickList().then(function(results) {
+  let PickList = require("../fetch/fetchPickList.js");
+  PickList.fetchPickList().then(function(results) {
       console.log(results);
       console.log(results.length);
   }, function(error) {
