@@ -1,3 +1,5 @@
+var Parse = require('parse/node');
+
 exports.saveInputtedPackage = function saveInputtedPackage(uniqueID) {
     var promise = new Parse.Promise();
 
