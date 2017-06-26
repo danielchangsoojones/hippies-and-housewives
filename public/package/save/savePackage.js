@@ -99,7 +99,7 @@ function finishPickable(item, order, lineItems) {
 function createPickable(order, lineItems) {
     let pickable = new Pickable();
     pickable.set("order", order);
-    pickable.set("lineItems");
+    pickable.set("lineItems", lineItems);
     return pickable;
 }
 

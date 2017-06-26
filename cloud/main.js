@@ -100,6 +100,20 @@ Parse.Cloud.define("inputMassCuts", function(req, res) {
   });
 });
 
+Parse.Cloud.define("inputPackage", function(req, res) {
+  let uniqueItemID = req.params.uniqueItemID;
+
+  var Save = require("../public/package/save/packageForm/saveInputtedPackage.js");
+  Save.saveInputtedPackage(uniqueItemID).then(function(item) {
+    var success = true;
+    res.success(success);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+
+
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");
