@@ -102,12 +102,14 @@ exports.createPickList = function createPickList() {
 //     return promise;
 // }
 
-exports.checkPickabilityForOrder = function checkPickabilityForOrder(order) {
+exports.checkPickabilityForOrder = function checkPickabilityForOrder(order, initialLineItem) {
     var promise = new Parse.Promise();
 
     let LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
     query.equalTo("order", order);
+    //we don't want to pull down the line item that we are testing because it is not saved yet, but we are setting its packaging to true
+    query.notEqualTo("objectId", initialLineItem.id);
     query.include("item.package");
     query.find({
         success: function(lineItems) {

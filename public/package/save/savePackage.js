@@ -11,7 +11,7 @@ exports.savePackage = function savePackage(state, item) {
     fetchLineItem(item).then(function(lineItem) {
         initialLineItem = lineItem;
         var PickList = require("../../pickList/pickList.js");
-        return PickList.checkPickabilityForOrder(lineItem.get("order"));
+        return PickList.checkPickabilityForOrder(lineItem.get("order"), lineItem);
     }).then(function(pickableLineItems) {
         lineItems = pickableLineItems;
         return doesPickableAlreadyExist(initialLineItem.get("order"));
