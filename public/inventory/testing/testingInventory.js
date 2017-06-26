@@ -1,7 +1,6 @@
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
-testInventorySave();
 function testInventorySave() {
     let productTypeObjectID = "lCpLWrAYGo";
     let size = "XS";
