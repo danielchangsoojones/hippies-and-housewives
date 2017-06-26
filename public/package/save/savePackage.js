@@ -1,17 +1,22 @@
 let Pickable = require("../../models/pickable.js");
+var Parse = require('parse/node');
 exports.noPickableAvailableError = "could not create a pickable";
 
 exports.savePackage = function savePackage(state, item) {
     var promise = new Parse.Promise();
 
-    setPackage(item);
-    fetchLineItem().then(function(lineItem) {
-        let PickList = require("../../pickList/pickList.js");
-        PickList.checkPickabilityForOrder(lineItem.get("order"));
+    setPackage(item, state);
+    var initialLineItem;
+    var lineItems;
+    fetchLineItem(item).then(function(lineItem) {
+        initialLineItem = lineItem;
+        var PickList = require("../../pickList/pickList.js");
+        return PickList.checkPickabilityForOrder(lineItem.get("order"));
     }).then(function(pickableLineItems) {
-        return doesPickableAlreadyExist(lineItem.get("order"));
+        lineItems = pickableLineItems;
+        return doesPickableAlreadyExist(initialLineItem.get("order"));
     }).then(function(order) {
-        return finishPickable(order, pickableLineItems);
+        return finishPickable(item, order, lineItems);
     }).then(function(objects) {
         //returning the item
         promise.resolve(objects[0]);
@@ -30,9 +35,9 @@ exports.savePackage = function savePackage(state, item) {
     return promise;
 }
 
-function setPackage(item) {
+function setPackage(item, state) {
     let Package = require("../../models/tracking/package.js");
-    let package = new Package();
+    var package = new Package();
     package.set("state", state);
     item.set("package", package);
 }
@@ -67,11 +72,13 @@ function doesPickableAlreadyExist(order) {
     let query = Pickable.query();
     query.equalTo("order", order);
     query.first({
-        success: function(order) {
-            if (order == undefined) {
-                promise.reject(exports.noPickableAvailableError);
-            } else {
+        success: function(pickable) {
+            if (pickable == undefined) {
+                //the pickable has never been made before, so return our order adn create a pickable
                 promise.resolve(order);
+            } else {
+                //the pickable has already been created and we don't want duplicates
+                promise.reject(exports.noPickableAvailableError);
             }
         },
         error: function(error) {
@@ -82,7 +89,7 @@ function doesPickableAlreadyExist(order) {
     return promise;
 }
 
-function finishPickable(order, lineItems) {
+function finishPickable(item, order, lineItems) {
     let pickable = createPickable(order, lineItems);
     let objects = [item, pickable];
     let SaveAll = require("../../orders/js/orders.js");
