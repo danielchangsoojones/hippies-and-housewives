@@ -135,10 +135,14 @@ function checkForAllCompletedLineItems(lineItems) {
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         var item = lineItem.get("item");
-        var package = item.get("package");
-        if (package == undefined) {
-            //a line item of the order has not been packaged yet, therefore the order can't be picked
+        if (item == undefined) {
             return false;
+        } else {
+            var package = item.get("package");
+            if (package == undefined) {
+                //a line item of the order has not been packaged yet, therefore the order can't be picked
+                return false;
+            }
         }
     }
 

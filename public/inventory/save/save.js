@@ -20,14 +20,10 @@ exports.saveInventory = function saveInventory(productTypeObjectID, size, quanti
                         promise.reject(error);
                     });
                 } else {
-                    setAsPackaged(groupItem);
-                    groupItem.save(null, {
-                        success: function (groupItem) {
-                            promise.resolve(groupItem);
-                        },
-                        error: function (error) {
-                            promise.reject(error);
-                        }
+                    setAsPackaged(groupItem).then(function(groupItem) {
+                        promise.resolve(groupItem);
+                    }, function(error) {
+                        promise.reject(error);
                     });
                 }
             }, function (error) {
@@ -65,11 +61,9 @@ function checkIfGroupItem(itemsToSkip, productVariant) {
 }
 
 function setAsPackaged(item) {
-    //package states: in inventory, waiting for identified pick
+    let SetPackage = require("../../package/save/savePackage.js");
     let Package = require("../../models/tracking/package.js");
-    var package = new Package();
-    package.set("state", "in inventory");
-    item.set("package", package);
+    return SetPackage.savePackage(Package.states().in_inventory, item);
 }
 
 exports.getProductVariant = function getProductVariant(productTypeObjectID, size, i) {
@@ -106,8 +100,9 @@ function createNewInventory(productVariant, lineItemsToSkip) {
     let Item = require('../../models/item.js');
     let item = new Item();
     item.set("productVariant", productVariant);
-    setAsPackaged(item);
-    return allocateInventory(item, productVariant, lineItemsToSkip);
+    return allocateInventory(item, productVariant, lineItemsToSkip).then(function(objects) {
+        return setAsPackaged(item);
+    });
 }
 
 function allocateInventory(item, productVariant, lineItemsToSkip) {
@@ -121,7 +116,11 @@ function allocateInventory(item, productVariant, lineItemsToSkip) {
             //allocated
             item.set("lineItem", lineItem);
             lineItem.set("item", item);
-            return Parse.Object.saveAll([item, lineItem]);
+            return Parse.Object.saveAll([item, lineItem]).then(function(objects) {
+                promise.resolve(item);
+            }, function(error) {
+                promise.reject(error);
+            });
         }
     }).then(function(objects) {
         promise.resolve(item);
