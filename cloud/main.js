@@ -101,34 +101,34 @@ Parse.Cloud.define("inputMassCuts", function(req, res) {
 });
 
 //MARK: BEFORE SAVES
-// Parse.Cloud.beforeSave("ProductType", function(request, response) {
-//   let title = request.object.get("title");
-//   if (typeof title === 'string' || title instanceof String) {
-//     let lowercaseTitle = title.toLowerCase();
-//     request.object.set("lowercaseTitle", lowercaseTitle);
-//   }
+Parse.Cloud.beforeSave("ProductType", function(request, response) {
+  let title = request.object.get("title");
+  if (typeof title === 'string' || title instanceof String) {
+    let lowercaseTitle = title.toLowerCase();
+    request.object.set("lowercaseTitle", lowercaseTitle);
+  }
 
-//   response.success();
-// });
+  response.success();
+});
 
-// Parse.Cloud.beforeSave("Item", function(request, response) {
-//   let uniqueID = request.object.get("uniqueID");
+Parse.Cloud.beforeSave("Item", function(request, response) {
+  let uniqueID = request.object.get("uniqueID");
 
-//   if (uniqueID == undefined) {
-//     //the item doesn't have a unique id yet
-//     var Unique = require("../public/items/item/uniqueID.js");
-//     Unique.createUniqueID(request.object);
-//   }
+  if (uniqueID == undefined) {
+    //the item doesn't have a unique id yet
+    var Unique = require("../public/items/item/uniqueID.js");
+    Unique.createUniqueID(request.object);
+  }
 
-//   var Initiation = require("../public/items/item/initiateItem.js");
-//   Initiation.checkItemInitiation(request.object);
+  var Initiation = require("../public/items/item/initiateItem.js");
+  Initiation.checkItemInitiation(request.object);
 
-//   response.success();
-// });
+  response.success();
+});
 
-// Parse.Cloud.afterSave("LineItem", function(request, response) {
-//   var Initiation = require("../public/items/item/initiateItem.js");
-//   Initiation.checkLineItemInitiation(request.object);
+Parse.Cloud.afterSave("LineItem", function(request, response) {
+  var Initiation = require("../public/items/item/initiateItem.js");
+  Initiation.checkLineItemInitiation(request.object);
 
-//   response.success();
-// });
+  response.success();
+});
