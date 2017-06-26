@@ -5,7 +5,6 @@ var Parse = require('parse/node');
 
 var num = 1;
 
-transposeData();
 function transposeData() {
     var LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
@@ -185,6 +184,7 @@ function addUniqueID(item, lineItem) {
     item.set("uniqueID", lineItem.get("shopifyLineItemID"));
 }
 
+//MARK: deleting items
 function deleteAllItems() {
     createDeleteQuery("Item");
     createDeleteQuery("Cut");

@@ -24,13 +24,7 @@ exports.allocateItem = function allocateItem(item, lineItemsToSkip) {
 function findLineItem(productVariant, lineItemsToSkip) {
     let CutList = require("../../cutList/cutList.js");
     let query = CutList.createLineItemsToCutQuery();
-    // var LineItem = require("../../models/lineItem.js");
-    // var query = new Parse.Query(LineItem);
-    // query.doesNotExist("item");
     query.equalTo("productVariant", productVariant);
-
-    // var Item = require("../../models/item.js");
-    // let itemQuery = Item.query();
     
     query.skip(lineItemsToSkip);
 

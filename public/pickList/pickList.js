@@ -40,7 +40,7 @@ function findCompletedLineItems() {
     query.matchesQuery("item", itemQuery);
 
     query.include("order");
-
+    query.limit(500);
     return query.find();
 }
 
