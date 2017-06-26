@@ -79,9 +79,9 @@ function groupLineItemsToOrders(completedLineItems) {
     return orderDictionary
 }
 
-function runIncompleteLineItemQuery(completedLineItems) {
+exports.runIncompleteLineItemQuery = function runIncompleteLineItemQuery(completedLineItem) {
     var promise = new Parse.Promise();
-    let order = completedLineItems[0].get("order")
+    let order = completedLineItem.get("order");
 
     var incompleteLineItemQuery = createIncompleteLineItemQuery(order);
     incompleteLineItemQuery.first({
@@ -101,6 +101,74 @@ function runIncompleteLineItemQuery(completedLineItems) {
 
     return promise;
 }
+
+exports.checkPickabilityForOrder = function checkPickabilityForOrder(order) {
+    var promise = new Parse.Promise();
+
+    let LineItem = require("../models/lineItem.js");
+    let query = LineItem.query();
+    query.equalTo("order", order);
+    query.include("package");
+    query.find({
+        success: function(lineItems) {
+            if (checkForAllCompletedLineItems(lineItems)) {
+                promise.resolve(lineItems);
+            } else {
+                let SavePackage = require("../package/save/savePackage.js");
+                promise.reject(SavePackage.noPickableAvailableError);
+            }
+        }, 
+        error: function(error) {
+            promise.reject(error);
+        }
+    });
+
+
+    return promise;
+}
+
+function checkForAllCompletedLineItems(lineItems) {
+    if (lineItems.length == 0) {
+        return false;
+    }
+
+    for (var i = 0; i < lineItems.length; i++) {
+        let lineItem = lineItems[i];
+        let package = lineItem.get("package");
+        if (package == undefined) {
+            //a line item of the order has not been packaged yet, therefore the order can't be picked
+            return false;
+        }
+    }
+
+    //all line items are completed for an order, so the order can be picked
+    return true;
+}
+
+
+//TODO: delete this function, I changed it to fit my new needs
+// function runIncompleteLineItemQuery(completedLineItems) {
+//     var promise = new Parse.Promise();
+//     let order = completedLineItems[0].get("order")
+
+//     var incompleteLineItemQuery = createIncompleteLineItemQuery(order);
+//     incompleteLineItemQuery.first({
+//         success: function(lineItem) {
+//             if (lineItem == undefined) {
+//                 //we couldn't find an incomplete line item, which means the entire order is ready to be picked
+//                 promise.resolve([order, completedLineItems]);
+//             } else {
+//                 //we found an incomplete line item, so don't pick this order. 
+//                 promise.resolve(undefined);
+//             }
+//             },
+//             error: function(error) {
+//                 promise.reject(error);
+//             }
+//     });
+
+//     return promise;
+// }
 
 function createIncompleteLineItemQuery(order) {
     let nonExistentItemQuery = createItemDoesNotExistQuery(order);
