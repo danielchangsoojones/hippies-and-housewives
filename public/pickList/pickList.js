@@ -114,6 +114,7 @@ exports.checkPickabilityForOrder = function checkPickabilityForOrder(order, init
     query.find({
         success: function(lineItems) {
             if (checkForAllCompletedLineItems(lineItems)) {
+                lineItems.push(initialLineItem);
                 promise.resolve(lineItems);
             } else {
                 let SavePackage = require("../package/save/savePackage.js");
