@@ -5,9 +5,28 @@ when it is 100% capable of being filled. This means that every order chosen for 
 pick list will have all of its line items ready.
 */
 var Parse = require('parse/node');
+let SavePackage = require("../package/save/savePackage.js");
+var Pickable = require("../models/pickable.js");
 
-//MARK: the stuff that is good for my software that I just made
-exports.checkPickabilityForOrder = function checkPickabilityForOrder(order, initialLineItem) {
+exports.checkPickabilityForOrder = function checkPickability(order, initialLineItem, item) {
+    var promise = new Parse.Promise();
+
+    var lineItems;
+    checkPickabilityForOrder(order, initialLineItem).then(function(pickableLineItems) {
+        lineItems = pickableLineItems;
+        return doesPickableAlreadyExist(initialLineItem.get("order"));
+    }).then(function(order) {
+        return finishPickable(item, order, lineItems);
+    }).then(function(objects) {
+        promise.resolve(objects);
+    }, function(error) {
+        promise.reject(error);
+    });
+
+    return promise;
+}
+
+function checkPickabilityForOrder(order, initialLineItem) {
     var promise = new Parse.Promise();
 
     let LineItem = require("../models/lineItem.js");
@@ -22,7 +41,6 @@ exports.checkPickabilityForOrder = function checkPickabilityForOrder(order, init
                 lineItems.push(initialLineItem);
                 promise.resolve(lineItems);
             } else {
-                let SavePackage = require("../package/save/savePackage.js");
                 promise.reject(SavePackage.noPickableAvailableError);
             }
         }, 
@@ -58,5 +76,41 @@ function checkForAllCompletedLineItems(lineItems) {
 
     //all line items are completed for an order, so the order can be picked
     return true;
+}
+
+function doesPickableAlreadyExist(order) {
+    var promise = new Parse.Promise();
+    let query = Pickable.query();
+    query.equalTo("order", order);
+    query.first({
+        success: function(pickable) {
+            if (pickable == undefined) {
+                //the pickable has never been made before, so return our order adn create a pickable
+                promise.resolve(order);
+            } else {
+                //the pickable has already been created and we don't want duplicates
+                promise.reject(SavePackage.noPickableAvailableError);
+            }
+        },
+        error: function(error) {
+            promise.reject(error);
+        }
+    });
+
+    return promise;
+}
+
+function finishPickable(item, order, lineItems) {
+    let pickable = createPickable(order, lineItems);
+    let objects = [item, pickable];
+    let SaveAll = require("../orders/js/orders.js");
+    return SaveAll.saveAllComponents(objects);
+}
+
+function createPickable(order, lineItems) {
+    let pickable = new Pickable();
+    pickable.set("order", order);
+    pickable.set("lineItems", lineItems);
+    return pickable;
 }
 

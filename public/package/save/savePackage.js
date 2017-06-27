@@ -11,18 +11,14 @@ exports.savePackage = function savePackage(state, item) {
     fetchLineItem(item).then(function(lineItem) {
         initialLineItem = lineItem;
         var PickList = require("../../pickList/pickList.js");
-        return PickList.checkPickabilityForOrder(lineItem.get("order"), lineItem);
-    }).then(function(pickableLineItems) {
-        lineItems = pickableLineItems;
-        return doesPickableAlreadyExist(initialLineItem.get("order"));
-    }).then(function(order) {
-        return finishPickable(item, order, lineItems);
+        return PickList.checkPickabilityForOrder(lineItem.get("order"), lineItem, item);
     }).then(function(objects) {
         //returning the item
         promise.resolve(objects[0]);
     }, function(error) {
         if(error == exports.noPickableAvailableError) {
             item.save().then(function (item) {
+                console.log(error);
                 promise.resolve(item);
             }, function (error) {
                 promise.reject(error);
@@ -64,42 +60,5 @@ function fetchLineItem(item) {
     });
 
     return promise;
-}
-
-function doesPickableAlreadyExist(order) {
-    var promise = new Parse.Promise();
-
-    let query = Pickable.query();
-    query.equalTo("order", order);
-    query.first({
-        success: function(pickable) {
-            if (pickable == undefined) {
-                //the pickable has never been made before, so return our order adn create a pickable
-                promise.resolve(order);
-            } else {
-                //the pickable has already been created and we don't want duplicates
-                promise.reject(exports.noPickableAvailableError);
-            }
-        },
-        error: function(error) {
-            promise.reject(error);
-        }
-    });
-
-    return promise;
-}
-
-function finishPickable(item, order, lineItems) {
-    let pickable = createPickable(order, lineItems);
-    let objects = [item, pickable];
-    let SaveAll = require("../../orders/js/orders.js");
-    return SaveAll.saveAllComponents(objects);
-}
-
-function createPickable(order, lineItems) {
-    let pickable = new Pickable();
-    pickable.set("order", order);
-    pickable.set("lineItems", lineItems);
-    return pickable;
 }
 
