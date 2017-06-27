@@ -2,7 +2,6 @@ var request = require('request');
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
-searchProduct("izzy");
 function searchProduct(searchText) {
     var Search = require("../search/searchProduct.js");
     Search.searchProduct(searchText).then(function(products) {
@@ -10,6 +9,31 @@ function searchProduct(searchText) {
     }, function(error) {
         console.log(error);
     });
+}
+
+getProductVariant("YehYeh Top // Snow", "S");
+function getProductVariant(style, size) {
+    let ProductVariant = require("../../models/productVariant.js");
+    let query = ProductVariant.query();
+    query.equalTo("size", size);
+
+    let ProductType = require("../../models/productType.js");
+    let productQuery = ProductType.query();
+    productQuery.equalTo("lowercaseTitle", style.toLowerCase());
+    query.matchesQuery("product", productQuery);
+
+    query.first({
+        success: function(productVariant) {
+            if (productVariant == undefined) {
+                console.log("couldn't find product variant");
+            } else {
+                console.log(productVariant.id);
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    })
 }
 
 //MARK: retrieving mass products
