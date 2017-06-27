@@ -72,8 +72,12 @@ exports.getProductVariant = function getProductVariant(productTypeObjectID, size
     let query = exports.createProductVariantQuery(productTypeObjectID, size);
     query.first({
         success: function (productVariant) {
-            let result = {productVariant: productVariant, i: i};
-            promise.resolve(result);
+            if (productVariant == undefined) {
+                promise.reject("could not find product variant");
+            } else {
+                let result = { productVariant: productVariant, i: i};
+                promise.resolve(result);
+            }
         },
         error: function (error) {
             promise.reject(error);
@@ -116,11 +120,7 @@ function allocateInventory(item, productVariant, lineItemsToSkip) {
             //allocated
             item.set("lineItem", lineItem);
             lineItem.set("item", item);
-            return Parse.Object.saveAll([item, lineItem]).then(function(objects) {
-                promise.resolve(item);
-            }, function(error) {
-                promise.reject(error);
-            });
+            return Parse.Object.saveAll([item, lineItem]);
         }
     }).then(function(objects) {
         promise.resolve(item);

@@ -11,8 +11,9 @@ function searchProduct(searchText) {
     });
 }
 
-getProductVariant("YehYeh Top // Snow", "S");
-function getProductVariant(style, size) {
+exports.getProductVariant = function getProductVariant(style, size) {
+    var promise = new Parse.Promise();
+
     let ProductVariant = require("../../models/productVariant.js");
     let query = ProductVariant.query();
     query.equalTo("size", size);
@@ -25,15 +26,17 @@ function getProductVariant(style, size) {
     query.first({
         success: function(productVariant) {
             if (productVariant == undefined) {
-                console.log("couldn't find product variant");
+                promise.reject("couldn't find product variant");
             } else {
-                console.log(productVariant.id);
+                promise.resolve(productVariant.id);
             }
         },
         error: function(error) {
-            console.log(error);
+            promise.reject(error);
         }
     })
+
+    return promise;
 }
 
 //MARK: retrieving mass products
