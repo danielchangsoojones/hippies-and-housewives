@@ -36,8 +36,10 @@ exports.checkPickabilityForOrder = function checkPickabilityForOrder(order, init
 }
 
 function checkForAllCompletedLineItems(lineItems) {
-    if (lineItems == undefined || lineItems.length == 0) {
-        return false;
+    if (lineItems.length == 0) {
+        //this order only has one item, therefore, we couldn't find any associated line items
+        //we know we are packaging this item already, so the order is completed
+        return true;
     }
 
     for (var i = 0; i < lineItems.length; i++) {

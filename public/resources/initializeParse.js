@@ -3,7 +3,7 @@ var Parse = require('parse/node');
 //either production or development to point to the respective databases
 var development = "development";
 var production = "production";
-var configuration = development;
+var configuration = production;
 
 var appId;
 var masterKey;
