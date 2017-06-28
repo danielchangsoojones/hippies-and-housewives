@@ -51,8 +51,7 @@ function createLineItems(orderJSON, order, customer) {
             let lineItem = createLineItem(lineItemJSON, order, orderJSON);
             lineItem.set("productVariant", variant);
             let Allocate = require("../allocate/allocateLineItem.js");
-            Allocate.allocateLineItem(variant, lineItem).then(function(objects) {
-                
+            Allocate.allocateLineItem(variant, lineItem).then(function(objects) { 
                 exports.saveAllComponents([order, customer, objects]);
             }, function (error) {
                 console.log(error);
