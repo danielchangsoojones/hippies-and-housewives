@@ -6,17 +6,24 @@ pick list will have all of its line items ready.
 */
 var Parse = require('parse/node');
 
+var num = 0;
+
 exports.updatePickList = function updatePickList() {
     let LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
-    //TODO: if our data every gets bigger than 10000 rows, then we need to change this up.
+    /** We are pulling down the entire database because running a query somehow created a RAM memory issue on Heroku's server.
+     * Therefore, we need to pull down every line item to see if it and the other order can be effectively picked.
+     * Right now we have a 10,000 row limit, which will pull down all open line items. However, if we had more
+     * than 10,000 open line items then we would have to either enhance this limit or run recursively.
+     */
     query.limit(10000);
-    query.include("package");
+
     query.include("pick");
     query.include("order");
     query.include("item");
     query.find({
         success: function(lineItems) {
+            console.log("total open line items:" + lineItems.length);
             let orderDictionary = groupLineItemsToOrders(lineItems);
             let completedOrderDictionary = goThrough(orderDictionary);
             savePickables(completedOrderDictionary);
@@ -26,14 +33,15 @@ exports.updatePickList = function updatePickList() {
     });
 }
 
-function groupLineItemsToOrders(completedLineItems) {
+function groupLineItemsToOrders(lineItems) {
     //{order : [line items]}
     var orderDictionary = {}
 
-    for (var i = 0; i < completedLineItems.length; i++) {
-        let lineItem = completedLineItems[i];
+    for (var i = 0; i < lineItems.length; i++) {
+        let lineItem = lineItems[i];
         let order = lineItem.get("order");
-        let orderID = order.id
+        let orderID = order.id;
+
         
         if (orderDictionary[orderID] == undefined) {
             //order key doesn't exist in dictionary yet
@@ -43,7 +51,7 @@ function groupLineItemsToOrders(completedLineItems) {
             orderDictionary[orderID].push(lineItem);
         }
     }
-
+        
     return orderDictionary
 }
 
@@ -64,6 +72,8 @@ function checkIfAllLineItemsCompleted(lineItems) {
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         let item = lineItem.get("item");
+
+
         if (item == undefined) {
             return false;
         } else {
@@ -112,7 +122,7 @@ function doesPickableAlreadyExist(order) {
                 promise.resolve(order);
             } else {
                 //the pickable has already been created and we don't want duplicates
-                promise.reject("pick already exists");
+                promise.reject("pickable already exists");
             }
         },
         error: function(error) {
