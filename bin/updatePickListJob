@@ -1,3 +1,7 @@
 #!/usr/bin/env node
 
-console.log("heyyy");
+require("../public/resources/initializeParse.js");
+
+console.log("running Pick List Update Job");
+let GetPickList = require("../public/pickList/pickList.js");
+GetPickList.updatePickList();
