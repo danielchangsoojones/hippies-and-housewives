@@ -14,6 +14,13 @@ function testInventorySave() {
     });
 }
 
+aggregateInventory();
+function aggregateInventory() {
+    let Aggregate = require("../aggregate/aggregateInventory.js");
+    var dictionary = {"xVQk4PISAd" : 10, "BqqyxB4jau" : 10};
+    Aggregate.updateInventoryCount(dictionary);
+}
+
 // removeInventory("C9p2zg51P7", "S");
 // function removeInventory(productTypeObjectID, size) {
 //     let Inventory = require("../remove/removeInventory.js");
@@ -24,15 +31,15 @@ function testInventorySave() {
 //     });
 // }
 
-removeMultipleInventory("xVQk4PISAd", 2);
-function removeMultipleInventory(productVariantObjectID, quantity) {
-    let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
-    Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
-        console.log(inventories);
-    }, function(error) {
-        console.log(error);
-    });
-}
+// removeMultipleInventory("xVQk4PISAd", 2);
+// function removeMultipleInventory(productVariantObjectID, quantity) {
+//     let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
+//     Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
+//         console.log(inventories);
+//     }, function(error) {
+//         console.log(error);
+//     });
+// }
 
 //Purpose: tell us how many inventories exist for a product variant
 // checkInventoryCount("YehYeh Top // Chaco", "S");
