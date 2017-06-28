@@ -2,7 +2,6 @@ require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 var Saving = require("../save/save.js");
 
-testInventorySave();
 function testInventorySave() {
     let productTypeObjectID = "B1keGnp9F2";
     let size = "S";
@@ -24,6 +23,16 @@ function testInventorySave() {
 //         console.log(error);
 //     });
 // }
+
+removeMultipleInventory("xVQk4PISAd", 2);
+function removeMultipleInventory(productVariantObjectID, quantity) {
+    let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
+    Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
+        console.log(inventories);
+    }, function(error) {
+        console.log(error);
+    });
+}
 
 //Purpose: tell us how many inventories exist for a product variant
 // checkInventoryCount("YehYeh Top // Chaco", "S");
