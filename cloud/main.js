@@ -71,17 +71,6 @@ Parse.Cloud.define("archiveShopifyOrder", function(req, res) {
   });
 });
 
-Parse.Cloud.define("removeInventory", function(req, res) {
-  let productTypeObjectID = req.params.productTypeObjectID;
-  let size = req.params.size;
-  let Inventory = require("../public/inventory/remove/removeInventory.js");
-  Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {    
-    res.success(inventory);
-  }, function(error) {
-    res.error(error);
-  });
-});
-
 Parse.Cloud.define("inputMassCuts", function(req, res) {
   let productTypeObjectID = req.params.productTypeObjectID;
   let size = req.params.size;
@@ -107,6 +96,29 @@ Parse.Cloud.define("inputPackage", function(req, res) {
   Save.saveInputtedPackage(uniqueItemID).then(function(item) {
     var success = true;
     res.success(success);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+//MARK: Inventory
+Parse.Cloud.define("updateInventoryCount", function(req, res) {
+  let productVariantDictionary = req.params.variantDict;
+
+  let Aggregate = require("../public/inventory/aggregate/aggregateInventory.js");
+  Aggregate.updateInventoryCount(productVariantDictionary).then(function(results) {
+    res.success(results);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+Parse.Cloud.define("removeInventory", function(req, res) {
+  let productTypeObjectID = req.params.productTypeObjectID;
+  let size = req.params.size;
+  let Inventory = require("../public/inventory/remove/removeInventory.js");
+  Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {    
+    res.success(inventory);
   }, function(error) {
     res.error(error);
   });
