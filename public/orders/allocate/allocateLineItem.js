@@ -28,3 +28,9 @@ exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
 
     return promise;
 }
+
+function checkPickabilityOfOrder(order, lineItem, item) {
+    //we are not returning this order because we are just saving the pickable without regard to saving everything else
+    let PickList = require("../../pickList/pickList.js");
+    PickList.checkPickabilityForOrder(order, lineItem, item);
+}

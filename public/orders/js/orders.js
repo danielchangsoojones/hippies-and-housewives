@@ -1,4 +1,5 @@
 var Parse = require('parse/node');
+let LineItem = require('../../models/lineItem.js');
 
 //MARK: saving a new order
 exports.uploadNewOrder = function uploadNewOrder(orderJSON) {
@@ -51,6 +52,7 @@ function createLineItems(orderJSON, order, customer) {
             lineItem.set("productVariant", variant);
             let Allocate = require("../allocate/allocateLineItem.js");
             Allocate.allocateLineItem(variant, lineItem).then(function(objects) {
+                
                 exports.saveAllComponents([order, customer, objects]);
             }, function (error) {
                 console.log(error);
@@ -63,7 +65,6 @@ function createLineItems(orderJSON, order, customer) {
 }
 
 function createLineItem(lineItemJSON, order, orderJSON) {
-    let LineItem = require('../../models/lineItem.js');
     let lineItem = new LineItem();
     lineItem.set("shopifyLineItemID", lineItemJSON.id);
     lineItem.set("title", lineItemJSON.title);

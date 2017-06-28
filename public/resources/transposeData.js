@@ -288,9 +288,6 @@ function goThrough(orderDictionary) {
     for(var orderID in orderDictionary) {
         let lineItems = orderDictionary[orderID];
         if (checkIfAllLineItemsCompleted(lineItems)) {
-            if (lineItems.length == 1) {
-                console.log(lineItems[0].get("order"));
-            }
             completedOrdersDictionary[orderID] = lineItems;
         }
     }
@@ -328,16 +325,14 @@ function savePickables(orderDictionary) {
              pickable.set("order", order);
              pickable.set("lineItems", lineItems);
 
-//TODO: make sure to uncomment this
-            //  return pickable.save({
-            //      success: function (pickable) {
-            //          console.log("success");
-            //      },
-            //      error: function (error) {
-            //          console.log(error);
-            //      }
-            //  });
-            return new Parse.Promise();
+             return pickable.save({
+                 success: function (pickable) {
+                     console.log("success");
+                 },
+                 error: function (error) {
+                     console.log(error);
+                 }
+             });
         }).then(function(pickable) {
             console.log("succcess");
         }, function(error) {
