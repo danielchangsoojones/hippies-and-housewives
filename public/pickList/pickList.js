@@ -84,22 +84,14 @@ function savePickables(orderDictionary) {
         let order = lineItems[0].get("order");
 
         doesPickableAlreadyExist(order).then(function(success) {
-            console.log("nonexistent pick order: " + order.id);
              let Pickable = require("../models/pickable.js");
              let pickable = new Pickable();
              pickable.set("order", order);
              pickable.set("lineItems", lineItems);
 
-             return pickable.save({
-                 success: function (pickable) {
-                     console.log("success");
-                 },
-                 error: function (error) {
-                     console.log(error);
-                 }
-             });
+             return pickable.save();
         }).then(function(pickable) {
-            console.log("succcess");
+            console.log("successfully created pickable: " + pickable.id);
         }, function(error) {
             console.log(error);
         });
