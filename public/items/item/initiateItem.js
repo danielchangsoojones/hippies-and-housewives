@@ -26,6 +26,8 @@ exports.checkLineItemInitiation = function checkLineItemInitiation(lineItem) {
 
 exports.checkPickables = function checkPickables(lineItem) {
     let state = lineItem.get("state");
+    console.log("in the check Pickables function");
+    console.log(state);
 
     let LineItem = require("../../models/lineItem.js");
     if (state != LineItem.states().open) {
