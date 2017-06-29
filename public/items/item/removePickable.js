@@ -16,7 +16,11 @@ function removePickable(lineItem) {
 
     let Pickable = require("../../models/pickable.js");
     let query = Pickable.query();
-    query.equalTo("lineItems", lineItem);
+
+    let LineItem = require("../../models/LineItem.js");
+    let copyLineItem = new LineItem();
+    copyLineItem.id = lineItem.id;
+    query.equalTo("lineItems", copyLineItem);
     query.find().then(function (pickables) {
         return Parse.Object.destroyAll(pickables);
     }).then(function (pickables) {
