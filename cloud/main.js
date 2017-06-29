@@ -155,6 +155,7 @@ Parse.Cloud.beforeSave("Item", function(request, response) {
 Parse.Cloud.afterSave("LineItem", function(request, response) {
   var Initiation = require("../public/items/item/initiateItem.js");
   Initiation.checkLineItemInitiation(request.object);
+  Initiation.checkPickables(request.object);
 
   response.success();
 });

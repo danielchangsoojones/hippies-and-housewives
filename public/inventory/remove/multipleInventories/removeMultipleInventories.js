@@ -78,7 +78,7 @@ function siftInventories(items, quantityToRemove) {
     let lineItemsToCheckWithPickables = tuple.lineItemsToCheckWithPickables;
 
     var promises = [];
-    promises.push(removePickables(lineItemsToCheckWithPickables));
+    promises.push(exports.removePickables(lineItemsToCheckWithPickables));
     promises.push(deleteAll(tuple.itemsToDelete));
 
     return Parse.Promise.when(promises);
@@ -142,7 +142,7 @@ function deleteAll(items) {
     return Parse.Object.saveAll(items);
 }
 
-function removePickables(lineItems) {
+exports.removePickables = function removePickables(lineItems) {
     var promise = new Parse.Promise();
 
     if (lineItems.length > 0) {

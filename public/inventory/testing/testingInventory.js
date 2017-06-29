@@ -14,7 +14,6 @@ var Saving = require("../save/save.js");
 //     });
 // }
 
-aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
     var dictionary = {"xVQk4PISAd" : -2, "BqqyxB4jau" : 2};
@@ -25,25 +24,24 @@ function aggregateInventory() {
     });
 }
 
-// removeInventory("C9p2zg51P7", "S");
-// function removeInventory(productTypeObjectID, size) {
-//     let Inventory = require("../remove/removeInventory.js");
-//     Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {
-//         console.log(inventory);
-//     }, function(error) {
-//         console.log(error);
-//     });
-// }
+function removeInventory(productTypeObjectID, size) {
+    let Inventory = require("../remove/removeInventory.js");
+    Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {
+        console.log(inventory);
+    }, function(error) {
+        console.log(error);
+    });
+}
 
-// removeMultipleInventory("xVQk4PISAd", 2);
-// function removeMultipleInventory(productVariantObjectID, quantity) {
-//     let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
-//     Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
-//         console.log(inventories);
-//     }, function(error) {
-//         console.log(error);
-//     });
-// }
+removeMultipleInventory("yJH8S2eqxe", 2);
+function removeMultipleInventory(productVariantObjectID, quantity) {
+    let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
+    Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
+        console.log(inventories);
+    }, function(error) {
+        console.log(error);
+    });
+}
 
 //Purpose: tell us how many inventories exist for a product variant
 // checkInventoryCount("YehYeh Top // Chaco", "S");
