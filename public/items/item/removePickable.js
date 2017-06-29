@@ -5,8 +5,9 @@ exports.checkPickables = function checkPickables(lineItem) {
 
     let LineItem = require("../../models/lineItem.js");
     if (state != LineItem.states().open) {
-        let Remove = require("../../inventory/remove/multipleInventories/removeMultipleInventories.js");
-        Remove.removePickable(lineItem);
+        // let Remove = require("../../inventory/remove/multipleInventories/removeMultipleInventories.js");
+        // Remove.removePickable(lineItem);
+        removePickable(lineItem);
     }
 }
 
