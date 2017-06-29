@@ -9,7 +9,8 @@ exports.updateInventoryCount = function updateInventoryCount(productVariantDicti
             let Add = require("../save/multipleInventory/saveMultipleInventory.js");
             promises.push(Add.saveInventory(productVariantObjectID, delta));
         } else if (delta < 0) {
-            console.log("delta is negative");            
+            let Remove = require("../remove/multipleInventories/removeMultipleInventories.js");
+            promises.push(Remove.removeInventory(productVariantObjectID, delta));         
         }
     }
 

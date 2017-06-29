@@ -2,8 +2,9 @@ var Parse = require('parse/node');
 
 exports.removeInventory = function removeInventory(productVariantObjectID, quantity) {
     var promise = new Parse.Promise();
+    let absolueQuantity = Math.abs(quantity);
 
-    findInventory(productVariantObjectID, quantity).then(function(results) {
+    findInventory(productVariantObjectID, absolueQuantity).then(function(results) {
         promise.resolve(results);
     }, function(error) {
         promise.reject(error);
