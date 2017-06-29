@@ -7,7 +7,9 @@ exports.updateInventoryCount = function updateInventoryCount(productVariantDicti
         var delta = productVariantDictionary[productVariantObjectID];
         if (delta > 0) {
             let Add = require("../save/multipleInventory/saveMultipleInventory.js");
-            Add.saveInventory(productVariantObjectID, delta);
+            promises.push(Add.saveInventory(productVariantObjectID, delta));
+        } else if (delta < 0) {
+            console.log("delta is negative");            
         }
     }
 

@@ -17,12 +17,12 @@ var Saving = require("../save/save.js");
 aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
-    var dictionary = {"xVQk4PISAd" : 10, "BqqyxB4jau" : 10};
+    var dictionary = {"xVQk4PISAd" : 2, "BqqyxB4jau" : 2};
     Aggregate.updateInventoryCount(dictionary).then(function(results) {
         console.log(results);
     }, function(error) {
         console.log(error);
-    })
+    });
 }
 
 // removeInventory("C9p2zg51P7", "S");
