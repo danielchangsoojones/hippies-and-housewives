@@ -5,33 +5,12 @@ exports.checkPickables = function checkPickables(lineItem) {
 
     let LineItem = require("../../models/lineItem.js");
     if (state != LineItem.states().open) {
-        // let Remove = require("../../inventory/remove/multipleInventories/removeMultipleInventories.js");
-        // Remove.removePickable(lineItem);
-        removePickable(lineItem);
+        //For some reason, just passing the line item causes the subsquent query to not work. We need to pass a copy of the line item to make it work.
+        let LineItem = require("../../models/lineItem.js");
+        let copyLineItem = new LineItem();
+        copyLineItem.id = lineItem.id;
+
+        let Remove = require("../../inventory/remove/multipleInventories/removeMultipleInventories.js");
+        Remove.removePickables([copyLineItem]);
     }
-}
-
-function removePickable(lineItem) {
-    var promise = new Parse.Promise();
-
-    let Pickable = require("../../models/pickable.js");
-    let query = Pickable.query();
-
-    let LineItem = require("../../models/lineItem.js");
-    let copyLineItem = new LineItem();
-    copyLineItem.id = lineItem.id;
-    query.equalTo("lineItems", copyLineItem);
-    query.find().then(function (pickables) {
-        return Parse.Object.destroyAll(pickables);
-    }).then(function (pickables) {
-        console.log("successful deletion");
-        console.log(pickables);
-        let success = true;
-        promise.resolve(success);
-    }, function (error) {
-        console.log(error);
-        promise.reject(error);
-    });
-
-    return promise;
 }
