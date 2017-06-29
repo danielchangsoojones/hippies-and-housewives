@@ -1,19 +1,20 @@
 var Parse = require('parse/node');
+var ProductVariant = require("../../../models/productVariant.js");
 
-exports.saveInventory = function saveInventory(productTypeObjectID, size, quantity) {
+exports.saveInventory = function saveInventory(productVariantObjectID, quantityToSave) {
     var promises = [];
 
-    for (var i = 0; i < quantity; i++) {
+    for (var i = 0; i < quantityToSave; i++) {
         let promise = new Parse.Promise();
         promises.push(promise);
 
-        exports.getProductVariant(productTypeObjectID, size, i).then(function (productVariantResult) {
+        exports.getProductVariant(productVariantObjectID, i).then(function (productVariantResult) {
             let productVariant = productVariantResult.productVariant;
             checkIfGroupItem(productVariantResult.i, productVariant).then(function (result) {
                 let groupItem = result.item;
                 if (groupItem == undefined) {
                     //no groupItem found
-                    let lineItemsToSkip = quantity - result.i - 1;
+                    let lineItemsToSkip = quantityToSave - result.i - 1;
                     createNewInventory(productVariant, lineItemsToSkip).then(function (item) {
                         promise.resolve(item);
                     }, function (error) {
@@ -41,8 +42,9 @@ Say, we send a bunch of swimsuits off to a factory, and we need to make sure tho
 so they don't get double cut. But, they have no label, so when they are placed into inventory, we need to match them back up
 */
 function checkIfGroupItem(itemsToSkip, productVariant) {
-    var Item = require("../../models/item.js");
+    var Item = require("../../../models/item.js");
     var query = Item.query();
+
     query.equalTo("productVariant", productVariant);
     query.exists("group");
     query.doesNotExist("package");
@@ -61,15 +63,15 @@ function checkIfGroupItem(itemsToSkip, productVariant) {
 }
 
 function setAsPackaged(item) {
-    let SetPackage = require("../../package/save/savePackage.js");
-    let Package = require("../../models/tracking/package.js");
+    let SetPackage = require("../../../package/save/savePackage.js");
+    let Package = require("../../../models/tracking/package.js");
     return SetPackage.setPackage(Package.states().in_inventory, item);
 }
 
-exports.getProductVariant = function getProductVariant(productTypeObjectID, size, i) {
+exports.getProductVariant = function getProductVariant(productVariantObjectID, i) {
     var promise = new Parse.Promise();
 
-    let query = exports.createProductVariantQuery(productTypeObjectID, size);
+    let query = exports.createProductVariantQuery(productVariantObjectID);
     query.first({
         success: function (productVariant) {
             if (productVariant == undefined) {
@@ -87,22 +89,16 @@ exports.getProductVariant = function getProductVariant(productTypeObjectID, size
     return promise;
 }
 
-exports.createProductVariantQuery = function createProductVariantQuery(productTypeObjectID, size) {
-    var ProductVariant = require("../../models/productVariant.js");
+exports.createProductVariantQuery = function createProductVariantQuery(productVariantObjectID) {
     var query = ProductVariant.query();
-    query.equalTo("size", size);
-
-    var ProductType = require("../../models/productType.js");
-    var innerQuery = ProductType.query();
-    innerQuery.equalTo("objectId", productTypeObjectID);
-    query.matchesQuery("product", innerQuery);
+    query.equalTo("objectId", productVariantObjectID);
 
     return query;
 }
 
 function createNewInventory(productVariant, lineItemsToSkip) {
-    let Item = require('../../models/item.js');
-    let item = new Item();
+    var Item = require('../../../models/item.js');
+    var item = new Item();
     item.set("productVariant", productVariant);
     return allocateInventory(item, productVariant, lineItemsToSkip).then(function(objects) {
         return setAsPackaged(item);
@@ -132,7 +128,7 @@ function allocateInventory(item, productVariant, lineItemsToSkip) {
 }
 
 function findMatchingLineItem(inventory, productVariant, lineItemsToSkip) {
-    var LineItem = require("../../models/lineItem.js");
+    var LineItem = require("../../../models/lineItem.js");
     var query = LineItem.query();
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("item");

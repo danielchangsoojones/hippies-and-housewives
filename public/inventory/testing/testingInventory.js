@@ -2,23 +2,27 @@ require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 var Saving = require("../save/save.js");
 
-function testInventorySave() {
-    let productTypeObjectID = "B1keGnp9F2";
-    let size = "S";
-    let quantity = 20;
+// function testInventorySave() {
+//     let productTypeObjectID = "B1keGnp9F2";
+//     let size = "S";
+//     let quantity = 20;
     
-    Saving.saveInventory(productTypeObjectID, size, quantity).then(function(items) {
-        console.log(items);
-    }, function (error) {
-        console.log(error);
-    });
-}
+//     Saving.saveInventory(productTypeObjectID, size, quantity).then(function(items) {
+//         console.log(items);
+//     }, function (error) {
+//         console.log(error);
+//     });
+// }
 
 aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
     var dictionary = {"xVQk4PISAd" : 10, "BqqyxB4jau" : 10};
-    Aggregate.updateInventoryCount(dictionary);
+    Aggregate.updateInventoryCount(dictionary).then(function(results) {
+        console.log(results);
+    }, function(error) {
+        console.log(error);
+    })
 }
 
 // removeInventory("C9p2zg51P7", "S");

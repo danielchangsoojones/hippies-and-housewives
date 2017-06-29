@@ -6,8 +6,8 @@ exports.updateInventoryCount = function updateInventoryCount(productVariantDicti
     for (var productVariantObjectID in productVariantDictionary) {
         var delta = productVariantDictionary[productVariantObjectID];
         if (delta > 0) {
-            let Add = require("../save/save.js");
-            Add.saveInventory()
+            let Add = require("../save/multipleInventory/saveMultipleInventory.js");
+            Add.saveInventory(productVariantObjectID, delta);
         }
     }
 
