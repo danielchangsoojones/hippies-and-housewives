@@ -63,7 +63,7 @@ function checkIfGroupItem(itemsToSkip, productVariant) {
 function setAsPackaged(item) {
     let SetPackage = require("../../package/save/savePackage.js");
     let Package = require("../../models/tracking/package.js");
-    return SetPackage.setPackage(Package.states().in_inventory, item);
+    return SetPackage.setPackage(item, Package.states().in_inventory);
 }
 
 exports.getProductVariant = function getProductVariant(productTypeObjectID, size, i) {

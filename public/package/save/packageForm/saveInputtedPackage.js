@@ -7,7 +7,7 @@ exports.saveInputtedPackage = function saveInputtedPackage(uniqueID) {
     Fetch.fetchItem(uniqueID).then(function(item) {
         var SavePackage = require("../savePackage.js");
         var Package = require("../../../models/tracking/package.js");
-        return SavePackage.setPackage(Package.states().waiting_for_identified_pick, item);
+        return SavePackage.setPackage(item, Package.states().waiting_for_identified_pick);
     }).then(function(item) {
         promise.resolve(item);
     }, function(error) {

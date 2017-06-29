@@ -5,5 +5,6 @@ exports.setPackage = function setPackage(item, state) {
     var package = new Package();
     package.set("state", state);
     item.set("package", package);
+    return item.save();
 }
 
