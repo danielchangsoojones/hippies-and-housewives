@@ -70,3 +70,11 @@ function checkInventoryCount(style, size) {
         console.log(error);
     });
 }
+
+function removePickable() {
+    let LineItem = require("../../models/lineItem.js");
+    let lineItem = new LineItem();
+    lineItem.id = "b4eWdX0Oh3"
+    let Remove = require("../remove/multipleInventories/removeMultipleInventories.js");
+    Remove.removePickables([lineItem]);
+}
