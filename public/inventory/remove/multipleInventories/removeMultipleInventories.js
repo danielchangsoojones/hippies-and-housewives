@@ -153,6 +153,7 @@ exports.removePickables = function removePickables(lineItems) {
             return Parse.Object.destroyAll(pickables);
         }).then(function (pickables) {
             console.log("successful deletion");
+            console.log(pickables);
             let success = true;
             promise.resolve(success);
         }, function (error) {
