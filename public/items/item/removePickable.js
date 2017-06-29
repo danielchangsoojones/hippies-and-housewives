@@ -17,7 +17,7 @@ function removePickable(lineItem) {
     let Pickable = require("../../models/pickable.js");
     let query = Pickable.query();
 
-    let LineItem = require("../../models/LineItem.js");
+    let LineItem = require("../../models/lineItem.js");
     let copyLineItem = new LineItem();
     copyLineItem.id = lineItem.id;
     query.equalTo("lineItems", copyLineItem);
