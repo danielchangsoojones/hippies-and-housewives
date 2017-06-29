@@ -23,15 +23,3 @@ exports.checkLineItemInitiation = function checkLineItemInitiation(lineItem) {
         item.save();
     }
 }
-
-exports.checkPickables = function checkPickables(lineItem) {
-    let state = lineItem.get("state");
-    console.log("in the check Pickables function");
-    console.log(state);
-
-    let LineItem = require("../../models/lineItem.js");
-    if (state != LineItem.states().open) {
-        let Remove = require("../../inventory/remove/multipleInventories/removeMultipleInventories.js");
-        Remove.removePickables([lineItem]);
-    }
-}
