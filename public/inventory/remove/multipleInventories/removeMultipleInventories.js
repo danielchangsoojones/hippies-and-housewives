@@ -152,16 +152,12 @@ exports.removePickables = function removePickables(lineItems) {
         query.find().then(function (pickables) {
             return Parse.Object.destroyAll(pickables);
         }).then(function (pickables) {
-            console.log("successful deletion");
-            console.log(pickables);
             let success = true;
             promise.resolve(success);
         }, function (error) {
-            console.log(error);
             promise.reject(error);
         });
     } else {
-        console.log("not deleted because no items length");
         promise.resolve(true);
     }
 
