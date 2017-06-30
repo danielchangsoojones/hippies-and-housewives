@@ -152,13 +152,6 @@ Parse.Cloud.beforeSave("Item", function(request, response) {
   response.success();
 });
 
-Parse.Cloud.beforeSave("LineItem", function(request, response) {
-  let Deallocate = require("../public/lineItems/deallocate/deallocateLineItem.js");
-  Deallocate.deallocateNonUsedItem(request.object);
-
-  response.success();
-});
-
 //MARK: after saves
 Parse.Cloud.afterSave("LineItem", function(request, response) {
   var Initiation = require("../public/items/item/initiateItem.js");
