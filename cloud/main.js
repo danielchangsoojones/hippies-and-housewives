@@ -34,9 +34,9 @@ Parse.Cloud.define("saveInventory", function(req, res) {
 });
 
 Parse.Cloud.define("getPickList", function(req, res) {
-  let PickList = require("../public/pickList/pickList.js");
-  PickList.createPickList().then(function(results) {
-    res.success(results);
+  let PickList = require("../public/pickList/fetch/fetchPickList.js");
+  PickList.fetchPickList().then(function(pickables) {
+    res.success(pickables);
   }, function(error) {
     res.error(error);
   });
@@ -71,17 +71,6 @@ Parse.Cloud.define("archiveShopifyOrder", function(req, res) {
   });
 });
 
-Parse.Cloud.define("removeInventory", function(req, res) {
-  let productTypeObjectID = req.params.productTypeObjectID;
-  let size = req.params.size;
-  let Inventory = require("../public/inventory/remove/removeInventory.js");
-  Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {    
-    res.success(inventory);
-  }, function(error) {
-    res.error(error);
-  });
-});
-
 Parse.Cloud.define("inputMassCuts", function(req, res) {
   let productTypeObjectID = req.params.productTypeObjectID;
   let size = req.params.size;
@@ -99,6 +88,43 @@ Parse.Cloud.define("inputMassCuts", function(req, res) {
     res.error(error);
   });
 });
+
+Parse.Cloud.define("inputPackage", function(req, res) {
+  let uniqueItemID = req.params.uniqueItemID;
+
+  var Save = require("../public/package/save/packageForm/saveInputtedPackage.js");
+  Save.saveInputtedPackage(uniqueItemID).then(function(item) {
+    var success = true;
+    res.success(success);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+//MARK: Inventory
+Parse.Cloud.define("updateInventoryCount", function(req, res) {
+  let productVariantDictionary = req.params.variantDict;
+
+  let Aggregate = require("../public/inventory/aggregate/aggregateInventory.js");
+  Aggregate.updateInventoryCount(productVariantDictionary).then(function(results) {
+    res.success(results);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+Parse.Cloud.define("removeInventory", function(req, res) {
+  let productTypeObjectID = req.params.productTypeObjectID;
+  let size = req.params.size;
+  let Inventory = require("../public/inventory/remove/removeInventory.js");
+  Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {    
+    res.success(inventory);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+
 
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
@@ -126,9 +152,12 @@ Parse.Cloud.beforeSave("Item", function(request, response) {
   response.success();
 });
 
+//MARK: after saves
 Parse.Cloud.afterSave("LineItem", function(request, response) {
   var Initiation = require("../public/items/item/initiateItem.js");
   Initiation.checkLineItemInitiation(request.object);
+  var RemovePickable = require("../public/items/item/removePickable.js");
+  RemovePickable.checkPickables(request.object);
 
   response.success();
 });

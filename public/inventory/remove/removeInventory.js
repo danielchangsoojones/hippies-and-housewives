@@ -96,7 +96,11 @@ function siftInventories(items) {
         firstInventory.set("isDeleted", true);
         Parse.Object.saveAll([lineItem, firstInventory], {
             success: function (results) {
-                promise.resolve(firstInventory);
+                removePickable(lineItem).then(function(success) {
+                    promise.resolve(firstInventory);
+                }, function(error) {
+                    promise.reject(error);
+                });
             },
             error: function (error) {                                     
                 promise.resolve(error);
@@ -105,6 +109,24 @@ function siftInventories(items) {
     } else {
         promise.reject("failed to find any matching inventory");
     }
+
+    return promise;
+}
+
+function removePickable(lineItem) {
+    var promise = new Parse.Promise();
+
+    let Pickable = require("../../models/pickable.js");
+    let query = Pickable.query();
+    query.equalTo("lineItems", lineItem);
+    query.find().then(function(pickables) {
+        return Parse.Object.destroyAll(pickables);
+    }).then(function(pickables) {
+        let success = true;
+        promise.resolve(success);
+    }, function(error) {
+        promise.reject(error);
+    });
 
     return promise;
 }

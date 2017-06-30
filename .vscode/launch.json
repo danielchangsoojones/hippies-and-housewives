@@ -7,6 +7,18 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Refund Testing",
+            "program": "${workspaceRoot}/public/refunds/testing/testRefund.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Save Package Testing",
+            "program": "${workspaceRoot}/public/package/testing/testingPackage.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Metrics",
             "program": "${workspaceRoot}/public/metrics/numberOfCuts.js"
         },

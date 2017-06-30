@@ -1,6 +1,5 @@
 var Parse = require('parse/node');
 
-
 exports.allocateLineItem = function allocateLineItem(productVariant, lineItem) {
     var promise = new Parse.Promise();
     

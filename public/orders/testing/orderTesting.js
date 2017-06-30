@@ -30,7 +30,6 @@ var readline = require('readline');
 //     });
 // }
 
-getPracticeOrder();
 function getPracticeOrder() {
     let baseURL = require("../../resources/shopifyURL.js");
     var shopifyURL = baseURL + '/orders/4979680009.json';
@@ -41,6 +40,23 @@ function getPracticeOrder() {
             let order = JSON.parse(body).order;
             let OrderHelper = require("../js/orders.js");
             OrderHelper.uploadNewOrder(order);
+        } else {
+            console.log(error);
+        }
+    });
+}
+
+practiceUpdateOrder();
+function practiceUpdateOrder() {
+    let baseURL = require("../../resources/shopifyURL.js");
+    var shopifyURL = baseURL + '/orders/4979680009.json';
+    var parameters = {};
+    request({url: shopifyURL, qs: parameters}, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            //For some reason, the json has a field orders which you have to access first before it gets to the array of orders
+            let order = JSON.parse(body).order;
+            let OrderHelper = require("../js/updateOrder.js");
+            OrderHelper.updateOrder(order);
         } else {
             console.log(error);
         }

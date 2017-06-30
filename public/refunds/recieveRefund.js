@@ -40,11 +40,22 @@ function saveLineItems(lineItems) {
         let lineItem = lineItems[i];
         lineItem.set("state", LineItem.states().refunded);
 
-        lineItem.save(null, {
-            success: function(lineItem) {},
-            error: function(lineItem, error) {
-                console.log(error);
-            }
+        deallocateNonUsedItems(lineItem).then(function(result) {
+            lineItem.save(null, {
+                success: function(lineItem) {
+                    console.log("successfully marked lineItem: " + lineItem.id + " as refunded");
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }, function(error) {
+            console.log(error);
         });
     }
+}
+
+function deallocateNonUsedItems(lineItem) {
+    let Deallocate = require("../lineItems/deallocate/deallocateLineItem.js");
+    return Deallocate.deallocateNonUsedItem(lineItem);
 }

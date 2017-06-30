@@ -68,11 +68,13 @@ function updateLineItems(lineItems, orderJSON) {
 
 function updateLineItem(lineItem, orderJSON) {
     lineItem.set("state", OrderHelper.getLineItemState(orderJSON));
-    lineItem.save(null, {
-        success: function(order) {},
-        error: function(error) {
-            console.log(error);
-        }
+    let Deallocate = require("../../lineItems/deallocate/deallocateLineItem.js");
+    Deallocate.deallocateNonUsedItem(lineItem).then(function (success) {
+        return lineItem.save();
+    }).then(function(lineItem) {
+        console.log("successfully update line item");
+    }, function(error) {
+        console.log(error);
     });
 }
 
