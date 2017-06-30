@@ -43,8 +43,11 @@ function checkForDeallocation(lineItem) {
 
     if (state != LineItem.states().open && ship == undefined) {
         //the item was either archived, refunded or cancelled without being shipped via our shipping interface
-        let item = lineItem.get("item");
-        lineItem.unset("item");
+        var item = lineItem.get("item");
+        if (item != undefined) {
+            item.unset("lineItem");
+            lineItem.unset("item");
+        }
         let Allocate = require("../../items/allocate/allocateItem.js");
         return Allocate.allocateItem(item, 0).then(function(objects) {
             let SaveAll = require("../../orders/js/orders.js");
