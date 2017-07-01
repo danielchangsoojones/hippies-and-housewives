@@ -9,6 +9,8 @@ class Analytic {
             openShipping: "openShipping",
             lastShipped: "lastShipped"
         }
-        return types
+        return types;
     }
 }
+
+module.exports = Analytic;
