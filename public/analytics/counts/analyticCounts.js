@@ -212,7 +212,8 @@ function createShippedQuery() {
     let shipQuery = Ship.query();
     //the Parse Server time is in GMT (Greenwich Mean Time), which is 10 hours ahead of Hawaii
     let hawaiiMidnight = new Date();
-    hawaiiMidnight.setHours(-10, 0, 0, 0);
+    hawaiiMidnight.setHours(0, 0, 0, 0);
+    console.log("Hawaii midnight time: " + hawaiiMidnight);
     shipQuery.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
     query.matchesQuery("ship", shipQuery);
     query.limit(10000);
