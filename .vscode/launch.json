@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Analytic Testing",
+            "program": "${workspaceRoot}/public/analytics/testing/analyticTesting.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Refund Testing",
             "program": "${workspaceRoot}/public/refunds/testing/testRefund.js"
         },

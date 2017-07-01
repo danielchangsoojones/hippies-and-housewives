@@ -101,6 +101,15 @@ Parse.Cloud.define("inputPackage", function(req, res) {
   });
 });
 
+Parse.Cloud.define("getAnalyticCounts", function(req, res) {
+  let AnalyticCounts = require("../public/analytics/counts/analyticCounts.js");
+  AnalyticCounts.getAnalyticCounts().then(function(results) {
+    res.success(results);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: Inventory
 Parse.Cloud.define("updateInventoryCount", function(req, res) {
   let productVariantDictionary = req.params.variantDict;
