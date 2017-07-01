@@ -213,8 +213,8 @@ function createShippedQuery() {
     let shipQuery = Ship.query();
     //the Parse Server time is in GMT (Greenwich Mean Time), which is 10 hours ahead of Hawaii
     //There is no Hawaii timezone on moment, so we are just offsetting from Los Angeles.
-    let hawaiiMidnight = moment().tz("America/Los_Angeles");
-    hawaiiMidnight.hour(3);
+    let hawaiiMidnight = moment().tz("Pacific/Honolulu");
+    hawaiiMidnight.hour(0);
     hawaiiMidnight.minute(0);
     hawaiiMidnight.second(0);
     hawaiiMidnight.millisecond(0);
