@@ -59,7 +59,6 @@ var num = 1;
 //     num++;
 
 //     addProductVariantToItem(item, lineItem);
-//     addUniqueID(item, lineItem);
 //     item.set("lineItem", lineItem);
 //     lineItem.set("item", item);
 
@@ -177,11 +176,6 @@ var num = 1;
 //     }, function (error) {
 //         console.log(error);
 //     });
-// }
-
-// //MARK: unqiue ID's
-// function addUniqueID(item, lineItem) {
-//     item.set("uniqueID", lineItem.get("shopifyLineItemID"));
 // }
 
 // function deleteAllItems() {
