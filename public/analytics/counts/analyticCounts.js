@@ -46,6 +46,7 @@ function getNewestOrdersCount() {
     var promise = new Parse.Promise();
 
     let query = Order.query();
+    query.limit(10000);
     let hawaiiMidnight = getHawaiiMidnight();
     query.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
     query.count({
@@ -67,6 +68,7 @@ function getNewestItemsCount() {
     query.exists("state");
     let hawaiiMidnight = getHawaiiMidnight();
     query.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
+    query.limit(10000);
     query.count({
         success: function(count) {
             let result = createResult(Analytic.types().newestItems, count);
