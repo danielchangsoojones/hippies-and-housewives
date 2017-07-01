@@ -3,12 +3,15 @@ var request = require("request");
 let LineItem = require("../../models/lineItem.js");
 let Analytic = require("../types/analytic.js");
 let Item = require("../../models/item.js");
+let Order = require("../../models/order.js");
 var moment = require('moment-timezone');
 
 exports.getAnalyticCounts = function getAnalyticCounts() {
     var promises = [];
 
     promises.push(getOpenOrdersCount());
+    promises.push(getNewestOrdersCount());
+    promises.push(getNewestItemsCount());
     promises.push(getItemsToBeCut());
     promises.push(getItemsToBeSewn());
     promises.push(getAllocatedInventoryCount());
@@ -36,6 +39,43 @@ function getOpenOrdersCount() {
         }
     });
     
+    return promise;
+}
+
+function getNewestOrdersCount() {
+    var promise = new Parse.Promise();
+
+    let query = Order.query();
+    let hawaiiMidnight = getHawaiiMidnight();
+    query.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
+    query.count({
+        success: function(count) {
+            let result = createResult(Analytic.types().newestOrders, count);
+            promise.resolve(result);
+        }, error: function(error) {
+            promise.reject(error);
+        }
+    });
+
+    return promise;
+}
+
+function getNewestItemsCount() {
+    var promise = new Parse.Promise();
+
+    let query = LineItem.query();
+    query.exists("state");
+    let hawaiiMidnight = getHawaiiMidnight();
+    query.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
+    query.count({
+        success: function(count) {
+            let result = createResult(Analytic.types().newestItems, count);
+            promise.resolve(result);
+        }, error: function(error) {
+            promise.reject(error);
+        }
+    });
+
     return promise;
 }
 
@@ -211,20 +251,23 @@ function createShippedQuery() {
 
     let Ship = require("../../models/tracking/ship.js");
     let shipQuery = Ship.query();
+    let hawaiiMidnight = getHawaiiMidnight();
+    
+    shipQuery.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
+    query.matchesQuery("ship", shipQuery);
+    query.limit(10000);
+
+    return query;
+}
+
+function getHawaiiMidnight() {
     //the Parse Server time is in GMT (Greenwich Mean Time), which is 10 hours ahead of Hawaii
     let hawaiiMidnight = moment().tz("Pacific/Honolulu");
     hawaiiMidnight.hour(0);
     hawaiiMidnight.minute(0);
     hawaiiMidnight.second(0);
     hawaiiMidnight.millisecond(0);
-    console.log(hawaiiMidnight);
-    console.log(hawaiiMidnight.toDate());
-    
-    shipQuery.greaterThanOrEqualTo("createdAt", hawaiiMidnight.toDate());
-    query.matchesQuery("ship", shipQuery);
-    query.limit(10000);
-
-    return query;
+    return hawaiiMidnight.toDate();
 }
 
 function createResult(analyticType, count) {
