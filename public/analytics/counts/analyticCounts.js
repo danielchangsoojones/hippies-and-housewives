@@ -3,6 +3,7 @@ var request = require("request");
 let LineItem = require("../../models/lineItem.js");
 let Analytic = require("../types/analytic.js");
 let Item = require("../../models/item.js");
+var moment = require('moment-timezone');
 
 exports.getAnalyticCounts = function getAnalyticCounts() {
     var promises = [];
@@ -211,10 +212,15 @@ function createShippedQuery() {
     let Ship = require("../../models/tracking/ship.js");
     let shipQuery = Ship.query();
     //the Parse Server time is in GMT (Greenwich Mean Time), which is 10 hours ahead of Hawaii
-    let hawaiiMidnight = new Date();
-    hawaiiMidnight.setHours(0, 0, 0, 0);
-    console.log("Hawaii midnight time: " + hawaiiMidnight);
-    shipQuery.greaterThanOrEqualTo("createdAt", hawaiiMidnight);
+    let hawaiiMidnight = moment().tz("America/Hawaii");
+    hawaiiMidnight.hour(0);
+    hawaiiMidnight.minute(0);
+    hawaiiMidnight.second(0);
+    hawaiiMidnight.millisecond(0);
+    console.log(hawaiiMidnight);
+    console.log(hawaiiMidnight.toDate());
+    
+    shipQuery.greaterThanOrEqualTo("createdAt", hawaiiMidnight.toDate());
     query.matchesQuery("ship", shipQuery);
     query.limit(10000);
 
