@@ -7,7 +7,8 @@ class Analytic {
             allocatedInventoryCount: "allocatedInventoryCount",
             openPicks: "openPicks",
             openShipping: "openShipping",
-            lastShipped: "lastShipped"
+            lastShippedOrders: "lastShippedOrders",
+            lastShippedItems: "lastShippedItems"
         }
         return types;
     }
