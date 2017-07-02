@@ -105,10 +105,10 @@ function getItemsToBeSewn() {
     var promise = new Parse.Promise();
 
     let query = LineItem.query();
-    query.doesNotExist("package");
 
     let itemQuery = Item.query();
     itemQuery.exists("cut");
+    itemQuery.doesNotExist("package");
     query.matchesQuery("item", itemQuery);
     
     query.limit(10000);
