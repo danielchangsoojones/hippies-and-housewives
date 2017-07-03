@@ -1,5 +1,6 @@
 var Parse = require('parse/node');
 
+
 exports.removeInventory = function removeInventory(productVariantObjectID, quantity) {
     var promise = new Parse.Promise();
     let absolueQuantity = Math.abs(quantity);
@@ -79,7 +80,7 @@ function siftInventories(items, quantityToRemove) {
 
     var promises = [];
     promises.push(exports.removePickables(lineItemsToCheckWithPickables));
-    promises.push(deleteAll(tuple.itemsToDelete));
+    promises.push(deleteAll(tuple.itemsToDelete, lineItemsToCheckWithPickables));
 
     return Parse.Promise.when(promises);
 }
@@ -134,12 +135,14 @@ function checkAllocatedInventories(items, quantityToRemove, itemsToDelete) {
     return results;
 }
 
-function deleteAll(items) {
+function deleteAll(items, lineItems) {
     //deleting does not actually destroy the item, it just sets a delete flag upon the item.
     for (var i = 0; i < items.length; i++) {
         items[i].set("isDeleted", true);
+        console.log(items[i].get("lineItem"));
     }
-    return Parse.Object.saveAll(items);
+    const SaveAll = require('../../../orders/js/orders.js');
+    return SaveAll.saveAllComponents([items, lineItems]);
 }
 
 exports.removePickables = function removePickables(lineItems) {

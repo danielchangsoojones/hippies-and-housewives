@@ -33,7 +33,7 @@ function removeInventory(productTypeObjectID, size) {
     });
 }
 
-removeMultipleInventory("yJH8S2eqxe", 2);
+removeMultipleInventory("tkSx9UPpBZ", 1);
 function removeMultipleInventory(productVariantObjectID, quantity) {
     let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
     Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
