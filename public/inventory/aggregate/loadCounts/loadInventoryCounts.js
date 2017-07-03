@@ -3,6 +3,18 @@ const ProductVariant = require('../../../models/productVariant.js');
 const ProductType = require('../../../models/productType.js');
 
 exports.loadInventories = function loadInventories(productTypeObjectID) {
+    var promise = new Parse.Promise();
+
+    loadResults(productTypeObjectID).then(function(results) {
+        promise.resolve(Parse._encode(results));
+    }, function(error) {
+        promise.reject(error);
+    });
+
+    return promise;
+}
+
+function loadResults(productTypeObjectID) {
     var promises = [];
 
     promises.push(getAllProductVariants(productTypeObjectID));

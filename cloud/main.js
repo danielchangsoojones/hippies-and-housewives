@@ -122,6 +122,17 @@ Parse.Cloud.define("updateInventoryCount", function(req, res) {
   });
 });
 
+Parse.Cloud.define("getInventoryCounts", function(req, res) {
+  let productTypeObjectID = req.params.productTypeObjectID;
+
+  const LoadInventoryCounts = require('../public/inventory/aggregate/loadCounts/loadInventoryCounts.js');
+  LoadInventoryCounts.loadInventories(productTypeObjectID).then(function(results) {
+    res.success(results);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");
