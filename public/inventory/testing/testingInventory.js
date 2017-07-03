@@ -2,9 +2,8 @@ require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 var Saving = require("../save/save.js");
 
-testInventorySave();
 function testInventorySave() {
-    let productTypeObjectID = "B1keGnp9F2";
+    let productTypeObjectID = "SsOjSJqw32";
     let size = "S";
     let quantity = 2;
     
@@ -38,6 +37,16 @@ function removeMultipleInventory(productVariantObjectID, quantity) {
     let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
     Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
         console.log(inventories);
+    }, function(error) {
+        console.log(error);
+    });
+}
+
+loadInventories("SsOjSJqw32");
+function loadInventories(productTypeObjectID) {
+    const LoadInventoryCounts = require('../aggregate/loadCounts/loadInventoryCounts.js');
+    LoadInventoryCounts.loadInventories(productTypeObjectID).then(function(results) {
+        console.log(results);
     }, function(error) {
         console.log(error);
     });
