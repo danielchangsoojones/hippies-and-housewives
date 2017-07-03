@@ -153,8 +153,7 @@ exports.removePickables = function removePickables(lineItems) {
         let query = Pickable.query();
         query.containedIn("lineItems", lineItems);
         query.find().then(function (pickables) {
-            console.log(pickables);
-            // return Parse.Object.destroyAll(pickables);
+            return Parse.Object.destroyAll(pickables);
         }).then(function (pickables) {
             let success = true;
             promise.resolve(success);
