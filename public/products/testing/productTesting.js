@@ -84,6 +84,7 @@ function getDuplicateProduct() {
                   alreadyUsedProductIDs.push(shopifyProductID);
               } else {
                   //it's a duplicate product number
+                  console.log(product.get("title") + " " + product.get("createdAt"));
                   let alreadyUsedProduct = getAlreadyUsedProduct(alreadyUsedProducts, shopifyProductID);
                   matchItems(alreadyUsedProduct, product).then(function(items) {
                     deleteDuplicateProduct(product);
@@ -227,5 +228,21 @@ function getProductVariant(productVariants, targetProductVariantID) {
     }
 
     console.log("could not find matching product variants");
+}
+
+seeIfProductIsUnique("0lSatIbdAk");
+function seeIfProductIsUnique(productTypeObjectID) {
+
+    const ProductType = require('../../models/productType.js');
+    let query = ProductType.query();
+    query.equalTo("objectId", productTypeObjectID);
+    query.first().then(function(productType) {
+        const UniqueProduct = require('../unique/uniqueProduct.js');
+        return UniqueProduct.checkProductDuplicates(productType);
+    }).then(function(success) {
+        console.log("this product is unique");
+    }, function(error) {
+        console.log(error);
+    });
 }
 

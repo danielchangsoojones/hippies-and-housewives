@@ -141,7 +141,12 @@ Parse.Cloud.beforeSave("ProductType", function(request, response) {
     request.object.set("lowercaseTitle", lowercaseTitle);
   }
 
-  response.success();
+  const UniqueProduct = require('../public/products/unique/uniqueProduct.js');
+  UniqueProduct.checkProductDuplicates(request.object).then(function(success) {
+    response.success();
+  }, function(error) {
+    response.error(error);
+  });
 });
 
 Parse.Cloud.beforeSave("Item", function(request, response) {
