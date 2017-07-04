@@ -54,3 +54,13 @@ function getOneColorCutList(color) {
         console.log(error);
     });
 }
+
+getCutDistributions();
+function getCutDistributions() {
+    const CutDistributions = require('../distributions/cutDistributions.js');
+    CutDistributions.getCutDistributions().then(function(results) {
+        console.log(results);
+    }, function(error) {
+        console.log(error);
+    });
+}

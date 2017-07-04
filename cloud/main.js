@@ -110,6 +110,16 @@ Parse.Cloud.define("getAnalyticCounts", function(req, res) {
   });
 });
 
+//MARK: Cut List
+Parse.Cloud.define("getCutDistributions", function(req, res) {
+  const CutDistributions = require('../public/cutList/distributions/cutDistributions.js');
+  CutDistributions.getCutDistributions().then(function(results) {
+    res.success(results);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: Inventory
 Parse.Cloud.define("updateInventoryCount", function(req, res) {
   let productVariantDictionary = req.params.variantDict;
