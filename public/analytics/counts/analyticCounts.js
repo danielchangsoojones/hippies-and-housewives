@@ -167,9 +167,11 @@ function getOrdersToBeShippedCount() {
     query.exists("pick");
     query.doesNotExist("ship");
     query.limit(10000);
+    query.include("order");
 
-    query.count({
-        success: function(count) {
+    query.find({
+        success: function(lineItems) {
+            let count = getOrderCountFrom(lineItems);
             let result = createResult(Analytic.types().openShipping, count);
             promise.resolve(result);
         },
