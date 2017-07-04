@@ -277,3 +277,47 @@ var num = 1;
 //         }
 //     });
 // }
+
+//MARK: update a fabric color that is pointing wrongly
+updateColors();
+function updateColors() {
+    var theFabric;
+    getFabric().then(function(fabric) {
+        theFabric = fabric;
+        const LineItem = require('../models/lineItem.js');
+        let query = LineItem.query();
+        query.exists("state");
+        query.endsWith("title", "Chaco");
+        query.limit(10000);
+        query.include("productVariant.product");
+        return query.find();
+    }).then(function(lineItems) {
+        var productTypes = [];
+        for (var i = 0; i < lineItems.length; i++) {
+            let lineItem = lineItems[i];
+            let productVariant = lineItem.get("productVariant");
+            if (productVariant != undefined) {
+                let productType = productVariant.get("product");
+                productType.set("fabric", theFabric);
+                productTypes.push(productType);
+            }
+        }
+        Parse.Object.saveAll(productTypes, {
+            success: function(results) {
+                console.log("succcessss");
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }, function(error) {
+        console.log(error);
+    });
+}
+
+function getFabric() {
+    const Fabric = require('../models/fabric.js');
+    let query = Fabric.query();
+    query.equalTo("color", "chaco");
+    return query.first();
+}
