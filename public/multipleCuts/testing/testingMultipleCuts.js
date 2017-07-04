@@ -1,7 +1,6 @@
 require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 
-inputMultipleCuts();
 function inputMultipleCuts() {
     let quantity = 5;
     let productTypeObjectID = "sW3DA7fqrH";
