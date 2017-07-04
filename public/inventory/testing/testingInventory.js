@@ -42,7 +42,6 @@ function removeMultipleInventory(productVariantObjectID, quantity) {
     });
 }
 
-loadInventories("SsOjSJqw32");
 function loadInventories(productTypeObjectID) {
     const LoadInventoryCounts = require('../aggregate/loadCounts/loadInventoryCounts.js');
     LoadInventoryCounts.loadInventories(productTypeObjectID).then(function(results) {

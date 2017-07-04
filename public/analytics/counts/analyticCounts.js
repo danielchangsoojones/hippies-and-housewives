@@ -129,25 +129,12 @@ function getItemsToBeSewn() {
 function getAllocatedInventoryCount() {
     var promise = new Parse.Promise();
 
-    let query = LineItem.query();
-    query.doesNotExist("pick");
-
-    let itemQuery = Item.query();
-    let Package = require("../../models/tracking/package.js");
-    let packageQuery = Package.query();
-    packageQuery.equalTo("state", Package.states().in_inventory);
-    itemQuery.matchesQuery("package", packageQuery);
-    query.matchesQuery("item", itemQuery);
-    query.limit(10000);
-
-    query.count({
-        success: function(count) {
-            let result = createResult(Analytic.types().allocatedInventoryCount, count);
-            promise.resolve(result);
-        },
-        error: function(error) {
-            promise.reject(error);
-        }
+    const GetInventoryCount = require('./InventoryAnalytics/getInventoryCount.js');
+    GetInventoryCount.findAllocatedInventoryCount().then(function(count) {
+        let result = createResult(Analytic.types().allocatedInventoryCount, count);
+        promise.resolve(result);
+    }, function(error) {
+        promise.reject(error);
     });
 
     return promise;
