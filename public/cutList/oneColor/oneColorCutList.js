@@ -1,6 +1,8 @@
 var Parse = require('parse/node');
 
 exports.getOneColorCutList = function getOneColorCutList(color) {
+    var promise = new Parse.Promise();
+
     let CutList = require("../cutList.js");
     let query = CutList.createLineItemsToCutQuery();
     
@@ -8,9 +10,15 @@ exports.getOneColorCutList = function getOneColorCutList(color) {
     query.matchesQuery("productVariant", productVariantQuery);
     query.limit(10000);
 
-    return query.find().then(function(lineItems) {
+    query.find().then(function(lineItems) {
         return CutList.createGoogleSheet(lineItems);
+    }).then(function(results) {
+        promise.resolve(results);
+    }, function(error) {
+        promise.reject(error);
     });
+
+    return promise;
 }
 
 function createFabricColorQuery(color) {
