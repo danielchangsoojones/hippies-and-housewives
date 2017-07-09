@@ -132,7 +132,6 @@ function findMatchingLineItem(inventory, productVariant, lineItemsToSkip) {
     var query = LineItem.query();
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("item");
-    query.notEqualTo("isInitiated", true);
     //if someone saves 15 inventory items at once, you want to skip the ones that would be saved for the ones before it.
     //so we don't save the same LineItem to multiple Inventories
     query.skip(lineItemsToSkip);

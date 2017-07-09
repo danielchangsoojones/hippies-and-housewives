@@ -233,3 +233,91 @@ var num = 1;
 //         console.log(error);
 //     });
 // }
+
+function getRidOfOldGroupCuts(style, size, lastHour) {
+    const Item = require('../models/item.js');
+    let query = Item.query();
+    query.exists("group");
+
+    const ProductVariant = require('../models/productVariant.js');
+    let productVariantQuery = ProductVariant.query();
+    const ProductType = require('../models/productType.js');
+    let productTypeQuery = ProductType.query();
+    productTypeQuery.equalTo("lowercaseTitle", style);
+    productVariantQuery.matchesQuery("product", productTypeQuery);
+    productVariantQuery.equalTo("size", size);
+    query.matchesQuery("productVariant", productVariantQuery);
+
+    let moment = require("moment-timezone");
+    let badTime = moment().tz("Pacific/Honolulu");
+    badTime.hour(lastHour);
+    badTime.minute(0);
+    badTime.second(0);
+    badTime.millisecond(0);
+    query.greaterThanOrEqualTo("createdAt", badTime.toDate());
+
+
+    query.limit(10000);
+    query.include("lineItem");
+    query.find({
+        success: function(items) {
+            for (var i = 0; i < items.length; i++) {
+                let item = items[i];
+                let lineItem = item.get("lineItem");
+                if (lineItem != undefined) {
+                    lineItem.unset("item");
+                }
+                item.unset("lineItem");
+                item.set("isDeleted", true);
+                Parse.Object.saveAll([item, lineItem])
+            }
+            console.log(items.length);
+        }, 
+        error: function(error) {
+            console.log(error);
+        }
+    });
+}
+
+//MARK: update a fabric color that is pointing wrongly
+// function updateColors() {
+//     var theFabric;
+//     getFabric().then(function(fabric) {
+//         theFabric = fabric;
+//         const LineItem = require('../models/lineItem.js');
+//         let query = LineItem.query();
+//         query.exists("state");
+//         query.endsWith("title", "Chaco");
+//         query.limit(10000);
+//         query.include("productVariant.product");
+//         return query.find();
+//     }).then(function(lineItems) {
+//         var productTypes = [];
+//         for (var i = 0; i < lineItems.length; i++) {
+//             let lineItem = lineItems[i];
+//             let productVariant = lineItem.get("productVariant");
+//             if (productVariant != undefined) {
+//                 let productType = productVariant.get("product");
+//                 productType.set("fabric", theFabric);
+//                 productTypes.push(productType);
+//             }
+//         }
+//         Parse.Object.saveAll(productTypes, {
+//             success: function(results) {
+//                 console.log("succcessss");
+//             },
+//             error: function(error) {
+//                 console.log(error);
+//             }
+//         });
+//     }, function(error) {
+//         console.log(error);
+//     });
+// }
+
+// function getFabric() {
+//     const Fabric = require('../models/fabric.js');
+//     let query = Fabric.query();
+//     query.equalTo("color", "chaco");
+//     return query.first();
+// }

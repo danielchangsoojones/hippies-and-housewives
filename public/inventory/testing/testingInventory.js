@@ -2,17 +2,17 @@ require("../../resources/initializeParse.js");
 var Parse = require('parse/node');
 var Saving = require("../save/save.js");
 
-// function testInventorySave() {
-//     let productTypeObjectID = "B1keGnp9F2";
-//     let size = "S";
-//     let quantity = 20;
+function testInventorySave() {
+    let productTypeObjectID = "SsOjSJqw32";
+    let size = "S";
+    let quantity = 2;
     
-//     Saving.saveInventory(productTypeObjectID, size, quantity).then(function(items) {
-//         console.log(items);
-//     }, function (error) {
-//         console.log(error);
-//     });
-// }
+    Saving.saveInventory(productTypeObjectID, size, quantity).then(function(items) {
+        console.log(items);
+    }, function (error) {
+        console.log(error);
+    });
+}
 
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
@@ -33,11 +33,19 @@ function removeInventory(productTypeObjectID, size) {
     });
 }
 
-removeMultipleInventory("tkSx9UPpBZ", 1);
 function removeMultipleInventory(productVariantObjectID, quantity) {
     let Inventory = require("../remove/multipleInventories/removeMultipleInventories.js");
     Inventory.removeInventory(productVariantObjectID, quantity).then(function(inventories) {
         console.log(inventories);
+    }, function(error) {
+        console.log(error);
+    });
+}
+
+function loadInventories(productTypeObjectID) {
+    const LoadInventoryCounts = require('../aggregate/loadCounts/loadInventoryCounts.js');
+    LoadInventoryCounts.loadInventories(productTypeObjectID).then(function(results) {
+        console.log(results);
     }, function(error) {
         console.log(error);
     });

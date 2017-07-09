@@ -51,16 +51,6 @@ Parse.Cloud.define("createCutList", function(req, res) {
   });
 });
 
-Parse.Cloud.define("getOneColorCutList", function(req, res) {
-  let color = req.params.color;
-  let CutList = require("../public/cutList/oneColor/oneColorCutList.js");
-  CutList.getOneColorCutList(color).then(function(success) {
-    res.success(success);
-  }, function(error) {
-    res.error(error);
-  });
-});
-
 Parse.Cloud.define("archiveShopifyOrder", function(req, res) {
   let shopifyOrderID = req.params.shopifyOrderID;
   let Archive = require("../public/orders/archive/archiveOrder.js");
@@ -110,6 +100,26 @@ Parse.Cloud.define("getAnalyticCounts", function(req, res) {
   });
 });
 
+//MARK: Cut List
+Parse.Cloud.define("getCutDistributions", function(req, res) {
+  const CutDistributions = require('../public/cutList/distributions/cutDistributions.js');
+  CutDistributions.getCutDistributions().then(function(results) {
+    res.success(results);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
+Parse.Cloud.define("getOneColorCutList", function(req, res) {
+  let color = req.params.color;
+  let CutList = require("../public/cutList/oneColor/oneColorCutList.js");
+  CutList.getOneColorCutList(color).then(function(success) {
+    res.success(success);
+  }, function(error) {
+    res.error(error);
+  });
+});
+
 //MARK: Inventory
 Parse.Cloud.define("updateInventoryCount", function(req, res) {
   let productVariantDictionary = req.params.variantDict;
@@ -122,18 +132,16 @@ Parse.Cloud.define("updateInventoryCount", function(req, res) {
   });
 });
 
-Parse.Cloud.define("removeInventory", function(req, res) {
+Parse.Cloud.define("getInventoryCounts", function(req, res) {
   let productTypeObjectID = req.params.productTypeObjectID;
-  let size = req.params.size;
-  let Inventory = require("../public/inventory/remove/removeInventory.js");
-  Inventory.removeInventory(productTypeObjectID, size).then(function(inventory) {    
-    res.success(inventory);
+
+  const LoadInventoryCounts = require('../public/inventory/aggregate/loadCounts/loadInventoryCounts.js');
+  LoadInventoryCounts.loadInventories(productTypeObjectID).then(function(results) {
+    res.success(results);
   }, function(error) {
     res.error(error);
   });
 });
-
-
 
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
@@ -143,7 +151,12 @@ Parse.Cloud.beforeSave("ProductType", function(request, response) {
     request.object.set("lowercaseTitle", lowercaseTitle);
   }
 
-  response.success();
+  const UniqueProduct = require('../public/products/unique/uniqueProduct.js');
+  UniqueProduct.checkProductDuplicates(request.object).then(function(success) {
+    response.success();
+  }, function(error) {
+    response.error(error);
+  });
 });
 
 Parse.Cloud.beforeSave("Item", function(request, response) {

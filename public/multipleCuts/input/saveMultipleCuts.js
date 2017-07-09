@@ -66,7 +66,11 @@ function getProductVariant(productTypeObjectID, size, position) {
     var promise = new Parse.Promise();
 
     var Find = require("../../inventory/save/save.js");
-    Find.getProductVariant(productTypeObjectID, size, position).then(function (result) {
+    Find.getProductVariant(productTypeObjectID, size).then(function (productVariant) {
+        let result = {
+            i: position,
+            productVariant: productVariant
+        }
         promise.resolve(result);
     }, function (error) {
         promise.reject(error);

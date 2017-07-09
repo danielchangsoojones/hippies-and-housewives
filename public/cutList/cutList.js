@@ -21,7 +21,7 @@ exports.getCutList = function getCutList() {
             promise.reject(error);
         });
     }, function(error) {
-        console.log(error);
+        promise.reject(error);
     });
 
     return promise;
