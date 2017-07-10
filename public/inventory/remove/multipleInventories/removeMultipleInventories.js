@@ -116,7 +116,6 @@ function checkAllocatedInventories(items, quantityToRemove, itemsToDelete) {
                     items[q].unset("lineItem");
                     itemsToDelete.push(items[q]);
                     lineItemsToCheckWithPickables.push(lineItem);
-                    quantityToRemove--;
                 }
             } else {
                 /**if the item is undefined that means that quantity to remove is more than items in the database
@@ -139,7 +138,6 @@ function deleteAll(items, lineItems) {
     //deleting does not actually destroy the item, it just sets a delete flag upon the item.
     for (var i = 0; i < items.length; i++) {
         items[i].set("isDeleted", true);
-        console.log(items[i].get("lineItem"));
     }
     const SaveAll = require('../../../orders/js/orders.js');
     return SaveAll.saveAllComponents([items, lineItems]);

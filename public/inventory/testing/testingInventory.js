@@ -14,9 +14,10 @@ function testInventorySave() {
     });
 }
 
+aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
-    var dictionary = {"xVQk4PISAd" : -2, "BqqyxB4jau" : 2};
+    var dictionary = {"511bGXrSII" : -20};
     Aggregate.updateInventoryCount(dictionary).then(function(results) {
         console.log(results);
     }, function(error) {
@@ -52,7 +53,6 @@ function loadInventories(productTypeObjectID) {
 }
 
 //Purpose: tell us how many inventories exist for a product variant
-// checkInventoryCount("YehYeh Top // Chaco", "S");
 function checkInventoryCount(style, size) {
     let Get = require("../../products/testing/productTesting.js");
     Get.getProductVariant(style, size).then(function(productVariantObjectID) {
