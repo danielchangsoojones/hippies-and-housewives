@@ -7,8 +7,6 @@ var Parse = require('parse/node');
 //Our cut list is connected to the hippiesresources@gmail.com account for the Daniel Magic Cut List.
 //TODO: not sure why, but somehow the id can change sometimes...
 var spreadSheetID = "1DzNjm3RCL9-Sg3u1B_0jAR-lIzeCxohIrGQyOpJNqzU"
-
-var promise = new Parse.Promise();
 var lineItems = [];
 
 exports.createCutList = function createCutList(lineItemsToCut) {
@@ -16,26 +14,25 @@ exports.createCutList = function createCutList(lineItemsToCut) {
   lineItems = lineItemsToCut;
   console.log(lineItems);
   let secretJSON = require("./client_secret.json");
-  authorize(secretJSON, createSheet);
-
-  return promise;
+  let oauth2Client = authorize(secretJSON);
+  return createSheet(oauth2Client);
 }
 
 /**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
+ * Create an OAuth2 client with the given credentials
  *
  * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+function authorize(credentials) {
+  var promise = new Parse.Promise();
+
   var oauth2Client = exports.getAuthClient(credentials);
 
   // Get previously stored token. Daniel Jones had to edit the normal Google Sheets Quickstart to just pull a saved token on our server since
   //We only need one token because we only access one google account. Normally you would save tokens to your database for each user.
   let token = require("./token/token.json");
   oauth2Client.credentials = token;
-  callback(oauth2Client);
+  return oauth2Client;
 }
 
 exports.getAuthClient = function getAuthClient(credentials) {
@@ -49,6 +46,8 @@ exports.getAuthClient = function getAuthClient(credentials) {
 }
 
 function createSheet(authClient) {
+  var promise = new Parse.Promise();
+
     var request = {
     // The spreadsheet to apply the updates to.
     spreadsheetId: spreadSheetID,
@@ -87,11 +86,19 @@ function createSheet(authClient) {
     console.log(JSON.stringify(response, null, 2));
     var json = JSON.parse(JSON.stringify(response, null, 2));
 
-    appendRows(authClient, response);
+    appendRows(authClient, response).then(function(result) {
+      promise.resolve(result);
+    }, function(error) {
+      promise.reject(error);
+    });
   });
+
+  return promise;
 }
 
 function appendRows(authClient, response) {
+  var promise = new Parse.Promise();
+
   let sheetTitle = response.replies[0].addSheet.properties.title
   let lineItemRows = createLineItemRowValues();
   let numOfRows = lineItemRows.length;
@@ -126,6 +133,8 @@ function appendRows(authClient, response) {
     let success = true; 
     promise.resolve(success);
   });
+
+  return promise;
 }
 
 function createLineItemRowValues() {
