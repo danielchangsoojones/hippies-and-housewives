@@ -148,7 +148,11 @@ function createLineItemRowValues() {
     let lineItem = lineItems[i];
     let order = lineItem.get("order");
     let item = lineItem.get("item");
-    let lineItemJSON = [item.get("uniqueID"), lineItem.get("title"), lineItem.get("variant_title"), order.get("name")];
+    var uniqueID;
+    if (item == undefined) {
+      uniqueID = "unknown";
+    }
+    let lineItemJSON = [uniqueID, lineItem.get("title"), lineItem.get("variant_title"), order.get("name")];
     lineItemArray.push(lineItemJSON);
   }
 
