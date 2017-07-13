@@ -243,7 +243,7 @@ function getRidOfOldGroupCuts(style, size, lastHour) {
     let productVariantQuery = ProductVariant.query();
     const ProductType = require('../models/productType.js');
     let productTypeQuery = ProductType.query();
-    productTypeQuery.equalTo("lowercaseTitle", style);
+    productTypeQuery.equalTo("lowercaseTitle", style.toLowerCase());
     productVariantQuery.matchesQuery("product", productTypeQuery);
     productVariantQuery.equalTo("size", size);
     query.matchesQuery("productVariant", productVariantQuery);
