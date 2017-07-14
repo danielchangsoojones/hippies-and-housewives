@@ -24,7 +24,7 @@ exports.updatePickList = function updatePickList() {
     query.find({
         success: function(lineItems) {
             console.log("total open line items:" + lineItems.length);
-            let orderDictionary = groupLineItemsToOrders(lineItems);
+            let orderDictionary = exports.groupLineItemsToOrders(lineItems);
             let completedOrderDictionary = goThrough(orderDictionary);
             savePickables(completedOrderDictionary);
         }, function(error) {
@@ -33,7 +33,7 @@ exports.updatePickList = function updatePickList() {
     });
 }
 
-function groupLineItemsToOrders(lineItems) {
+exports.groupLineItemsToOrders = function groupLineItemsToOrders(lineItems) {
     //{order : [line items]}
     var orderDictionary = {}
 
@@ -91,23 +91,30 @@ function checkIfAllLineItemsCompleted(lineItems) {
 function savePickables(orderDictionary) {
     for(var orderID in orderDictionary) {
         let lineItems = orderDictionary[orderID];
-        let order = lineItems[0].get("order");
-
-        doesPickableAlreadyExist(order).then(function(success) {
-             let Pickable = require("../models/pickable.js");
-             let pickable = new Pickable();
-             pickable.set("order", order);
-             pickable.set("lineItems", lineItems);
-
-             return pickable.save();
-        }).then(function(pickable) {
-            console.log("successfully created pickable: " + pickable.id);
-        }, function(error) {
-            console.log(error);
-        });
+        exports.savePickable(lineItems);
     }
 }
 
+exports.savePickable = function savePickable(lineItems) {
+    let order = lineItems[0].get("order");
+
+    doesPickableAlreadyExist(order).then(function (success) {
+        let pickable = createPickable(order, lineItems);
+        return pickable.save();
+    }).then(function (pickable) {
+        console.log("successfully created pickable: " + pickable.id);
+    }, function (error) {
+        console.log(error);
+    });
+}
+
+function createPickable(order, lineItems) {
+    let Pickable = require("../models/pickable.js");
+    let pickable = new Pickable();
+    pickable.set("order", order);
+    pickable.set("lineItems", lineItems);
+    return pickable;
+}
 
 function doesPickableAlreadyExist(order) {
     var promise = new Parse.Promise();
