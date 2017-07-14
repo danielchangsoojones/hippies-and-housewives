@@ -143,6 +143,13 @@ Parse.Cloud.define("getInventoryCounts", function(req, res) {
   });
 });
 
+//MARK: allocation
+Parse.Cloud.define("updateAllocation", function(req, res) {
+  const Allocate = require('../public/allocation/allocate.js');
+  Allocate.allocate();
+  res.success(true);
+});
+
 //MARK: BEFORE SAVES
 Parse.Cloud.beforeSave("ProductType", function(request, response) {
   let title = request.object.get("title");
