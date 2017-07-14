@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+require("../public/resources/initializeParse.js");
+
+console.log("running Allocation Job");
+var Allocate = require('../public/allocation/allocate.js');
+Allocate.allocate();

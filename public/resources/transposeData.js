@@ -234,50 +234,50 @@ var num = 1;
 //     });
 // }
 
-function getRidOfOldGroupCuts(style, size, lastHour) {
-    const Item = require('../models/item.js');
-    let query = Item.query();
-    query.exists("group");
+// function getRidOfOldGroupCuts(style, size, lastHour) {
+//     const Item = require('../models/item.js');
+//     let query = Item.query();
+//     query.exists("group");
 
-    const ProductVariant = require('../models/productVariant.js');
-    let productVariantQuery = ProductVariant.query();
-    const ProductType = require('../models/productType.js');
-    let productTypeQuery = ProductType.query();
-    productTypeQuery.equalTo("lowercaseTitle", style.toLowerCase());
-    productVariantQuery.matchesQuery("product", productTypeQuery);
-    productVariantQuery.equalTo("size", size);
-    query.matchesQuery("productVariant", productVariantQuery);
+//     const ProductVariant = require('../models/productVariant.js');
+//     let productVariantQuery = ProductVariant.query();
+//     const ProductType = require('../models/productType.js');
+//     let productTypeQuery = ProductType.query();
+//     productTypeQuery.equalTo("lowercaseTitle", style.toLowerCase());
+//     productVariantQuery.matchesQuery("product", productTypeQuery);
+//     productVariantQuery.equalTo("size", size);
+//     query.matchesQuery("productVariant", productVariantQuery);
 
-    let moment = require("moment-timezone");
-    let badTime = moment().tz("Pacific/Honolulu");
-    badTime.hour(lastHour);
-    badTime.minute(0);
-    badTime.second(0);
-    badTime.millisecond(0);
-    query.greaterThanOrEqualTo("createdAt", badTime.toDate());
+//     let moment = require("moment-timezone");
+//     let badTime = moment().tz("Pacific/Honolulu");
+//     badTime.hour(lastHour);
+//     badTime.minute(0);
+//     badTime.second(0);
+//     badTime.millisecond(0);
+//     query.greaterThanOrEqualTo("createdAt", badTime.toDate());
 
 
-    query.limit(10000);
-    query.include("lineItem");
-    query.find({
-        success: function(items) {
-            for (var i = 0; i < items.length; i++) {
-                let item = items[i];
-                let lineItem = item.get("lineItem");
-                if (lineItem != undefined) {
-                    lineItem.unset("item");
-                }
-                item.unset("lineItem");
-                item.set("isDeleted", true);
-                Parse.Object.saveAll([item, lineItem])
-            }
-            console.log(items.length);
-        }, 
-        error: function(error) {
-            console.log(error);
-        }
-    });
-}
+//     query.limit(10000);
+//     query.include("lineItem");
+//     query.find({
+//         success: function(items) {
+//             for (var i = 0; i < items.length; i++) {
+//                 let item = items[i];
+//                 let lineItem = item.get("lineItem");
+//                 if (lineItem != undefined) {
+//                     lineItem.unset("item");
+//                 }
+//                 item.unset("lineItem");
+//                 item.set("isDeleted", true);
+//                 Parse.Object.saveAll([item, lineItem])
+//             }
+//             console.log(items.length);
+//         }, 
+//         error: function(error) {
+//             console.log(error);
+//         }
+//     });
+// }
 
 //MARK: update a fabric color that is pointing wrongly
 // function updateColors() {

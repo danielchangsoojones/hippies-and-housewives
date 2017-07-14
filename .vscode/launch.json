@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Allocate Testing",
+            "program": "${workspaceRoot}/public/allocation/testing/allocateTesting.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Analytic Testing",
             "program": "${workspaceRoot}/public/analytics/testing/analyticTesting.js"
         },
