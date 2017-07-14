@@ -3,5 +3,5 @@
 require("../public/resources/initializeParse.js");
 
 console.log("running Allocation Job");
-const Allocate = require('../public/allocation/allocate.js');
+var Allocate = require('../public/allocation/allocate.js');
 Allocate.allocate();
