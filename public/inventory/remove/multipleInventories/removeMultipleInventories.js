@@ -1,6 +1,5 @@
 var Parse = require('parse/node');
 
-
 exports.removeInventory = function removeInventory(productVariantObjectID, quantity) {
     var promise = new Parse.Promise();
     let absoluteQuantity = Math.abs(quantity);
@@ -22,6 +21,7 @@ function findInventory(productVariantObjectID, quantity) {
 
     var orQuery = Parse.Query.or(nonExistentLineItemQuery, existingLineItemsQuery);
     orQuery.include("lineItem");
+    orQuery.limit(10000);
 
     orQuery.find().then(function(inventories) {
         return siftInventories(inventories, quantity);
