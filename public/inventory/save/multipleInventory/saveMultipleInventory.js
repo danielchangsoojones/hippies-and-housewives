@@ -2,38 +2,21 @@ var Parse = require('parse/node');
 var ProductVariant = require("../../../models/productVariant.js");
 
 exports.saveInventory = function saveInventory(productVariantObjectID, quantityToSave) {
-    var promises = [];
+    let promise = new Parse.Promise();
 
-    for (var i = 0; i < quantityToSave; i++) {
-        let promise = new Parse.Promise();
-        promises.push(promise);
-
-        exports.getProductVariant(productVariantObjectID, i).then(function (productVariantResult) {
-            let productVariant = productVariantResult.productVariant;
-            checkIfGroupItem(productVariantResult.i, productVariant).then(function (result) {
-                let groupItem = result.item;
-                if (groupItem == undefined) {
-                    //no groupItem found
-                    let lineItemsToSkip = quantityToSave - result.i - 1;
-                    createNewInventory(productVariant, lineItemsToSkip).then(function (item) {
-                        promise.resolve(item);
-                    }, function (error) {
-                        promise.reject(error);
-                    });
-                } else {
-                    setAsPackaged(groupItem).then(function(groupItem) {
-                        promise.resolve(groupItem);
-                    }, function(error) {
-                        promise.reject(error);
-                    });
-                }
-            }, function (error) {
-                promise.reject(error);
-            });
+    exports.getProductVariant(productVariantObjectID, quantityToSave).then(function (productVariantResult) {
+        let productVariant = productVariantResult.productVariant;
+        getGroupItems(quantityToSave, productVariant).then(function (groupItems) {
+            let leftoverQuantity = setGroupItems(groupItems, quantityToSave);
+            return createNewInventories(leftoverQuantity, productVariant);
+        }).then(function (results) {
+            promise.resolve(results);
+        }, function (error) {
+            promise.reject(error);
         });
-    }
+    });
 
-    return Parse.Promise.when(promises);
+    return promise;
 }
 
 /*
@@ -41,25 +24,35 @@ a group item is an item that was associated with a group and we used it to initi
 Say, we send a bunch of swimsuits off to a factory, and we need to make sure those line items are initiated,
 so they don't get double cut. But, they have no label, so when they are placed into inventory, we need to match them back up
 */
-function checkIfGroupItem(itemsToSkip, productVariant) {
+function getGroupItems(itemsToSave, productVariant) {
     var Item = require("../../../models/item.js");
     var query = Item.query();
 
     query.equalTo("productVariant", productVariant);
     query.exists("group");
     query.doesNotExist("package");
-    query.skip(itemsToSkip);
+    query.limit(itemsToSave);
     
     var promise = new Parse.Promise();
 
-    query.first(function(item) {
-        let result = {item: item, i: itemsToSkip}
-        promise.resolve(result);
+    query.find(function(groupItems) {
+        promise.resolve(groupItems);
     }, function(error) {
         promise.reject(error);
     });
 
     return promise;
+}
+
+function setGroupItems(groupItems, quantityToSave) {
+    var leftoverQuantity = quantityToSave;
+    for (var i = 0; i < groupItems.length; i++) {
+        let groupItem = groupItems[i];
+        setAsPackaged(groupItem);
+        leftoverQuantity--;
+    }
+
+    return leftoverQuantity;
 }
 
 function setAsPackaged(item) {
@@ -96,45 +89,60 @@ exports.createProductVariantQuery = function createProductVariantQuery(productVa
     return query;
 }
 
+function createNewInventories(leftoverQuantity, productVariant) {
+    var newItems = [];
+    for (var i = 0; i < leftoverQuantity; i++) {
+        let newItem = createNewInventory(productVariant);
+        newItems.push(newItem);
+    }
+
+    return allocateInventories(newItems, productVariant, leftoverQuantity);
+}
+
+
 function createNewInventory(productVariant, lineItemsToSkip) {
     var Item = require('../../../models/item.js');
     var item = new Item();
     item.set("productVariant", productVariant);
-    return allocateInventory(item, productVariant, lineItemsToSkip).then(function(objects) {
-        return setAsPackaged(item);
-    });
+    setAsPackaged(item);
+
+    return item;
 }
 
-function allocateInventory(item, productVariant, lineItemsToSkip) {
+function allocateInventories(items, productVariant, quantityToSave) {
     console.log("allocating inventories");
     var promise = new Parse.Promise();
-    findMatchingLineItem(item, productVariant, lineItemsToSkip).then(function (lineItem) {
-        if (lineItem == undefined) {
-            //couldn't allocate
-            return item.save();
-        } else {
-            //allocated
-            item.set("lineItem", lineItem);
-            lineItem.set("item", item);
-            return Parse.Object.saveAll([item, lineItem]);
+
+    findMatchingLineItems(productVariant, quantityToSave).then(function (lineItems) {
+        var objectsToSave = [];
+        for (var i = 0; i < lineItems.length; i++) {
+            let lineItem = lineItems[i];
+            let item = items[i];
+            objectsToSave.push(allocate(lineItem, item));
         }
-    }).then(function(objects) {
-        promise.resolve(item);
-    }, function(error) {
-        promise.reject(error);
+        const SaveAll = require('../../../orders/js/orders.js');
+        SaveAll.saveAllComponents(objectsToSave).then(function (results) {
+            promise.resolve(results);
+        }, function (error) {
+            promise.reject(error);
+        });
     });
 
     return promise;
 }
 
-function findMatchingLineItem(inventory, productVariant, lineItemsToSkip) {
+function allocate(lineItem, item) {
+    item.set("lineItem", lineItem);
+    lineItem.set("item", item);
+    return [item, lineItem];
+}
+
+function findMatchingLineItems(productVariant, quantityToSave) {
     var LineItem = require("../../../models/lineItem.js");
     var query = LineItem.query();
     query.equalTo("productVariant", productVariant);
     query.doesNotExist("item");
-    //if someone saves 15 inventory items at once, you want to skip the ones that would be saved for the ones before it.
-    //so we don't save the same LineItem to multiple Inventories
-    query.skip(lineItemsToSkip);
+    query.limit(quantityToSave);
 
-    return query.first();
+    return query.find();
 }

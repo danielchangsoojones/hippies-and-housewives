@@ -17,7 +17,7 @@ function testInventorySave() {
 aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
-    var dictionary = {"511bGXrSII" : -20};
+    var dictionary = {"511bGXrSII" : 2};
     Aggregate.updateInventoryCount(dictionary).then(function(results) {
         console.log(results);
     }, function(error) {
