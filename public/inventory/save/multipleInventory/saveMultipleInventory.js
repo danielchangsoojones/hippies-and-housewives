@@ -6,14 +6,18 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
 
     exports.getProductVariant(productVariantObjectID, quantityToSave).then(function (productVariantResult) {
         let productVariant = productVariantResult.productVariant;
-        getGroupItems(quantityToSave, productVariant).then(function (groupItems) {
-            let leftoverQuantity = setGroupItems(groupItems, quantityToSave);
-            return createNewInventories(leftoverQuantity, productVariant);
-        }).then(function (results) {
-            promise.resolve(results);
-        }, function (error) {
-            promise.reject(error);
+        return getGroupItems(quantityToSave, productVariant).then(function (groupItems) {
+            let results = setGroupItems(groupItems, quantityToSave);
+            let leftoverQuantity = results.leftoverQuantity;
+            let groupItemsToSave = results.groupItemsToSave;
+            return createNewInventories(leftoverQuantity, productVariant).then(function(objectsToSave) {
+                return saveAllObjects(groupItemsToSave, objectsToSave);  
+            });
         });
+    }).then(function(results) {
+        promise.resolve(results);
+    }, function(error) {
+        promise.reject(error);
     });
 
     return promise;
@@ -46,19 +50,26 @@ function getGroupItems(itemsToSave, productVariant) {
 
 function setGroupItems(groupItems, quantityToSave) {
     var leftoverQuantity = quantityToSave;
+    var groupItemsToSave = [];
     for (var i = 0; i < groupItems.length; i++) {
         let groupItem = groupItems[i];
         setAsPackaged(groupItem);
+        groupItemsToSave.push(groupItem);
         leftoverQuantity--;
     }
 
-    return leftoverQuantity;
+    let results = {
+        groupItemsToSave: groupItemsToSave,
+        leftoverQuantity: leftoverQuantity
+    };
+
+    return results;
 }
 
 function setAsPackaged(item) {
     let SetPackage = require("../../../package/save/savePackage.js");
     let Package = require("../../../models/tracking/package.js");
-    return SetPackage.setPackage(item, Package.states().in_inventory);
+    SetPackage.setItemAsPackaged(item, Package.states().in_inventory);
 }
 
 exports.getProductVariant = function getProductVariant(productVariantObjectID, i) {
@@ -120,12 +131,7 @@ function allocateInventories(items, productVariant, quantityToSave) {
             let item = items[i];
             objectsToSave.push(allocate(lineItem, item));
         }
-        const SaveAll = require('../../../orders/js/orders.js');
-        SaveAll.saveAllComponents(objectsToSave).then(function (results) {
-            promise.resolve(results);
-        }, function (error) {
-            promise.reject(error);
-        });
+        promise.resolve(objectsToSave);
     });
 
     return promise;
@@ -146,3 +152,21 @@ function findMatchingLineItems(productVariant, quantityToSave) {
 
     return query.find();
 }
+
+function saveAllObjects(groupItemsToSave, objectsToSave) {
+    const SaveAll = require('../../../orders/js/orders.js');
+    let flattenedArray = flatten([groupItemsToSave, objectsToSave]);
+    return SaveAll.saveAllComponents(flattenedArray);
+}
+
+function flatten(arr, result = []) {
+    for (let i = 0, length = arr.length; i < length; i++) {
+        const value = arr[i];
+        if (Array.isArray(value)) {
+            flatten(value, result);
+        } else {
+            result.push(value);
+        }
+    }
+    return result;
+};
