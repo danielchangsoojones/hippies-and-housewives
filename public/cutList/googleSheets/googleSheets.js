@@ -151,6 +151,8 @@ function createLineItemRowValues() {
     var uniqueID;
     if (item == undefined) {
       uniqueID = "unknown";
+    } else {
+      uniqueID = item.get("uniqueID");
     }
     let lineItemJSON = [uniqueID, lineItem.get("title"), lineItem.get("variant_title"), order.get("name")];
     lineItemArray.push(lineItemJSON);
