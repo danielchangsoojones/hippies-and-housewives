@@ -39,16 +39,8 @@ function getGroupItems(itemsToSave, productVariant) {
     query.exists("group");
     query.doesNotExist("package");
     query.limit(itemsToSave);
-    
-    var promise = new Parse.Promise();
 
-    query.find(function(groupItems) {
-        promise.resolve(groupItems);
-    }, function(error) {
-        promise.reject(error);
-    });
-
-    return promise;
+    return query.find();
 }
 
 function setGroupItems(groupItems, quantityToSave) {
