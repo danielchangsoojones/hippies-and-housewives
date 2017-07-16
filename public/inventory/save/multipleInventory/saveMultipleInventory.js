@@ -7,11 +7,11 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
     exports.getProductVariant(productVariantObjectID, quantityToSave).then(function (productVariantResult) {
         let productVariant = productVariantResult.productVariant;
         return getGroupItems(quantityToSave, productVariant).then(function (groupItems) {
-            console.log("showing group items: ");
-            console.log(groupItems);
+            console.log("group items length: " + groupItems.length);
             let results = setGroupItems(groupItems, quantityToSave);
             let leftoverQuantity = results.leftoverQuantity;
             let groupItemsToSave = results.groupItemsToSave;
+            console.log("group items to save: " + groupItemsToSave.length);
             console.log("leftoverQuantity: " + leftoverQuantity);
             return createNewInventories(leftoverQuantity, productVariant).then(function(objectsToSave) {
                 return saveAllObjects(groupItemsToSave, objectsToSave);  
