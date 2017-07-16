@@ -6,10 +6,8 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
 
     exports.getProductVariant(productVariantObjectID, quantityToSave).then(function (productVariantResult) {
         let productVariant = productVariantResult.productVariant;
-        return getGroupItems(quantityToSave, productVariant).then(function (groupItems) {
-            console.log("showing group items: ");
-            console.log(groupItems);
-            let results = setGroupItems(groupItems, quantityToSave);
+        const MatchGroupItems = require('./groupItems/matchGroupItems.js');
+        return MatchGroupItems.matchGroupItems(quantityToSave, productVariant).then(function(results) {
             let leftoverQuantity = results.leftoverQuantity;
             let groupItemsToSave = results.groupItemsToSave;
             console.log("leftoverQuantity: " + leftoverQuantity);
@@ -18,7 +16,7 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
             });
         });
     }).then(function(results) {
-        console.log("results length: " + results.length);
+        console.log("results length: " + results);
         promise.resolve(results);
     }, function(error) {
         promise.reject(error);
@@ -27,42 +25,7 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
     return promise;
 }
 
-/*
-a group item is an item that was associated with a group and we used it to initiate a line item
-Say, we send a bunch of swimsuits off to a factory, and we need to make sure those line items are initiated,
-so they don't get double cut. But, they have no label, so when they are placed into inventory, we need to match them back up
-*/
-function getGroupItems(itemsToSave, productVariant) {
-    var Item = require("../../../models/item.js");
-    var query = Item.query();
-
-    query.equalTo("productVariant", productVariant);
-    query.exists("group");
-    query.doesNotExist("package");
-    query.limit(itemsToSave);
-
-    return query.find();
-}
-
-function setGroupItems(groupItems, quantityToSave) {
-    var leftoverQuantity = quantityToSave;
-    var groupItemsToSave = [];
-    for (var i = 0; i < groupItems.length; i++) {
-        let groupItem = groupItems[i];
-        setAsPackaged(groupItem);
-        groupItemsToSave.push(groupItem);
-        leftoverQuantity--;
-    }
-
-    let results = {
-        groupItemsToSave: groupItemsToSave,
-        leftoverQuantity: leftoverQuantity
-    };
-
-    return results;
-}
-
-function setAsPackaged(item) {
+exports.setAsPackaged = function setAsPackaged(item) {
     let SetPackage = require("../../../package/save/savePackage.js");
     let Package = require("../../../models/tracking/package.js");
     SetPackage.setItemAsPackaged(item, Package.states().in_inventory);
@@ -111,7 +74,7 @@ function createNewInventory(productVariant, lineItemsToSkip) {
     var Item = require('../../../models/item.js');
     var item = new Item();
     item.set("productVariant", productVariant);
-    setAsPackaged(item);
+    exports.setAsPackaged(item);
 
     return item;
 }

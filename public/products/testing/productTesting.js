@@ -230,7 +230,6 @@ function getProductVariant(productVariants, targetProductVariantID) {
     console.log("could not find matching product variants");
 }
 
-seeIfProductIsUnique("0lSatIbdAk");
 function seeIfProductIsUnique(productTypeObjectID) {
 
     const ProductType = require('../../models/productType.js');
