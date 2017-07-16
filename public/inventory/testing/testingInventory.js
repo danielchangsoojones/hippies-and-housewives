@@ -17,7 +17,7 @@ function testInventorySave() {
 aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
-    var dictionary = {"511bGXrSII" : 5};
+    var dictionary = {"H0AKC1debR" : 5};
     Aggregate.updateInventoryCount(dictionary).then(function(results) {
         for (var i = 0; i < results[0].length; i++) {
             let result = results[0][i];
@@ -52,33 +52,6 @@ function loadInventories(productTypeObjectID) {
     const LoadInventoryCounts = require('../aggregate/loadCounts/loadInventoryCounts.js');
     LoadInventoryCounts.loadInventories(productTypeObjectID).then(function(results) {
         console.log(results);
-    }, function(error) {
-        console.log(error);
-    });
-}
-
-//Purpose: tell us how many inventories exist for a product variant
-function checkInventoryCount(style, size) {
-    let Get = require("../../products/testing/productTesting.js");
-    Get.getProductVariant(style, size).then(function(productVariantObjectID) {
-        let Item = require("../../models/item.js");
-        let query = Item.query();
-
-        let productVariantQuery = require("../../models/productVariant.js").query();
-        productVariantQuery.equalTo("objectId", productVariantObjectID);
-        query.matchesQuery("productVariant", productVariantQuery);
-
-        let Package = require("../../models/tracking/package.js");
-        let packageQuery = Package.query();
-        packageQuery.equalTo("state", Package.states().in_inventory);
-        query.matchesQuery("package", packageQuery);
-
-
-        query.count({
-            success: function (count) {
-                console.log(count);
-            }
-        });
     }, function(error) {
         console.log(error);
     });
