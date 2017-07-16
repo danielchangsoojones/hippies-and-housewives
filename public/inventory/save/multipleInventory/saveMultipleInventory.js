@@ -12,11 +12,13 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
             let results = setGroupItems(groupItems, quantityToSave);
             let leftoverQuantity = results.leftoverQuantity;
             let groupItemsToSave = results.groupItemsToSave;
+            console.log("leftoverQuantity: " + leftoverQuantity);
             return createNewInventories(leftoverQuantity, productVariant).then(function(objectsToSave) {
                 return saveAllObjects(groupItemsToSave, objectsToSave);  
             });
         });
     }).then(function(results) {
+        console.log("results length: " + results.length);
         promise.resolve(results);
     }, function(error) {
         promise.reject(error);
@@ -38,16 +40,8 @@ function getGroupItems(itemsToSave, productVariant) {
     query.exists("group");
     query.doesNotExist("package");
     query.limit(itemsToSave);
-    
-    var promise = new Parse.Promise();
 
-    query.find(function(groupItems) {
-        promise.resolve(groupItems);
-    }, function(error) {
-        promise.reject(error);
-    });
-
-    return promise;
+    return query.find();
 }
 
 function setGroupItems(groupItems, quantityToSave) {
@@ -126,14 +120,23 @@ function allocateInventories(items, productVariant, quantityToSave) {
     console.log("allocating inventories");
     var promise = new Parse.Promise();
 
-    findMatchingLineItems(productVariant, quantityToSave).then(function (lineItems) {
+    const MatchingLineItem = require('./matchingLineItems/matchingLineItem.js');
+    MatchingLineItem.findMatchingLineItems(productVariant, quantityToSave).then(function (lineItems) {
         var objectsToSave = [];
-        for (var i = 0; i < lineItems.length; i++) {
+        for (var i = 0; i < items.length; i++) {
             let lineItem = lineItems[i];
             let item = items[i];
-            objectsToSave.push(allocate(lineItem, item));
+            if (lineItem != undefined) {
+                //we found a matching line item
+                objectsToSave.push(allocate(lineItem, item));
+            } else {
+                //there were no more line items to attach to items. This means that we have unallocated inventory, so just save it without a line item.
+                objectsToSave.push(item);
+            }
         }
         promise.resolve(objectsToSave);
+    }, function(error) {
+        promise.reject(error);
     });
 
     return promise;
