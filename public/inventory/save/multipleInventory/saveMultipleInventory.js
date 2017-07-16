@@ -122,10 +122,16 @@ function allocateInventories(items, productVariant, quantityToSave) {
 
     findMatchingLineItems(productVariant, quantityToSave).then(function (lineItems) {
         var objectsToSave = [];
-        for (var i = 0; i < lineItems.length; i++) {
+        for (var i = 0; i < items.length; i++) {
             let lineItem = lineItems[i];
             let item = items[i];
-            objectsToSave.push(allocate(lineItem, item));
+            if (lineItem != undefined) {
+                //we found a matching line item
+                objectsToSave.push(allocate(lineItem, item));
+            } else {
+                //there were no more line items to attach to items. This means that we have unallocated inventory, so just save it without a line item.
+                objectsToSave.push(item);
+            }
         }
         promise.resolve(objectsToSave);
     });
