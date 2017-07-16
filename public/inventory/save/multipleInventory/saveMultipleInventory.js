@@ -7,6 +7,8 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
     exports.getProductVariant(productVariantObjectID, quantityToSave).then(function (productVariantResult) {
         let productVariant = productVariantResult.productVariant;
         return getGroupItems(quantityToSave, productVariant).then(function (groupItems) {
+            console.log("showing group items: ");
+            console.log(groupItems);
             let results = setGroupItems(groupItems, quantityToSave);
             let leftoverQuantity = results.leftoverQuantity;
             let groupItemsToSave = results.groupItemsToSave;
