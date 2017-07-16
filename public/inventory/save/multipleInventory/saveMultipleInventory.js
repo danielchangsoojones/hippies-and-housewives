@@ -18,6 +18,7 @@ exports.saveInventory = function saveInventory(productVariantObjectID, quantityT
             });
         });
     }).then(function(results) {
+        console.log("results length: " + results.length);
         promise.resolve(results);
     }, function(error) {
         promise.reject(error);
