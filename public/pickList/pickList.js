@@ -27,6 +27,8 @@ exports.updatePickList = function updatePickList() {
             let orderDictionary = exports.groupLineItemsToOrders(lineItems);
             let completedOrderDictionary = goThrough(orderDictionary);
             savePickables(completedOrderDictionary);
+            const CleanPickable = require('./clean/cleanPickable.js');
+            CleanPickable.cleanPickables();
         }, function(error) {
             console.log(error);
         }
@@ -60,7 +62,7 @@ function goThrough(orderDictionary) {
 
     for(var orderID in orderDictionary) {
         let lineItems = orderDictionary[orderID];
-        if (checkIfAllLineItemsCompleted(lineItems)) {
+        if (exports.checkIfAllLineItemsCompleted(lineItems)) {
             completedOrdersDictionary[orderID] = lineItems;
         }
     }
@@ -68,7 +70,7 @@ function goThrough(orderDictionary) {
     return completedOrdersDictionary;
 }
 
-function checkIfAllLineItemsCompleted(lineItems) {
+exports.checkIfAllLineItemsCompleted = function checkIfAllLineItemsCompleted(lineItems) {
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         let item = lineItem.get("item");

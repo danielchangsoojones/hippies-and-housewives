@@ -11,6 +11,7 @@ function fetchPickList() {
   });
 }
 
+testPickListUpdate();
 function testPickListUpdate() {
   let PickList = require("../pickList.js");
   PickList.updatePickList();
