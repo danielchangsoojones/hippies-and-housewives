@@ -53,12 +53,18 @@ function createNonExistentLineItemQuery(productTypeObjectID) {
 function createExistingLineItemQuery(productTypeObjectID) {
     let query = createCommonItemQuery(productTypeObjectID);
 
-    const LineItem = require('../../../models/lineItem.js');
-    let lineItemQuery = LineItem.query();
-    lineItemQuery.doesNotExist("picked");
+    let lineItemQuery = exports.createLineItemQuery();
     query.matchesQuery("lineItem", lineItemQuery);
 
     return query;
+}
+
+exports.createLineItemQuery = function createLineItemQuery() {
+    const LineItem = require('../../../models/lineItem.js');
+    let lineItemQuery = LineItem.query();
+    lineItemQuery.doesNotExist("pick");
+
+    return lineItemQuery;
 }
 
 function createCommonItemQuery(productTypeObjectID) {

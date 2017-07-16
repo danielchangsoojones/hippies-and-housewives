@@ -43,9 +43,8 @@ function createNonExistentLineItemsQuery(productVariantObjectID) {
 function createExistingLineItemsQuery(productVariantObjectID) {
     var query = createInventoryQuery(productVariantObjectID);
 
-    var LineItem = require("../../../models/lineItem.js");
-    var lineItemQuery = LineItem.query();
-    lineItemQuery.doesNotExist("pick");
+    const LoadInventoryCounts = require('../../aggregate/loadCounts/loadInventoryCounts.js');
+    let lineItemQuery = LoadInventoryCounts.createLineItemQuery();
     query.matchesQuery("lineItem", lineItemQuery);
 
     return query;
@@ -57,7 +56,7 @@ function createInventoryQuery(productVariantObjectID) {
 
     var Package = require("../../../models/tracking/package.js");
     var packageQuery = Package.query();
-    packageQuery.equalTo("state", "in inventory");
+    packageQuery.equalTo("state", Package.states().in_inventory);
     query.matchesQuery("package", packageQuery);
     
     let ProductVariant = require("../../../models/productVariant.js");
@@ -65,7 +64,7 @@ function createInventoryQuery(productVariantObjectID) {
     productVariantQuery.equalTo("objectId", productVariantObjectID);
     query.matchesQuery("productVariant", productVariantQuery);
 
-    return query
+    return query;
 }
 
 function siftInventories(items, quantityToRemove) {

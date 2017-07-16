@@ -17,9 +17,14 @@ function testInventorySave() {
 aggregateInventory();
 function aggregateInventory() {
     let Aggregate = require("../aggregate/aggregateInventory.js");
-    var dictionary = {"511bGXrSII" : 2};
+    var dictionary = {"511bGXrSII" : 5};
     Aggregate.updateInventoryCount(dictionary).then(function(results) {
-        console.log(results);
+        for (var i = 0; i < results[0].length; i++) {
+            let result = results[0][i];
+            if (result.className === "Item") {
+                console.log(result);
+            }
+        }
     }, function(error) {
         console.log(error);
     });
