@@ -120,7 +120,8 @@ function allocateInventories(items, productVariant, quantityToSave) {
     console.log("allocating inventories");
     var promise = new Parse.Promise();
 
-    findMatchingLineItems(productVariant, quantityToSave).then(function (lineItems) {
+    const MatchingLineItem = require('./matchingLineItems/matchingLineItem.js');
+    MatchingLineItem.findMatchingLineItems(productVariant, quantityToSave).then(function (lineItems) {
         var objectsToSave = [];
         for (var i = 0; i < items.length; i++) {
             let lineItem = lineItems[i];
