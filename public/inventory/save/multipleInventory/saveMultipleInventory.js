@@ -134,6 +134,8 @@ function allocateInventories(items, productVariant, quantityToSave) {
             }
         }
         promise.resolve(objectsToSave);
+    }, function(error) {
+        promise.reject(error);
     });
 
     return promise;
