@@ -39,3 +39,8 @@ function getOpenItemsSpreadsheet() {
     });
 
 }
+
+function getItemsToSew() {
+    const SewingAnalytics = require('../sewing/sewingAnalytics.js');
+    SewingAnalytics.sendItemsToBeSewnToGoogleSheet();
+}
