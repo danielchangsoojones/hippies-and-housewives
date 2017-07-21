@@ -121,14 +121,8 @@ function getItemsToBeCut() {
 function getItemsToBeSewn() {
     var promise = new Parse.Promise();
 
-    let query = LineItem.query();
-
-    let itemQuery = Item.query();
-    itemQuery.exists("cut");
-    itemQuery.doesNotExist("package");
-    query.matchesQuery("item", itemQuery);
-    
-    query.limit(10000);
+    const SewingAnalytics = require('../sewing/sewingAnalytics.js');
+    let query = SewingAnalytics.createItemsToBeSewnQuery();
 
     query.count({
         success: function(count) {
