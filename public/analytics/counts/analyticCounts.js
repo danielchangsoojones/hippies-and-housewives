@@ -89,8 +89,7 @@ function getCostToMakeItemsCount() {
         let count = result[Analytic.types().newestItems];
         let costPerItem = 15;
         let totalCost = count * costPerItem;
-        let costString = "$" + totalCost
-        let costResult = createResult(Analytic.types().newestItemsCost, costString);
+        let costResult = createResult(Analytic.types().newestItemsCost, totalCost);
         promise.resolve(costResult);
     }, function(error) {
         promise.reject(error);
