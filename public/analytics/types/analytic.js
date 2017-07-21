@@ -4,6 +4,7 @@ class Analytic {
             openOrders: "openOrders",
             newestOrders: "newestOrders",
             newestItems: "newestItems",
+            newestItemsCost: "newestItemsCost",
             itemsToCut: "itemsToCut",
             itemsToSew: "itemsToSew",
             allocatedInventoryCount: "allocatedInventoryCount",

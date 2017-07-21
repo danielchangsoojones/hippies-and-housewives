@@ -12,6 +12,7 @@ exports.getAnalyticCounts = function getAnalyticCounts() {
     promises.push(getOpenOrdersCount());
     promises.push(getNewestOrdersCount());
     promises.push(getNewestItemsCount());
+    promises.push(getCostToMakeItemsCount());
     promises.push(getItemsToBeCut());
     promises.push(getItemsToBeSewn());
     promises.push(getAllocatedInventoryCount());
@@ -76,6 +77,23 @@ function getNewestItemsCount() {
         }, error: function(error) {
             promise.reject(error);
         }
+    });
+
+    return promise;
+}
+
+function getCostToMakeItemsCount() {
+    var promise = new Parse.Promise();
+
+    getNewestItemsCount().then(function(result) {
+        let count = result[Analytic.types().newestItems];
+        let costPerItem = 15;
+        let totalCost = count * costPerItem;
+        let costString = "$" + totalCost
+        let costResult = createResult(Analytic.types().newestItemsCost, costString);
+        promise.resolve(costResult);
+    }, function(error) {
+        promise.reject(error);
     });
 
     return promise;
