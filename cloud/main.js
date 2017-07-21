@@ -91,6 +91,8 @@ Parse.Cloud.define("inputPackage", function(req, res) {
   });
 });
 
+
+//MARK: analytics
 Parse.Cloud.define("getAnalyticCounts", function(req, res) {
   let AnalyticCounts = require("../public/analytics/counts/analyticCounts.js");
   AnalyticCounts.getAnalyticCounts().then(function(results) {
@@ -98,6 +100,12 @@ Parse.Cloud.define("getAnalyticCounts", function(req, res) {
   }, function(error) {
     res.error(error);
   });
+});
+
+Parse.Cloud.define("createSewingItemsGoogleSheet", function(req, res) {
+  const SewingAnalytics = require('../public/analytics/sewing/sewingAnalytics.js');
+  SewingAnalytics.sendItemsToBeSewnToGoogleSheet();
+  res.success(true);
 });
 
 //MARK: Cut List
