@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+require("../public/resources/initializeParse.js");
+console.log("running Clean Multiple Products Job");
+
+//I'm pretty sure that you can not use const in this file, but idk
+var CleanMultipleProducts = require('../public/dataCleansing/multipleProducts/cleanMultipleProducts.js');
+CleanMultipleProducts.cleanMultipleProducts();
