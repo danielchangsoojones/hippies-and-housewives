@@ -6,10 +6,6 @@ exports.getCorrespondingItems = function getCorrespondingItems(originalProductTy
     const Item = require('../../models/item.js');
     let query = Item.query();
 
-    if (originalProductType.id == "B1keGnp9F2") {
-        console.log("yehyeh top // chaco");
-    }
-
     let productVariantQuery = createProductVariantQuery(title, originalProductType.id);
     query.matchesQuery("productVariant", productVariantQuery);
 
