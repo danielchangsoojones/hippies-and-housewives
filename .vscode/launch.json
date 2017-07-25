@@ -7,6 +7,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Data Cleansing Testing",
+            "program": "${workspaceRoot}/public/dataCleansing/testing/dataCleansingTesting.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Allocate Testing",
             "program": "${workspaceRoot}/public/allocation/testing/allocateTesting.js"
         },
