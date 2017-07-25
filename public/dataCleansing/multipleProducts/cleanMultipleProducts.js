@@ -59,6 +59,7 @@ function getCorrespondingLineItems(originalProductType) {
 
 function setObjectsToOriginalProductType(productVariantDictionary, items, lineItems) {
     if (items.length == 0 && lineItems.length == 0) {
+        console.log("no data associated");
         return;
     }
 
@@ -66,7 +67,7 @@ function setObjectsToOriginalProductType(productVariantDictionary, items, lineIt
     let lineItemsToSave = updateLineItems(productVariantDictionary, lineItems);
     const SaveAll = require('../../orders/js/orders.js');
     SaveAll.saveAllComponents([itemsToSave, lineItemsToSave]).then(function(results) {
-        console.log("successfully reset items/lineitems");
+        console.log(results);
     }, function(error) {
         console.log(error);
     });
