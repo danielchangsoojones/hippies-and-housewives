@@ -29,6 +29,7 @@ function getLineItems() {
     query.include("order");
     query.include("productVariant");
     query.include("item.lineItem");
+    query.include("item.package");
     query.limit(10000);
     return query.find();
 }
@@ -38,6 +39,7 @@ function allocateResults(results) {
     let lineItems = results[1];
     let orderDictionary = groupLineItemsToOrders(lineItems);
     iterateThroughDictionary(orderDictionary, items);
+    allocateLeftoverItems(items, lineItems);
 }
 
 function iterateThroughDictionary(orderDictionary, items) {
@@ -50,7 +52,7 @@ function iterateThroughDictionary(orderDictionary, items) {
             let itemsToAllocate = checkAllocationFor(lineItems, items);
             if (itemsToAllocate != undefined) {
                 const ReplaceItem = require('./replace/replaceItem.js');
-                ReplaceItem.replace(itemsToAllocate, lineItems);
+                ReplaceItem.replace(itemsToAllocate, lineItems, true);
             }
         }
     }
@@ -82,9 +84,13 @@ function checkAllocationFor(lineItems, items) {
 function removeAllocatedItemsFromTotalItemArray(items, itemsToAllocate) {
     for(var i = 0; i < itemsToAllocate.length; i++) {
         let itemToAllocate = itemsToAllocate[i];
-        let removingIndex = items.indexOf(itemToAllocate);
-        items.splice(removingIndex, 1);
+        removeAllocatedItem(itemToAllocate, items);
     }
+}
+
+function removeAllocatedItem(itemToRemove, items) {
+    let removingIndex = items.indexOf(itemToRemove);
+    items.splice(removingIndex, 1);
 }
 
 function groupLineItemsToOrders(lineItems) {
@@ -121,4 +127,50 @@ function cleanDirtyItem(lineItem) {
             lineItem.save();
         }
     }
+}
+
+function allocateLeftoverItems(items, lineItems) {
+    var itemsToAllocate = [];
+    var lineItemsToAllocate = [];
+    var lineItemDictionary = {};
+
+    for (var i = 0; i < lineItems.length; i++) {
+        let lineItem = lineItems[i];
+        let itemOfLineItem = lineItem.get("item");
+        if (itemOfLineItem == undefined || itemOfLineItem.get("package") == undefined) {
+            //the line item has no packaged item, so it is fair game to allocate
+            let matchingItem = findNonAllocatedItemIndexMatching(lineItem.get("productVariant"), items);
+            if (matchingItem != undefined) {
+                //we found a leftover item to allocate to a non-100% pickable order
+                console.log(matchingItem.get("lineItem"));
+                console.log(lineItem.get("title"));
+                console.log(lineItem.id);
+                removeAllocatedItem(matchingItem, items);
+                itemsToAllocate.push(matchingItem);
+                lineItemsToAllocate.push(lineItem);
+            }
+        }
+    }
+
+    const Replace = require('./replace/replaceItem.js');
+    Replace.replace(itemsToAllocate, lineItemsToAllocate, false);
+}
+
+/**
+ * for orders that are not 100% allocated, then we only want to allocate an item if it has no line item
+ * if it already has a line item, then it's not fair to steal it because these non-100% are no more worthy
+ * than its current line item.
+ */
+function findNonAllocatedItemIndexMatching(lineItemProductVariant, items) {
+    if (lineItemProductVariant != undefined) {
+        for (var i = 0; i < items.length; i++) {
+            let item = items[i];
+            let itemProductVariant = item.get("productVariant");
+            if (itemProductVariant != undefined && itemProductVariant.id == lineItemProductVariant.id && item.get("lineItem") == undefined) {
+                return item;
+            }
+        }
+    }
+
+    return undefined;
 }

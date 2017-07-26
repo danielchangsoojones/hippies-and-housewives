@@ -6,8 +6,6 @@ pick list will have all of its line items ready.
 */
 var Parse = require('parse/node');
 
-var num = 0;
-
 exports.updatePickList = function updatePickList() {
     let LineItem = require("../models/lineItem.js");
     let query = LineItem.query();
@@ -37,14 +35,13 @@ exports.updatePickList = function updatePickList() {
 
 exports.groupLineItemsToOrders = function groupLineItemsToOrders(lineItems) {
     //{order : [line items]}
-    var orderDictionary = {}
+    var orderDictionary = {};
 
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         let order = lineItem.get("order");
         let orderID = order.id;
 
-        
         if (orderDictionary[orderID] == undefined) {
             //order key doesn't exist in dictionary yet
             orderDictionary[orderID] = [lineItem];
@@ -74,7 +71,6 @@ exports.checkIfAllLineItemsCompleted = function checkIfAllLineItemsCompleted(lin
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         let item = lineItem.get("item");
-
 
         if (item == undefined) {
             return false;

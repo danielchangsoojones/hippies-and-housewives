@@ -1,7 +1,11 @@
-exports.replace = function replace(itemsToAllocate, newLineItems) {
+exports.replace = function replace(itemsToAllocate, newLineItems, shouldCreatePickable) {
     let oldLineItemsToSave = [];
     let updatedItemsToSave = [];
     let newLineItemsToSave = [];
+
+    if (shouldCreatePickable) {
+        createPickable(newLineItems);
+    }
 
     for (var i = 0; i < itemsToAllocate.length; i++) {
         let item = itemsToAllocate[i];
@@ -22,7 +26,7 @@ exports.replace = function replace(itemsToAllocate, newLineItems) {
         }
     }
 
-    createPickable(newLineItems);
+    
     const SaveAll = require('../../orders/js/orders.js');
     SaveAll.saveAllComponents([updatedItemsToSave, newLineItemsToSave, oldLineItemsToSave]);   
 }
@@ -33,6 +37,7 @@ function findMatchingLineItem(newLineItems, itemProductVariant) {
             let lineItem = newLineItems[i];
             let lineItemProductVariant = lineItem.get("productVariant");
             if (lineItemProductVariant != undefined && lineItemProductVariant.id == itemProductVariant.id) {
+                newLineItems.splice(i, 1);
                 return lineItem;
             }
         }
