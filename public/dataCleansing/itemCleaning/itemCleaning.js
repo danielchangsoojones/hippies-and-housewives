@@ -61,7 +61,9 @@ function clean(items, lineItemID) {
         let lineItem = item.get("lineItem");
         if (lineItem != undefined) {
             let itemOfLineItem = lineItem.get("item");
-            if (itemOfLineItem == undefined || item.id != itemOfLineItem.id) {
+            const LineItem = require('../../models/lineItem.js');
+            //only do this to lineItems where the states are open. Archived line items we don't care about.
+            if (lineItem.get("state") == LineItem.states().open && (itemOfLineItem == undefined || item.id != itemOfLineItem.id)) {
                 //the item is pointing to a Line Item, but the LineItem is not pointing back
                 item.unset("lineItem");
                 itemsToClean.push(item);

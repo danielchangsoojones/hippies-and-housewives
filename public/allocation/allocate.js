@@ -149,7 +149,7 @@ function allocateLeftoverItems(items, lineItems) {
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         let lineItemProductVariant = lineItem.get("productVariant");
-        if (lineItemProductVariant != undefined && (itemOfLineItem == undefined || checkIfLineItemIsAlreadyAllocated(lineItem))) {
+        if (lineItemProductVariant != undefined && !checkIfLineItemIsAlreadyAllocated(lineItem)) {
             //the line item has no packaged item, so it is fair game to allocate
             let matchingItem = findNonAllocatedItemIndexMatching(lineItemProductVariant, items);
             if (matchingItem != undefined) {
