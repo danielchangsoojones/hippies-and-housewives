@@ -22,7 +22,7 @@ function createNonInitiatedLineItemQuery(productVariant) {
     const Item = require('../../../../models/item.js');
     let itemQuery = Item.query();
     itemQuery.notEqualTo("isInitiated", true);
-    query.matchesQuery("item", query);
+    query.matchesQuery("item", itemQuery);
 
     return query;
 }

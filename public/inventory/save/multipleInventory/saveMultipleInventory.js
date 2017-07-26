@@ -111,16 +111,6 @@ function allocate(lineItem, item) {
     return [item, lineItem];
 }
 
-function findMatchingLineItems(productVariant, quantityToSave) {
-    var LineItem = require("../../../models/lineItem.js");
-    var query = LineItem.query();
-    query.equalTo("productVariant", productVariant);
-    query.doesNotExist("item");
-    query.limit(quantityToSave);
-
-    return query.find();
-}
-
 function saveAllObjects(groupItemsToSave, objectsToSave) {
     const SaveAll = require('../../../orders/js/orders.js');
     let flattenedArray = flatten([groupItemsToSave, objectsToSave]);
