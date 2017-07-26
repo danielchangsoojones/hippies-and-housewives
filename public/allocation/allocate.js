@@ -63,14 +63,26 @@ function checkAllocationFor(lineItems, items) {
 
     for(var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
-        let matchingItem = findItemIndexMatching(lineItem.get("productVariant"), items);
-        if (matchingItem == undefined) {
-            //could not find matching item
-            cleanDirtyItem(lineItem);
-            return;
-        } else {
-            itemsToAllocate.push(matchingItem);
+        
+        /**
+         * if the line item already has a packaged Item, then we don't want to replace it with a new item because then we will 
+         * just have replaced the item and it create items with duplicate pointers to the same line item.
+         */
+        if (!checkIfLineItemIsAlreadyAllocated(lineItem)) {
+            let matchingItem = findItemIndexMatching(lineItem.get("productVariant"), items);
+            if (matchingItem == undefined) {
+                //could not find matching item
+                cleanDirtyItem(lineItem);
+                return;
+            } else {
+                itemsToAllocate.push(matchingItem);
+            }
         }
+    }
+
+    if (itemsToAllocate.length == 0) {
+        //all line items were already allocated to completed items, so there is no need to save them, etc.
+        return undefined;
     }
 
     removeAllocatedItemsFromTotalItemArray(items, itemsToAllocate);
@@ -136,16 +148,12 @@ function allocateLeftoverItems(items, lineItems) {
 
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
-        let itemOfLineItem = lineItem.get("item");
         let lineItemProductVariant = lineItem.get("productVariant");
-        if (lineItemProductVariant != undefined && (itemOfLineItem == undefined || itemOfLineItem.get("package") == undefined)) {
+        if (lineItemProductVariant != undefined && (itemOfLineItem == undefined || checkIfLineItemIsAlreadyAllocated(lineItem))) {
             //the line item has no packaged item, so it is fair game to allocate
             let matchingItem = findNonAllocatedItemIndexMatching(lineItemProductVariant, items);
             if (matchingItem != undefined) {
                 //we found a leftover item to allocate to a non-100% pickable order
-                console.log(matchingItem.get("lineItem"));
-                console.log(lineItem.get("title"));
-                console.log(lineItem.id);
                 removeAllocatedItem(matchingItem, items);
                 itemsToAllocate.push(matchingItem);
                 lineItemsToAllocate.push(lineItem);
@@ -174,4 +182,16 @@ function findNonAllocatedItemIndexMatching(lineItemProductVariant, items) {
     }
 
     return undefined;
+}
+
+/**
+ * a line item is already allocated if it's Item already has a package
+ */
+function checkIfLineItemIsAlreadyAllocated(lineItem) {
+    let itemOfLineItem = lineItem.get("item");
+    if (itemOfLineItem != undefined && itemOfLineItem.get("package") != undefined) {
+        return true;
+    }
+
+    return false;
 }
