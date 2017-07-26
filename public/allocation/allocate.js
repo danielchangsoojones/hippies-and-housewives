@@ -137,9 +137,10 @@ function allocateLeftoverItems(items, lineItems) {
     for (var i = 0; i < lineItems.length; i++) {
         let lineItem = lineItems[i];
         let itemOfLineItem = lineItem.get("item");
-        if (itemOfLineItem == undefined || itemOfLineItem.get("package") == undefined) {
+        let lineItemProductVariant = lineItem.get("productVariant");
+        if (lineItemProductVariant != undefined && (itemOfLineItem == undefined || itemOfLineItem.get("package") == undefined)) {
             //the line item has no packaged item, so it is fair game to allocate
-            let matchingItem = findNonAllocatedItemIndexMatching(lineItem.get("productVariant"), items);
+            let matchingItem = findNonAllocatedItemIndexMatching(lineItemProductVariant, items);
             if (matchingItem != undefined) {
                 //we found a leftover item to allocate to a non-100% pickable order
                 console.log(matchingItem.get("lineItem"));
