@@ -10,6 +10,9 @@ function getAnalyticsCounts() {
     });
 }
 
+/**
+ * Purpose: these open items are items that are open and have not been packaged yet.
+ */
 function getOpenItemsSpreadsheet() {
     const LineItem = require('../../models/lineItem.js');
     let query = LineItem.query();
