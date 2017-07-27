@@ -1,17 +1,21 @@
 exports.cleanItems = function cleanItems() {
-    getAllItems().then(function(items) {
+    getAllOpenItems().then(function(items) {
         iterateThrough(items);
     }, function(error) {
         console.log(error);
     });
 }
 
-function getAllItems() {
+function getAllOpenItems() {
     const Item = require('../../models/item.js');
     let query = Item.query();
-    query.exists("lineItem");
+
+    const LineItem = require('../../models/lineItem.js');
+    let lineItemQuery = LineItem.query();
+    query.matchesQuery("lineItem", lineItemQuery);
+
     query.include("lineItem.item");
-    query.limit(20000);
+    query.limit(10000);
     return query.find();
 }
 
