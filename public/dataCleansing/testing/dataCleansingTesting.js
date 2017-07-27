@@ -9,8 +9,12 @@ function cleanMultipleProducts() {
     });
 }
 
-cleanItems();
 function cleanItems() {
     const ItemCleaning = require('../itemCleaning/itemCleaning.js');
     ItemCleaning.cleanItems();
+}
+
+function cleanEmptyLineItemProductVariants() {
+    const CleanEmptyLineItemProducts = require('../emptyProductVariantCleaning/cleanEmptyLineItemProducts.js');
+    CleanEmptyLineItemProducts.cleanEmptyLineItemProductVariants();
 }

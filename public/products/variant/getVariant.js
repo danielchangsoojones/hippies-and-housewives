@@ -52,11 +52,28 @@ function createQuery(shopifyVariantID, variantTitle, productTitle) {
 
 function systemizeVariantTitle(variantTitle) {
     var sizes = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL", "One Size"];
+    
 
     if (sizes.indexOf(variantTitle) == -1) {
-        //the size is not a normal size string (i.e. Chaco / S, etc.)
-        let sizeSuffix = variantTitle.substring(variantTitle.indexOf("/")+2)
-        return sizeSuffix
+        //the size is not a normal size string, could be (i.e. Chaco / S, etc.)
+        let indexOfSlash = variantTitle.indexOf("/");
+        var sizeSuffix = variantTitle.substring(indexOfSlash + 2);
+        sizeSuffix.trim();
+        
+        //sometimes, when data is entered incorrectly on Shipify we get (i.e. S / Chaco)
+        let sizePrefix = variantTitle.substring(0, indexOfSlash - 1);
+        sizePrefix.trim();
+
+        var size;
+
+        let isSizeSuffixCorrect = sizes.indexOf(sizeSuffix) > 0;
+        if (isSizeSuffixCorrect) {
+            size = sizeSuffix;
+        } else {
+            size = sizePrefix;
+        }
+
+        return size;
     }
 
     return variantTitle
