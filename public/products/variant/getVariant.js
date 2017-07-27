@@ -61,7 +61,7 @@ function systemizeVariantTitle(variantTitle) {
         sizeSuffix.trim();
         
         //sometimes, when data is entered incorrectly on Shipify we get (i.e. S / Chaco)
-        let sizePrefix = variantTitle.substring(0, indexOfSlash);
+        let sizePrefix = variantTitle.substring(0, indexOfSlash - 1);
         sizePrefix.trim();
 
         var size;
