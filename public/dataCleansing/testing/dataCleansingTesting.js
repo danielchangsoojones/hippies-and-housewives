@@ -1,6 +1,5 @@
 const initializeParse = require('../../resources/initializeParse.js');
 
-cleanMultipleProducts();
 function cleanMultipleProducts() {
     const CleanMultipleProducts = require('../multipleProducts/cleanMultipleProducts.js');
     CleanMultipleProducts.cleanMultipleProducts().then(function(results) {
@@ -8,4 +7,10 @@ function cleanMultipleProducts() {
     }, function(error) {
         console.log(error);
     });
+}
+
+cleanItems();
+function cleanItems() {
+    const ItemCleaning = require('../itemCleaning/itemCleaning.js');
+    ItemCleaning.cleanItems();
 }

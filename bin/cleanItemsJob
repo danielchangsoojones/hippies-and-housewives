@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+require("../public/resources/initializeParse.js");
+
+console.log("running Clean Items Job");
+var ItemCleaning = require('../public/dataCleansing/itemCleaning/itemCleaning.js');
+ItemCleaning.cleanItems();
