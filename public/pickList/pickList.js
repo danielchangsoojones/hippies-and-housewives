@@ -109,7 +109,6 @@ exports.savePickable = function savePickable(lineItems) {
     }
 
     doesPickableAlreadyExist(order).then(function (order) {
-        console.log(lineItemsCopy);
         let pickable = createPickable(order, lineItemsCopy);
         return pickable.save();
     }).then(function (pickable) {

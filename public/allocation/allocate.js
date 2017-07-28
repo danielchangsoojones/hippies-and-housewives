@@ -53,7 +53,6 @@ function iterateThroughDictionary(orderDictionary, items) {
             let itemsToAllocate = checkAllocationFor(lineItems, items);
             if (itemsToAllocate != undefined) {
                 const ReplaceItem = require('./replace/replaceItem.js');
-                console.log(lineItems);
                 ReplaceItem.replace(itemsToAllocate, lineItems, true);
             }
         }
