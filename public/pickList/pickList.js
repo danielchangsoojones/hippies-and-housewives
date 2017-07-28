@@ -96,8 +96,21 @@ function savePickables(orderDictionary) {
 exports.savePickable = function savePickable(lineItems) {
     let order = lineItems[0].get("order");
 
-    doesPickableAlreadyExist(order).then(function (success) {
-        let pickable = createPickable(order, lineItems);
+    /**
+     * I have no idea why, but if I don't create a copy of the lineItems array, then when it gets to the
+     * query callback, it somehow loses some of the lineItems. They just disappear. Maybe the javascript is halfway through trash disposal of the 
+     * line items. It's weird because some of the lineItems still exist, but some are removed. But, if I make a copy here, then
+     * it works like it should. So weird. But, this is the best workaround. 
+     */
+    var lineItemsCopy = [];
+    for (var i = 0; i < lineItems.length; i++) {
+        let lineItem = lineItems[i];
+        lineItemsCopy.push(lineItem);
+    }
+
+    doesPickableAlreadyExist(order).then(function (order) {
+        console.log(lineItemsCopy);
+        let pickable = createPickable(order, lineItemsCopy);
         return pickable.save();
     }).then(function (pickable) {
         console.log("successfully created pickable: " + pickable.id);
@@ -123,10 +136,9 @@ function doesPickableAlreadyExist(order) {
     query.first({
         success: function(pickable) {
             if (pickable == undefined) {
-                //the pickable has never been made before, so return our order adn create a pickable
+                //the pickable has never been made before, so return our order and create a pickable
                 promise.resolve(order);
             } else {
-                //the pickable has already been created and we don't want duplicates
                 promise.reject("pickable already exists");
             }
         },

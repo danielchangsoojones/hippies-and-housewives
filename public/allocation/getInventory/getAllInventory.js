@@ -24,6 +24,7 @@ function createInventoryQuery() {
     let orQuery = Parse.Query.or(attatchedLineItemQuery, nonAttachedLineItemQuery);
     orQuery.include("productVariant");
     orQuery.limit(10000);
+    orQuery.ascending("createdAt");
     return orQuery;
 }
 

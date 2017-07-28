@@ -30,6 +30,7 @@ function getLineItems() {
     query.include("productVariant");
     query.include("item.lineItem");
     query.include("item.package");
+    query.ascending("createdAt");
     query.limit(10000);
     return query.find();
 }
@@ -52,6 +53,7 @@ function iterateThroughDictionary(orderDictionary, items) {
             let itemsToAllocate = checkAllocationFor(lineItems, items);
             if (itemsToAllocate != undefined) {
                 const ReplaceItem = require('./replace/replaceItem.js');
+                console.log(lineItems);
                 ReplaceItem.replace(itemsToAllocate, lineItems, true);
             }
         }
@@ -68,7 +70,9 @@ function checkAllocationFor(lineItems, items) {
          * if the line item already has a packaged Item, then we don't want to replace it with a new item because then we will 
          * just have replaced the item and it create items with duplicate pointers to the same line item.
          */
-        if (!checkIfLineItemIsAlreadyAllocated(lineItem)) {
+        if (checkIfLineItemIsAlreadyAllocated(lineItem)) {
+            itemsToAllocate.push(lineItem.get("item"));
+        } else {
             let matchingItem = findItemIndexMatching(lineItem.get("productVariant"), items);
             if (matchingItem == undefined) {
                 //could not find matching item
@@ -102,7 +106,9 @@ function removeAllocatedItemsFromTotalItemArray(items, itemsToAllocate) {
 
 function removeAllocatedItem(itemToRemove, items) {
     let removingIndex = items.indexOf(itemToRemove);
-    items.splice(removingIndex, 1);
+    if (removingIndex >= 0) {
+        items.splice(removingIndex, 1);
+    }
 }
 
 function groupLineItemsToOrders(lineItems) {
